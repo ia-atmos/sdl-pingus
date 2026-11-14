@@ -15,13 +15,26 @@ task SurfaceBackground (g, o) {
         else     => 0
     }
 
-    ;; the scroll of the image by itself, in the time of the world
-    val scroll = [x=0, y=0]
-    if (sx != 0) || (sy != 0) {
-        spawn {
+    ;; the scroll of the image by itself, in the time of the world: a
+    ;; float that moves each tick, and comes back by one size when it
+    ;; passes it, as the original
+    val scroll = [x=0.0, y=0.0]
+    val func wrap (v, size) {
+        ifs {
+            v > size    => v - size
+            (-v) > size => v + size
+            else        => v
+        }
+    }
+    spawn {
+        if (sx != 0) || (sy != 0) {
             loop on :tick {
-                set scroll.x = (scroll.x + sx) % w
-                set scroll.y = (scroll.y + sy) % h
+                if sx != 0 {
+                    set scroll.x = wrap(pg.f32(scroll.x + sx), w)
+                }
+                if sy != 0 {
+                    set scroll.y = wrap(pg.f32(scroll.y + sy), h)
+                }
             }
         }
     }

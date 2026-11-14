@@ -112,6 +112,8 @@ of 154 demos with the same trace), the benchmark.
 2. The address of the compiler: `../fsantanna/ceu-atmos` in this
    container, a checkout of `main`; `run.sh` finds it by its former
    names too.
+4. Done: the scroll of the backgrounds by themselves, a live defect
+   found by the compiler (`ia-atmos/lang` `3cc4855`).
 3. Done: the names of the repositories (`ia-atmos/sdl-pingus`,
    `ia-atmos/lang`, the link of the plan) in `run.sh`, `README.md`,
    `doc/compiler.md`, `tools/bench/README.md`.

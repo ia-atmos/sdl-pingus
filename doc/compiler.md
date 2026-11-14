@@ -28,6 +28,17 @@ work found, in the order it was found:
 - **Iterating a tagged table** gives the field `tag` among the items:
   an index of data (a tagged vector) is iterated by position.
 
+## Found by the compiler
+
+- **A spawn that dies at the end of its block** (`ia-atmos/lang`
+  `3cc4855`, a new error: `invalid spawn : the task is aborted at the
+  end of its block`): the scroll of a background by itself was spawned
+  inside an `if`, and was aborted at its `}`; the backgrounds that
+  scroll by themselves (in 66 levels) never moved, and no trace saw
+  it, since a background acts on no pingu. The test is now inside the
+  spawn, and the scroll is a float that wraps by one size, as the
+  original.
+
 ## Measured
 
 - **Speed**: a task wake costs about 55 ns (2000 tasks, 1000 events,
