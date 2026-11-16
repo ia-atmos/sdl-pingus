@@ -15,6 +15,8 @@ task Smasher (g, o) {
     pin pos = [x=o.position@0, y=o.position@1]
     ground_put(res_surface("traps/smasher_cmap"), pos.x, pos.y, GP.solid)
     pin one = [world=true, speed=33, loop=false]
+    val d = res_desc("traps/smasher")
+    val last = (d.array@0 * d.array@1) - 1
     loop {
         ;; still, until a pingu walks under it
         par :any {
@@ -23,8 +25,13 @@ task Smasher (g, o) {
             await :tick until smasher_any(g, pos)
         }
 
-        ;; down, one frame per tick
-        await Sprite("traps/smasher", pos, one)
+        ;; down, one frame per tick: it smashes at its last frame, as the
+        ;; count of the original
+        par :any {
+            await Sprite("traps/smasher", pos, one)
+        } with {
+            await :frame until it.n == last
+        }
         sound "tenton"
         loop _ in 20 {
             spawn @(g.smoke) SmokeParticle(pos.x + 20 + math.random(0, 259), pos.y + 180,
@@ -37,7 +44,12 @@ task Smasher (g, o) {
             }
         }
 
-        ;; up
-        await Sprite("traps/smasher", pos, one ++ [back=true])
+        ;; up, until its first frame, when the original may trigger it
+        ;; again at the next tick
+        par :any {
+            await Sprite("traps/smasher", pos, one ++ [back=true])
+        } with {
+            await :frame until it.n == 0
+        }
     }
 }
