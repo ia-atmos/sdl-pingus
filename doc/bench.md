@@ -51,6 +51,15 @@ port, `PINGUS_KEYS`):
 | `X.load` of the largest level | 2 ms (`tools/check.atm`) |
 | Build, from the sources | 24 s (the C compiler, `-O2`, one C file) |
 
+## A newer compiler
+
+With `ia-atmos/lang` `b3cf341` (the blocks of tasks as trails in the
+frame of their task, with no allocation), the same scenarios, back to
+back with the previous build: no measurable difference in memory, CPU,
+or frames (the noise between runs is about 10%), and the binary is 8 KB
+smaller. The frame time is spent in the software renderer of SDL, not
+in the tasks.
+
 ## Reading
 
 - Memory: the port uses 1.05x the memory of the official game in the
