@@ -110,6 +110,12 @@ of 154 demos with the same trace), the benchmark, the new rules of `pin`.
    159 traces byte-identical, the benchmark unchanged (sent to the
    compiler session and to the author).
 3. The tips for a port of SuperTux (sent to the compiler session).
+4. The migration to the new rules of `pin` (`5b0f721` to `cc5fe72`),
+   reported to the compiler session: 128 keyword changes, 15 rewrites,
+   tests identical; 3 demo traces changed by the compiler `c467e60`
+   and now match the official game (145 of 154).
+5. The answers to env-sdl (screenshots by pixels, no test on the
+   frame cap, baseline `cc5fe72`).
 
 ## D. Older items
 
