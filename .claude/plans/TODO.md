@@ -11,25 +11,12 @@ of 154 demos with the same trace), the benchmark, the new rules of `pin`.
 
 ## A. Decisions waiting for the author
 
-1. **The workarounds the compiler no longer needs** (`ia-atmos/lang`
-   `b3cf341`): `[loop=false]` is accepted, so the options `once` and
-   `cycle` of `Sprite` could go back to `loop`; `"a\"b"` is accepted, so
-   `'"'` could be written as in the original. `doc/compiler.md` still
-   lists both as errors of the compiler.
-   Waits for the author (said by the compiler session).
-   *Recommended:* do it, and mark them fixed in `doc/compiler.md`, with
-   the commit of the compiler.
 2. **The 9 demos whose traces differ from the official game.** Late,
    small differences (one pixel, one tick, the order of deaths in a
    tick), listed in `doc/fidelity.md`.
    *Recommended:* investigate the 3 with an early difference
    (`intensiv-timpany` tick 301, `real6` 630, `stone5-grumbel` 936)
    with `PINGUS_TRACE=2` in both games; leave the rest.
-3. **A line in `doc/bench.md` for the new compiler** (`b3cf341`): the
-   same results, no measurable difference in speed or memory (noise of
-   about 10%), binary 8 KB smaller.
-   *Recommended:* add it, two lines.
-
 4. **Expressiveness over exactness, after full fidelity** (a rule of
    the author for every port, relayed by the compiler session): once a
    port is identical to its original on its runs, it may relax the
@@ -126,6 +113,11 @@ of 154 demos with the same trace), the benchmark, the new rules of `pin`.
    names too.
 4. Done: the scroll of the backgrounds by themselves, a live defect
    found by the compiler (`ia-atmos/lang` `3cc4855`).
+5. Done, approved by the author: the workarounds `once`/`cycle` and
+   `'"'` removed (`ecaa74a`); the note of the newer compiler in
+   `doc/bench.md` (`30b1d97`); the three demos with an early difference
+   investigated and fixed: the bomber (`intensiv-timpany`), the smasher
+   (`real6`), the basher (`stone5-grumbel`).
 3. Done: the names of the repositories (`ia-atmos/sdl-pingus`,
    `ia-atmos/lang`, the link of the plan) in `run.sh`, `README.md`,
    `doc/compiler.md`, `tools/bench/README.md`.
