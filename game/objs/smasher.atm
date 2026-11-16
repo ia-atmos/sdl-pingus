@@ -14,7 +14,7 @@ func smasher_any (g, pos) {
 task Smasher (g, o) {
     pin pos = [x=o.position@0, y=o.position@1]
     ground_put(res_surface("traps/smasher_cmap"), pos.x, pos.y, GP.solid)
-    pin one = [world=true, speed=33, once=true]
+    pin one = [world=true, speed=33, loop=false]
     loop {
         ;; still, until a pingu walks under it
         par :any {

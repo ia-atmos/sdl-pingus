@@ -33,7 +33,7 @@ task ActionButton (g, i, act, n) {
             set g.next = act
             watching :game.select until it.i != i {
                 spawn Sprite("core/buttons/buttonbackgroundhl", r)
-                await Sprite(name, sp, [anchor=:center, cycle=true])
+                await Sprite(name, sp, [anchor=:center, loop=true])
             }
         }
     } with {

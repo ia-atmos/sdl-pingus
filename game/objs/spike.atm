@@ -17,7 +17,7 @@ task Spike (g, o) {
     loop {
         await :tick until zone_any(g, pos, 16-5, 0, 16+5, 32)
         par :any {
-            await Sprite("traps/spike", pos, [world=true, cycle=true])
+            await Sprite("traps/spike", pos, [world=true, loop=true])
         } with {
             loop k {
                 await :tick

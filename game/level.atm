@@ -18,7 +18,7 @@ func level_load (path) {
     val n = lvl.head.levelname
     set lvl.head.levelname = ifs {
         n == nil     => path
-        n ?? :table  => vector.join(n, '"')
+        n ?? :table  => vector.join(n, "\"")
         else         => n
     }
     ;; texts in many strings, or with none

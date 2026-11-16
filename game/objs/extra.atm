@@ -161,7 +161,7 @@ task FakeExit (g, o) {
                 }
             }
         }
-        pin s = spawn Sprite("traps/fake_exit", pos, [world=true, once=true])
+        pin s = spawn Sprite("traps/fake_exit", pos, [world=true, loop=false])
         par :any {
             await(s)
         } with {
@@ -179,7 +179,7 @@ task FakeExit (g, o) {
 ;; Hammer: swings down and up, forever, and smashes the pingus under it.
 task Hammer (g, o) {
     pin pos = [x=o.position@0, y=o.position@1]
-    pin one = [world=true, speed=33, once=true]
+    pin one = [world=true, speed=33, loop=false]
     loop {
         await Sprite("traps/hammer", pos, one)
         loop _, t in g.pingus {
@@ -206,7 +206,7 @@ task Teleporter (g, o, target) {
         }
         loop {
             watching :tele.go {
-                await Sprite(img, pos, [world=true, once=true])
+                await Sprite(img, pos, [world=true, loop=false])
                 await Sprite(img, pos, [world=true, still=true])
             }
         }
@@ -239,7 +239,7 @@ task TeleporterTarget (g, o) {
     }
     loop {
         watching :teleport until it.id == o.id {
-            await Sprite(img, pos, [world=true, once=true])
+            await Sprite(img, pos, [world=true, loop=false])
             await Sprite(img, pos, [world=true, still=true])
         }
     }

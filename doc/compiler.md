@@ -6,9 +6,10 @@ work found, in the order it was found:
 
 ## Worked around
 
-- **A field named as a keyword in a constructor**: `[loop=false]` is a
-  syntax error, while `d.loop` and data files with `loop = false` work.
-  The options of `Sprite` became `once` and `cycle`.
+- **A field named as a keyword in a constructor**: `[loop=false]` was
+  a syntax error, while `d.loop` and data files with `loop = false`
+  worked. The options of `Sprite` were `once` and `cycle`. Fixed in
+  the compiler (`b3cf341`); the option is `loop` again, as the data.
 - **A native literal with one backquote is one line**: a call that
   spans lines must be on one line, or use three backquotes.
 - **A nested `func` is a global**: `func f` inside a task declares a
@@ -23,8 +24,8 @@ work found, in the order it was found:
   of pools may deserve a line there.
 - **`await x` of a variable** needs the value form, `await(x)`.
 - **`loop n { }`** is not a counted loop: `loop _ in n { }`.
-- **A string with an escaped delimiter** (`"a\"b"`) is still a syntax
-  error; `'"'` is used instead.
+- **A string with an escaped delimiter** (`"a\"b"`) was a syntax
+  error; `'"'` was used instead. Fixed in the compiler (`b3cf341`).
 - **Iterating a tagged table** gives the field `tag` among the items:
   an index of data (a tagged vector) is iterated by position.
 
