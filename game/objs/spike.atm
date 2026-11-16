@@ -13,7 +13,7 @@ func spike_kill (g, pos) {
 }
 
 task Spike (g, o) {
-    val pos = [x=o.position@0, y=o.position@1]
+    pin pos = [x=o.position@0, y=o.position@1]
     loop {
         await :tick until zone_any(g, pos, 16-5, 0, 16+5, 32)
         par :any {

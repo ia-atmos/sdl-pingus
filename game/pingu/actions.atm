@@ -24,11 +24,15 @@ include "actions/superman.atm"
 include "actions/waiter.atm"
 include "actions/walker.atm"
 
-set ACTIONS = [
+;; the table is pinned in pingu.atm, before the tasks exist: they are
+;; its fields
+loop k, v in [
     angel = Angel, basher = Basher, blocker = Blocker, boarder = Boarder, bomber = Bomber,
     bridger = Bridger, climber = Climber, dead = Dead, digger = Digger,
     drown = Drown, exiter = Exiter, faller = Faller, floater = Floater,
     jumper = Jumper, laserkill = Laserkill, miner = Miner,
     slider = Slider, smashed = Smashed, splashed = Splashed, superman = Superman,
     waiter = Waiter, walker = Walker,
-]
+] {
+    set ACTIONS@(k) = v
+}

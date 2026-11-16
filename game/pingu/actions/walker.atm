@@ -47,12 +47,12 @@ task Walker (p, g) {
                 val step = loop _, y in [5,4,3,2,1,0,-1,-2,-3,-4,-5] {
                     val px = rel(p, 1, y)
                     until ((px == GP.nothing) || (px == GP.bridge)) &&
-                          (rel(p, 1, y-1) != GP.nothing), [y]
+                          (rel(p, 1, y-1) != GP.nothing), y
                 }
                 ifs {
-                    step => {
+                    step != nil => {
                         set p.x += p.dir
-                        set p.y -= step@0
+                        set p.y -= step
                     }
                     rel(p, 1, 0) != GP.nothing => {
                         ;; a wall: the persistent ability, or turn

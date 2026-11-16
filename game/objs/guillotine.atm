@@ -1,7 +1,7 @@
 ;; Guillotine: kills the pingu that walks under it.
 
 task Guillotine (g, o) {
-    val pos = [x=o.position@0, y=o.position@1]
+    pin pos = [x=o.position@0, y=o.position@1]
     loop {
         ;; idle, until a pingu is under it
         val dir = watching :guillotine.kill {

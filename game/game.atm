@@ -37,7 +37,7 @@ task Orders (g) {
         await(false)
     }
     loop _, o in string.split(s, ",") {
-        val f = string.split(o, ":")
+        pin f = string.split(o, ":")
         val t, n, act = tonumber(f@0), tonumber(f@1), f@2
         ;; after the whole tick, as the original applies the events of
         ;; a demo after the update of the world
@@ -123,9 +123,9 @@ task Clock (g) {
 
 ;; Game(path): plays a level, and returns its result.
 task Game (path) {
-    val lvl = level_load(path)
+    pin lvl = level_load(path)
     val head = lvl.head
-    val objs = level_objects(lvl)
+    pin objs = level_objects(lvl)
     pg.map_new(head.levelsize@0, head.levelsize@1)
     defer {
         pg.map_free()
@@ -148,8 +148,8 @@ task Game (path) {
     pin weather = tasks()
 
     ;; the actions in the level, in the order of the buttons
-    val acts = do {
-        val v = []
+    pin acts = do {
+        pin v = []
         loop _, a in ACTIONS_PLAYER {
             if head.actions@(a) {
                 vector.insert(v, a)
@@ -173,7 +173,7 @@ task Game (path) {
     ]
 
     ;; the objects of the level, and the targets of teleporters by id
-    val ids = []
+    pin ids = []
     loop _, o in objs {
         if o.id {
             set ids@(o.id) = o

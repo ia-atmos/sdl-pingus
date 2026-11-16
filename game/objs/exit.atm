@@ -2,7 +2,7 @@
 ;; the ground, so that they can walk into it.
 
 task Exit (g, o) {
-    val pos = [x=o.position@0, y=o.position@1]
+    pin pos = [x=o.position@0, y=o.position@1]
     val owner = if (o.owner_id ?? :number) && (o.owner_id >= 0) && (o.owner_id <= 3) =>
                     o.owner_id => 0
     val img = res_surface(o.surface.image, o.surface.modifier)

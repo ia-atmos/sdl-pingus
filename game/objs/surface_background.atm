@@ -18,7 +18,7 @@ task SurfaceBackground (g, o) {
     ;; the scroll of the image by itself, in the time of the world: a
     ;; float that moves each tick, and comes back by one size when it
     ;; passes it, as the original
-    val scroll = [x=0.0, y=0.0]
+    pin scroll = [x=0.0, y=0.0]
     val func wrap (v, size) {
         ifs {
             v > size    => v - size

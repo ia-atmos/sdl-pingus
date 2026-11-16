@@ -16,7 +16,7 @@
 ;;      wall, fall  the persistent abilities: `:climber`, `:floater`
 ;;      owner       the player, for the names of the sprites
 
-val PINGU = [               ;; in `float`, as the original
+pin PINGU = [               ;; in `float`, as the original
     gravity  = pg.f32(0.2),
     deadly   = pg.f32(10.4),    ;; deadly velocity
     terminal = pg.f32(11.0),    ;; terminal velocity
@@ -55,21 +55,21 @@ func pspr (p, name) {
 
 ;; The options of the sprites of pingus: in the world, with the feet at
 ;; the position, and following the direction.
-val PSPR = [world=true, anchor=:bottom_center, turn=true]
-val PSPR1 = [world=true, anchor=:bottom_center]
+pin PSPR = [world=true, anchor=:bottom_center, turn=true]
+pin PSPR1 = [world=true, anchor=:bottom_center]
 
 ;;; ACTIONS ;;;
 
 ;; The tasks of the actions, by tag: see `actions.atm`.
-var ACTIONS = []
+pin ACTIONS = []
 
 ;; The actions that a player can give, in the order of the buttons.
-val ACTIONS_PLAYER = [
+pin ACTIONS_PLAYER = [
     :angel, :basher, :blocker, :boarder, :bomber, :bridger, :climber,
     :digger, :floater, :jumper, :miner, :slider, :superman,
 ]
 
-val ACTION_NAME = [
+pin ACTION_NAME = [
     angel = "Angel", boarder = "Boarder", superman = "Superman", smashed = "Smashed",
     basher = "Basher", blocker = "Blocker", bomber = "Bomber",
     bridger = "Bridger", climber = "Climber", digger = "Digger",
@@ -81,10 +81,10 @@ val ACTION_NAME = [
 
 ;; How an action is given: at once (the default), at the next wall
 ;; (climber), or at the next fall (floater). These two are persistent.
-val ACTION_MODE = [ climber = :wall, floater = :fall ]
+pin ACTION_MODE = [ climber = :wall, floater = :fall ]
 
 ;; Actions that are not shown nor clicked.
-val ACTION_UNCATCHABLE = [ drown=true, laserkill=true, smashed=true, splashed=true, dead=true ]
+pin ACTION_UNCATCHABLE = [ drown=true, laserkill=true, smashed=true, splashed=true, dead=true ]
 
 ;; Whether a pingu may change from action `a` to `b`, as the
 ;; `change_allowed` of the actions of the official game (the table

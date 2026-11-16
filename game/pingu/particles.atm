@@ -3,7 +3,7 @@
 
 ;; A piece of a pingu, which bounces on the ground.
 task PinguParticle (g, x, y) {
-    val pos = [x=x, y=y]
+    pin pos = [x=x, y=y]
     var vx = (math.random() * 7) - 3.5
     var vy = math.random() * -9
     spawn Sprite("particles/pingu_explo", pos, [world=true, anchor=:bottom_left])
@@ -38,7 +38,7 @@ task PinguParticle (g, x, y) {
 
 ;; Smoke, which goes away.
 task SmokeParticle (x, y, vx, vy) {
-    val pos = [x=x, y=y]
+    pin pos = [x=x, y=y]
     val name = if math.random(0, 1) == 0 => "particles/smoke" => "particles/smoke2"
     spawn Sprite(name, pos, [world=true])
     loop _ in 25 + math.random(0, 9) {

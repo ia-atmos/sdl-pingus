@@ -12,8 +12,8 @@
 ;; ActionButton(g, i, act, n): the button `i` of `n`, for the action
 ;; `act`. It is either selected or not, and goes from one to the other.
 task ActionButton (g, i, act, n) {
-    val r = [x=0, y=(H//2) + (i*38) - ((n*38)//2) - 19, w=60, h=38]
-    val sp = [x=r.x+3+16, y=r.y+16]
+    pin r = [x=0, y=(H//2) + (i*38) - ((n*38)//2) - 19, w=60, h=38]
+    pin sp = [x=r.x+3+16, y=r.y+16]
     val name = do {
         val n = "pingus/player0/" ++ act
         if file_exists("data/images/" ++ n ++ "/right.sprite.atm") => n ++ "/right" => n
@@ -96,7 +96,7 @@ task Time (g) {
 ;; The level in small, with the view, the pingus, the entrances and
 ;; exits. A click (or a drag) on it moves the view.
 task SmallMap (g) {
-    val r = [x=5, y=H-105, w=175, h=100]
+    pin r = [x=5, y=H-105, w=175, h=100]
     val ent = res_surface("core/misc/smallmap_entrance")
     val ext = res_surface("core/misc/smallmap_exit")
     val ew, eh = pg.size(ent)
@@ -149,8 +149,8 @@ task SmallMap (g) {
 ;; of the first. A case of the study: a state machine with no state
 ;; variable, only a loop and a timeout.
 task Armageddon (g) {
-    val r = [x=W-44, y=H-65, w=38, h=60]
-    val pos = [x=r.x+19, y=r.y+30]
+    pin r = [x=W-44, y=H-65, w=38, h=60]
+    pin pos = [x=r.x+19, y=r.y+30]
     spawn Sprite("core/buttons/hbuttonbgb", r)
     do {
         spawn Sprite("core/buttons/armageddon_anim", pos, [anchor=:center, still=true, frame=7])
@@ -169,8 +169,8 @@ task Armageddon (g) {
 
 ;; Fast forward: on while the button is pressed.
 task FastForward (g) {
-    val r = [x=W-84, y=H-65, w=38, h=60]
-    val pos = [x=r.x+19, y=r.y+30]
+    pin r = [x=W-84, y=H-65, w=38, h=60]
+    pin pos = [x=r.x+19, y=r.y+30]
     spawn {
         loop {
             watching :game.ff.on {
@@ -191,8 +191,8 @@ task FastForward (g) {
 
 ;; Pause: shows the state of the pause, and toggles it on click.
 task Pause (g) {
-    val r = [x=W-124, y=H-65, w=38, h=60]
-    val pos = [x=r.x+19, y=r.y+30]
+    pin r = [x=W-124, y=H-65, w=38, h=60]
+    pin pos = [x=r.x+19, y=r.y+30]
     spawn {
         loop {
             watching :game.pause {

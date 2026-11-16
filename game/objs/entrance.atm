@@ -9,7 +9,7 @@ task Entrance (g, o) {
                     o.owner_id => 0
     val rate = o.release_rate || 150
     ;; "misc" alternates: right, left, ...
-    val dirs = match o.direction {
+    pin dirs = match o.direction {
         :left  => [-1]
         :right => [1]
         else   => [1, -1]

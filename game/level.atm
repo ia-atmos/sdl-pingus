@@ -7,13 +7,13 @@
 ;; that the game only sees the objects it creates.
 
 ;; The kinds of objects that the game implements, and the actions.
-val OBJS_KNOWN = [
+pin OBJS_KNOWN = [
     :entrance, :exit, :groundpiece, :guillotine, :hotspot, :laser_exit,
     :liquid, :smasher, :spike, :surface_background,
 ]
 
 func level_load (path) {
-    val lvl = data_load(path)
+    pin lvl = data_load(path)
     ;; a name in pieces, as `""Crystal-Desert" Temple"` of a level
     val n = lvl.head.levelname
     set lvl.head.levelname = ifs {
@@ -37,17 +37,20 @@ func level_load (path) {
 ;; `ov`, appended to `out`.
 func level_flatten (objs, dx, dy, ov, out) {
     loop _, o in objs {
-        val obj = if ov => (o ++ ov) => o
+        ;; a copy, with the overrides of a prefab
+        pin obj = o ++ (ov || [])
         match obj {
             :group => level_flatten(obj.objects, dx, dy, nil, out)
             :prefab => do {
                 val name = string.sub(obj.name, #"prefabs/")
-                val pf = data_load("data/prefabs/" ++ name ++ ".prefab.atm")
-                val pos = obj.position || [0, 0, 0]
-                level_flatten(pf.objects, dx + pos@0, dy + pos@1, obj.overrides, out)
+                pin pf = data_load("data/prefabs/" ++ name ++ ".prefab.atm")
+                val px = (obj.position && obj.position@0) || 0
+                val py = (obj.position && obj.position@1) || 0
+                level_flatten(pf.objects, dx + px, dy + py, obj.overrides, out)
             }
             else => do {
-                val c = X.copy(obj)
+                ;; the list owns the copy, which is completed in place
+                val c = vector.insert(out, X.copy(obj))
                 set c.tag = obj.tag
                 if c.position {
                     set c.position = [
@@ -58,7 +61,6 @@ func level_flatten (objs, dx, dy, ov, out) {
                         c.position@2 || 0,
                     ]
                 }
-                vector.insert(out, c)
             }
         }
     }
@@ -67,7 +69,7 @@ func level_flatten (objs, dx, dy, ov, out) {
 
 ;; The depth of an object: the third coordinate of its position, or a
 ;; fixed one for some kinds, as the official game.
-val OBJ_Z = [
+pin OBJ_Z = [
     solidcolor_background = -10, starfield_background = -10,
     snow_generator = 1000, rain_generator = 1000,
     switchdoor_door = 100, switchdoor_switch = 100,
@@ -81,7 +83,8 @@ func obj_z (o) {
 ;; official game sets them up (a stable sort: the order of the file for
 ;; the same depth). The ground, water and holes depend on this order.
 func level_objects (lvl) {
-    val v = level_flatten(lvl.objects, 0, 0, nil, [])
+    pin v = []
+    level_flatten(lvl.objects, 0, 0, nil, v)
     vector.sort(v, \(a, b) { obj_z(a) < obj_z(b) })
     v
 }

@@ -2,7 +2,7 @@
 ;; it, through the collision map.
 
 task Liquid (g, o) {
-    val pos = [x=o.position@0, y=o.position@1]
+    pin pos = [x=o.position@0, y=o.position@1]
     val fw, fh = res_frame_size(o.surface.image)
     val n = o.repeat || 1
     val mask = res_surface("liquids/water_cmap")
