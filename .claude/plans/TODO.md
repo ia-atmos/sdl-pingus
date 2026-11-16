@@ -94,6 +94,12 @@ of 154 demos with the same trace), the benchmark, the new rules of `pin`.
     images, fonts, sounds, test mode), with the 159 traces identical;
     Pingus is planned to be the first. What is of the game stays here:
     the ground and collision maps and the mover in C.
+    Status (2026-11-16): the design is approved (`ia-atmos/env-sdl`,
+    `doc/design.md`; the inventory of this layer is
+    `doc/inventory/pingus.md`, read at `45ea8be`). Pingus moves at E4,
+    when env-sdl gives the commit. Agreed: screenshots may be compared
+    by pixels; no test depends on the frame cap; the baseline is
+    `cc5fe72` (after the migration to `pin`).
 
 ## C. Reported, not acknowledged
 
