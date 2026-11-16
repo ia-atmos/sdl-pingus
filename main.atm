@@ -35,7 +35,7 @@ func ends (s, suffix) {
     (#s >= #suffix) && (string.sub(s, #s - #suffix) == suffix)
 }
 
-val args = [...]
+pin args = [...]
 val file = args@0
 
 par :any {
@@ -55,7 +55,7 @@ par :any {
             ends(file, ".worldmap.atm") => await Worldmap(file)
             ends(file, ".story.atm")    => await Story(file)
             ends(file, ".levelset.atm") => do {
-                val ls = data_load(file)
+                pin ls = data_load(file)
                 set ls.paths = []
                 loop _, l in ls.levels {
                     vector.insert(ls.paths, "data/levels/" ++ l.filename ++ ".pingus.atm")

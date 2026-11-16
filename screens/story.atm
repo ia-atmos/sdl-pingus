@@ -4,7 +4,7 @@
 ;; the next iteration.
 
 task Story (path) {
-    val st = data_load(path)
+    pin st = data_load(path)
     spawn Board()
     music(st.music)
     spawn {
@@ -12,7 +12,7 @@ task Story (path) {
             text(FONT.chalk_large, tr(st.title), W//2, (H//2) - 200, :center)
         }
     }
-    val nr = board_at("core/misc/next", :right_bottom, -50, -60)
+    pin nr = board_at("core/misc/next", :right_bottom, -50, -60)
     par :any {
         loop _, page in st.pages {
             val img = page.surface.image
@@ -22,7 +22,7 @@ task Story (path) {
             spawn Sprite(img, [x=(W//2) - (iw//2), y=(H//2) + 10 - ih])
             ;; the text, letter by letter, until it is all there or the
             ;; player wants it all
-            val shown = [n=0, t=0]
+            pin shown = [n=0, t=0]
             spawn {
                 loop on :sdl.draw {
                     if shown.n > 0 {

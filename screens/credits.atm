@@ -2,13 +2,13 @@
 ;; scrolls faster.
 
 task Credits () {
-    val lines = []
+    pin lines = []
     loop l in io.lines("data/credits/pingus.credits") {
         vector.insert(lines, l)
     }
     spawn Board()
     spawn Sprite("core/misc/creditpingu", [x=W//2, y=(H//2) - 20], [anchor=:center])
-    val y = [v=H - 50]
+    pin y = [v=H - 50]
     spawn {
         val cx = W // 2
         loop on :sdl.draw {

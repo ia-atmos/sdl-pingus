@@ -8,8 +8,8 @@
 ;; The graph of a worldmap: nodes by name, and their neighbors with the
 ;; points of the paths between them.
 func wm_load (path) {
-    val wm = data_load(path)
-    val nodes = []
+    pin wm = data_load(path)
+    pin nodes = []
     loop _, n in wm.graph.nodes {
         set nodes@(n.dot.name) = [
             name = n.dot.name, tag = n.tag,
@@ -23,18 +23,19 @@ func wm_load (path) {
     loop _, e in wm.graph.edges {
         val a = nodes@(e.source)
         val b = nodes@(e.destination)
-        val pts = []
+        ;; the nodes own their paths, which are filled in place
+        set a.next@(b.name) = []
+        set b.next@(a.name) = []
+        val pts = a.next@(b.name)
+        val rev = b.next@(a.name)
         loop _, p in e.positions {
             ;; `:position [x,y,z]` of old files, `:point [pos=[x,y,z]]` now
             val v = p.pos || p
             vector.insert(pts, [x=v@0, y=v@1])
         }
-        set a.next@(b.name) = pts
-        val rev = []
         loop i in #pts {
             vector.insert(rev, pts@(#pts - 1 - i))
         }
-        set b.next@(a.name) = rev
     }
     set wm.nodes = nodes
     wm
@@ -61,8 +62,8 @@ func wm_open (wm, n) {
 ;; The shortest path between two nodes, through open nodes, as a vector
 ;; of names (breadth first).
 func wm_path (wm, a, b) {
-    val from = [ @(a) = a ]
-    val queue = [a]
+    pin from = [ @(a) = a ]
+    pin queue = [a]
     var i = 0
     loop {
         while i < #queue
@@ -78,7 +79,7 @@ func wm_path (wm, a, b) {
     if !from@(b) {
         return nil
     }
-    val path = [b]
+    pin path = [b]
     loop {
         while path@0 != a
         vector.insert(path, 0, from@(path@0))
@@ -94,7 +95,7 @@ func wm_cam (wm, x, y) {
 ;; The pingu of the worldmap: walks to the target of the player, one
 ;; edge at a time, at 100 pixels per second.
 task WmPingu (wm, me) {
-    val pos = [x=wm.nodes@(me.at).x, y=wm.nodes@(me.at).y, dir=0]
+    pin pos = [x=wm.nodes@(me.at).x, y=wm.nodes@(me.at).y, dir=0]
     spawn {
         loop on :sdl.draw {
             wm_cam(wm, pos.x, pos.y)
@@ -108,11 +109,11 @@ task WmPingu (wm, me) {
         }
         ;; walking to the target, which may change on the way
         loop {
-            val path = wm_path(wm, cur, me.goal)
+            pin path = wm_path(wm, cur, me.goal)
             while path && (#path > 1)
             set me.at = nil
             val nxt = path@1
-            val pts = [[x=pos.x, y=pos.y]] ++ wm.nodes@(cur).next@(nxt) ++
+            pin pts = [[x=pos.x, y=pos.y]] ++ wm.nodes@(cur).next@(nxt) ++
                       [[x=wm.nodes@(nxt).x, y=wm.nodes@(nxt).y]]
             loop i in #pts - 1 {
                 val a, b = pts@i, pts@(i+1)
@@ -142,8 +143,8 @@ task WmPingu (wm, me) {
 ;; name while the mouse is over it, and its clicks, which go to the view
 ;; `v` (the parent of a task in a pool is the pool, not the view).
 task WmDot (wm, n, v) {
-    val pos = [x=n.x, y=n.y]
-    val over = \(x, y) { inside([x=n.x-CAM.x-12, y=n.y-CAM.y-12, w=24, h=24], x, y) }
+    pin pos = [x=n.x, y=n.y]
+    pin over = \(x, y) { inside([x=n.x-CAM.x-12, y=n.y-CAM.y-12, w=24, h=24], x, y) }
     val name = if n.level => level_load(n.level).head.levelname => n.name
     do {
         val open = wm_open(wm, n)
@@ -189,7 +190,7 @@ task WmDot (wm, n, v) {
 
 ;; WmView(wm): the worldmap, until the player chooses something.
 task WmView (wm) {
-    val me = [at = SAVE.worldmaps@(wm.head.short_name) || wm.head.default_node, goal=nil]
+    pin me = [at = SAVE.worldmaps@(wm.head.short_name) || wm.head.default_node, goal=nil]
     set me.goal = me.at
     pin ims = tasks()
     loop _, o in wm.objects {
@@ -202,7 +203,7 @@ task WmView (wm) {
         spawn @dots WmDot(wm, n, task)
     }
     spawn WmPingu(wm, me)
-    val lr = do {
+    pin lr = do {
         val w, h = res_frame_size("core/worldmap/leave_button_normal")
         [x=W - w - 10, y=H - h - 10, w=w, h=h]
     }
@@ -232,7 +233,7 @@ task WmView (wm) {
 
 ;; Worldmap(path): the worldmap, the levels and stories of its dots.
 task Worldmap (path) {
-    val wm = wm_load(path)
+    pin wm = wm_load(path)
     set SAVE.worldmaps = SAVE.worldmaps || []
     set SAVE.stories = SAVE.stories || []
     if wm.intro_story && !SAVE.stories@(wm.intro_story) {

@@ -17,8 +17,8 @@ task List (items, per, height, title, draw, can, marker) {
         }
     }
     val uw, uh = res_frame_size("core/menu/arrow_up")
-    val up = [x=BOARD.x + BOARD.w - 35 - uw, y=BOARD.y + (BOARD.h//2) - 10 - uh, w=uw, h=uh]
-    val dn = [x=up.x, y=BOARD.y + (BOARD.h//2) + 10, w=uw, h=uh]
+    pin up = [x=BOARD.x + BOARD.w - 35 - uw, y=BOARD.y + (BOARD.h//2) - 10 - uh, w=uw, h=uh]
+    pin dn = [x=up.x, y=BOARD.y + (BOARD.h//2) + 10, w=uw, h=uh]
     var top = 0
     par :any {
         await Back()
@@ -32,9 +32,11 @@ task List (items, per, height, title, draw, can, marker) {
                 ;; the visible items
                 pin vis = tasks()
                 loop i in (top, math.min(#items, top + per) - 1) {
-                    val r = [x=BOARD.x + 44, y=BOARD.y + 155 - (height//2) + ((i - top) * height),
-                             w=680 - 90, h=height - 1]
-                    spawn @vis Item(items@i, i, r, draw, can, marker)
+                    ;; the item owns its rectangle
+                    spawn @vis Item(items@i, i,
+                        [x=BOARD.x + 44, y=BOARD.y + 155 - (height//2) + ((i - top) * height),
+                         w=680 - 90, h=height - 1],
+                        draw, can, marker)
                 }
                 await :any vis
             } with {
@@ -60,7 +62,7 @@ task Item (it_, i, r, draw, can, marker) {
     val _, mh = pg.size(marker)
     spawn {
         ;; the marker, under the item, while the mouse is over it
-        val over = \(x, y) { inside(r, x, y) }
+        pin over = \(x, y) { inside(r, x, y) }
         if !over(MOUSE.x, MOUSE.y) {
             await :sdl.mouse.motion until over(it.x, it.y)
         }
@@ -90,21 +92,22 @@ task Item (it_, i, r, draw, can, marker) {
 
 ;; The levelsets, with the levels that the game supports.
 func levelsets () {
-    val out = []
+    pin out = []
     loop f in io.lines("data/levelsets/index.txt") {
-        val ls = data_load("data/levelsets/" ++ f)
+        ;; the list owns the levelset, which is completed in place, and
+        ;; removed if it has no level the port supports
+        val ls = vector.insert(out, data_load("data/levelsets/" ++ f))
+        set ls.paths = []
         if !ls.developer_only {
-            val lv = []
             loop _, l in ls.levels {
                 val path = "data/levels/" ++ l.filename ++ ".pingus.atm"
                 if LEVELS_OK@(path) {
-                    vector.insert(lv, path)
+                    vector.insert(ls.paths, path)
                 }
             }
-            if #lv > 0 {
-                set ls.paths = lv
-                vector.insert(out, ls)
-            }
+        }
+        if #ls.paths == 0 {
+            vector.remove(out)
         }
     }
     vector.sort(out, \(a, b) { (a.priority || 0) > (b.priority || 0) })
@@ -128,7 +131,7 @@ func level_open (ls, i) {
 }
 
 task Levelsets () {
-    val sets = levelsets()
+    pin sets = levelsets()
     await List(sets, 4, 95, "Levelsets", \(ls, i, r) {
         pg.draw(res_surface(ls.image), r.x + 25, r.y)
         text(FONT.chalk_normal, tr(ls.title), r.x + 105, r.y + 15)
@@ -139,7 +142,7 @@ task Levelsets () {
 }
 
 task Levels (ls) {
-    val heads = []
+    pin heads = []
     loop _, p in ls.paths {
         vector.insert(heads, [path=p, name=level_load(p).head.levelname])
     }
@@ -155,10 +158,11 @@ task Levels (ls) {
 
 ;; LevelsetsMenu(): the levelsets, their levels, and playing them.
 task LevelsetsMenu () {
+    pin sets = levelsets()
     loop {
         val i = await Levelsets()
         until i == nil
-        val ls = levelsets()@i
+        val ls = sets@i
         loop {
             val j = await Levels(ls)
             until j == nil

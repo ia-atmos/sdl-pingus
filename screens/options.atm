@@ -9,7 +9,7 @@
 ;; of 32 pixels. The renderer of the original (sdl or opengl) has no
 ;; counterpart here: the port has one renderer.
 
-val LANG_NAMES = [
+pin LANG_NAMES = [
     en="English", ast="Asturian", bg="Bulgarian", ca="Catalan", cs="Czech",
     da="Danish", de="German", eo="Esperanto", es="Spanish", fi="Finnish",
     fr="French", gd="Scottish Gaelic", gl="Galician", hu="Hungarian",
@@ -18,13 +18,13 @@ val LANG_NAMES = [
     sv="Swedish", th="Thai", tr="Turkish", uk="Ukrainian",
 ]
 
-val RESOLUTIONS = ["800x600", "1024x768", "1280x960", "1280x720", "1600x900", "1920x1080"]
+pin RESOLUTIONS = ["800x600", "1024x768", "1280x960", "1280x720", "1600x900", "1920x1080"]
 
 func options_apply () {
     val o = OPTIONS
     pg.volume((o.master * o.sound) / 10000.0, (o.master * o.music) / 10000.0)
     lang_set(o.lang)
-    val r = string.split(o.resolution, "x")
+    pin r = string.split(o.resolution, "x")
     pg.display(o.fullscreen, tonumber(r@0) || W, tonumber(r@1) || H, o.grab, o.cursor)
 }
 
@@ -52,10 +52,10 @@ func option_at (col, row) {
 
 ;; CheckBox(key, s, col, row): a box, and its label at its right.
 task CheckBox (key, s, col, row) {
-    val r = option_at(col, row)
+    pin r = option_at(col, row)
     val yes = res_surface("core/menu/checkbox_marked_small")
     val no  = res_surface("core/menu/checkbox_small")
-    val box = [x=r.x, y=r.y, w=32, h=32]
+    pin box = [x=r.x, y=r.y, w=32, h=32]
     par {
         loop {
             await Click(box)
@@ -73,8 +73,8 @@ task CheckBox (key, s, col, row) {
 ;; on the left half goes back, on the right half goes forward, in a
 ;; cycle. `names` shows a choice by another name.
 task ChoiceBox (key, s, choices, col, row, names) {
-    val r = option_at(col, row)
-    val box = [x=r.x + 140, y=r.y, w=r.w - 140, h=r.h]
+    pin r = option_at(col, row)
+    pin box = [x=r.x + 140, y=r.y, w=r.w - 140, h=r.h]
     par {
         loop {
             val e = await :sdl.mouse.dn until (it.but == 1) && inside(box, it.x, it.y)
@@ -100,8 +100,8 @@ task ChoiceBox (key, s, choices, col, row, names) {
 ;; dragged with the left button.
 task SliderBox (key, s, col, row) {
     val STEPS = 20
-    val r = option_at(col, row)
-    val box = [x=r.x + 140, y=r.y, w=r.w - 140, h=r.h]
+    pin r = option_at(col, row)
+    pin box = [x=r.x + 140, y=r.y, w=r.w - 140, h=r.h]
     val func value (x) {
         val v = (STEPS * (x - box.x)) // (box.w - 12)
         math.max(0, math.min(STEPS, v)) * (100 // STEPS)
@@ -157,7 +157,7 @@ task Options () {
     spawn SliderBox(:master, "Master Volume:", 1, 5)
     spawn SliderBox(:sound,  "Sound Volume:",  1, 6)
     spawn SliderBox(:music,  "Music Volume:",  1, 7)
-    val ok = do {
+    pin ok = do {
         val w, h = res_frame_size("core/start/ok")
         [x=(W // 2) + 245, y=(H // 2) + 150, w=w, h=h]
     }

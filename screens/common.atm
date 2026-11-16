@@ -2,7 +2,7 @@
 ;; progress.
 
 ;; The blackboard in the middle of the screen, as a rectangle.
-val BOARD = do {
+pin BOARD = do {
     val w, h = res_frame_size("core/menu/blackboard")
     [x=(W-w)//2, y=(H-h)//2, w=w, h=h]
 }
@@ -22,8 +22,8 @@ func board_at (name, corner, dx, dy) {
 }
 
 ;; The buttons of the board: ok at the right, and back at the left.
-val OK_R   = board_at("core/start/ok",   :right_bottom, -50, -60)
-val BACK_R = board_at("core/start/back", :left_bottom,   70, -2)
+pin OK_R = board_at("core/start/ok",   :right_bottom, -50, -60)
+pin BACK_R = board_at("core/start/back", :left_bottom,   70, -2)
 
 task Ok () {
     await Button(OK_R, "core/start/ok", "core/start/ok_hover", "core/start/ok_clicked")
@@ -43,7 +43,7 @@ task Label (s, x, y, f) {
 ;; LabelButton(s, x, y): a text that is a button, at the top left `x,y`.
 task LabelButton (s, x, y) {
     val f = FONT.chalk_small
-    val r = [x=x, y=y, w=text_width(f, s), h=16]
+    pin r = [x=x, y=y, w=text_width(f, s), h=16]
     par :any {
         await Click(r)
     } with {
@@ -70,22 +70,23 @@ task Key (name) {
 ;; and the dots of the worldmaps.
 val SAVE_PATH = (os.getenv("PINGUS_HOME") || os.getenv("HOME") || "/tmp") ++ "/.pingus-atmos.atm"
 
-val SAVE = do {
-    val f = io.open(SAVE_PATH)
-    if f {
-        val s = io.read(f, :all)
-        io.close(f)
-        val ok, v = catch true {
-            X.load(s)
-        }
-        if ok && (v ?? :table) => v => [levels=[]]
-    } else {
-        [levels=[]]
+func save_load () {
+    pin f = io.open(SAVE_PATH)
+    if !f {
+        return [levels=[]]
     }
+    val s = io.read(f, :all)
+    io.close(f)
+    pin ok, v = catch true {
+        X.load(s)
+    }
+    if ok && (v ?? :table) => v => [levels=[]]
 }
 
+pin SAVE = save_load()
+
 func save () {
-    val f = io.open(SAVE_PATH, "w")
+    pin f = io.open(SAVE_PATH, "w")
     if f {
         io.write(f, X.dump(SAVE), "\n")
         io.close(f)
@@ -94,11 +95,11 @@ func save () {
 
 ;; A level is solved, or only played.
 func level_store (path, r) {
-    val old = SAVE.levels@(path) || [solved=false]
+    val old = SAVE.levels@(path)
     val ok = r.saved >= r.needed
     set SAVE.levels@(path) = [
-        solved = old.solved || ok,
-        saved  = math.max(old.saved || 0, r.saved),
+        solved = (old && old.solved) || ok,
+        saved  = math.max((old && old.saved) || 0, r.saved),
     ]
     save()
 }
@@ -109,9 +110,9 @@ func level_solved (path) {
 }
 
 ;; The index of the levels that the game supports (see tools/convert.py).
-val LEVELS_OK = do {
-    val t = []
-    val idx = data_load("data/levels.atm")
+pin LEVELS_OK = do {
+    pin t = []
+    pin idx = data_load("data/levels.atm")
     loop i in #idx {
         val l = idx@i
         if l.ok {

@@ -2,7 +2,7 @@
 
 ;; The layers of the background, which move at their own speeds.
 task MenuBackground () {
-    val layers = [
+    pin layers = [
         [img=res_surface("core/menu/layer1"), y=0,   v=12],
         [img=res_surface("core/menu/layer2"), y=150, v=25],
         [img=res_surface("core/menu/layer3"), y=200, v=50],
@@ -28,7 +28,7 @@ task MenuBackground () {
 ;; MenuButton(x, y, s): a button of the menu, at `x,y` from the center.
 task MenuButton (x, y, s) {
     val w, h = res_frame_size("core/menu/menuitem")
-    val r = [x=(W//2) + x - (w//2), y=(H//2) + y - (h//2), w=w, h=h]
+    pin r = [x=(W//2) + x - (w//2), y=(H//2) + y - (h//2), w=w, h=h]
     spawn Sprite("core/menu/menuitem", r)
     spawn Hover(r, "core/menu/menuitem_highlight", "tick")
     spawn {
