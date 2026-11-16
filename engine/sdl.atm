@@ -33,7 +33,7 @@
 val W = 800
 val H = 600
 
-val pg = [
+pin pg = [
     ;; pg.img(path, mod [, [cx,cy,cw,ch]]): an image, or -1
     img = func (path, mod, c) {
         val cx, cy, cw, ch = if c => (c@0, c@1, c@2, c@3) => (0, 0, 0, 0)
@@ -156,7 +156,7 @@ val pg = [
 ]
 
 ;; The ground types of the collision map.
-val GP = [
+pin GP = [
     nothing     = 0,
     solid       = 1,
     transparent = 2,
@@ -169,7 +169,7 @@ val GP = [
 ]
 
 ;; The modifiers of the data files, as numbers.
-val MOD = [
+pin MOD = [
     ROT0 = 0, ROT90 = 1, ROT180 = 2, ROT270 = 3,
     ROT0FLIP = 4, ROT90FLIP = 5, ROT180FLIP = 6, ROT270FLIP = 7,
 ]

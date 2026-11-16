@@ -11,7 +11,7 @@ include "sdl.atm"
 ;;; FILES ;;;
 
 func file_exists (path) {
-    val f = io.open(path)
+    pin f = io.open(path)
     if f {
         io.close(f)
         true
@@ -22,7 +22,7 @@ func file_exists (path) {
 
 ;; Reads a data file of the game, written in Atmos data.
 func data_load (path) {
-    val f = io.open(path) --> assert
+    pin f = io.open(path) --> assert
     val s = io.read(f, :all)
     io.close(f)
     X.load(s)
@@ -42,7 +42,7 @@ func dirname (path) {
 
 ;; A path with no `.` and `..`.
 func path_norm (path) {
-    val out = []
+    pin out = []
     loop _, s in string.split(path, "/") {
         ifs {
             s == ".." => vector.remove(out)
@@ -58,7 +58,7 @@ func path_norm (path) {
 ;; The description of a resource of `data/images/`, by name, as in the
 ;; original: a `.sprite` file, or else a `.png` or `.jpg` image.
 ;; The descriptions are kept: each one is read once.
-val DESCS = []
+pin DESCS = []
 
 func res_desc (name) {
     val c = DESCS@(name)
@@ -66,21 +66,22 @@ func res_desc (name) {
         return c
     }
     val base = "data/images/" ++ name
-    val d = ifs {
-        file_exists(base ++ ".sprite.atm") => do {
-            val t = data_load(base ++ ".sprite.atm")
-            ;; an absolute path is relative to the data
-            set t.path = if string.sub(t.image, 0, 0) == "/" =>
-                "data" ++ t.image =>
-                path_norm(dirname(base) ++ "/" ++ t.image)
-            t
-        }
+    ;; the cache owns the description, which is completed in place
+    set DESCS@(name) = ifs {
+        file_exists(base ++ ".sprite.atm") => data_load(base ++ ".sprite.atm")
         file_exists(base ++ ".png") => [path = base ++ ".png"]
         file_exists(base ++ ".jpg") => [path = base ++ ".jpg"]
         else => do {
             print("missing resource : " ++ name)
             [path = "data/images/core/misc/404.png"]
         }
+    }
+    val d = DESCS@(name)
+    if d.path == nil {
+        ;; a sprite: an absolute path is relative to the data
+        set d.path = if string.sub(d.image, 0, 0) == "/" =>
+            "data" ++ d.image =>
+            path_norm(dirname(base) ++ "/" ++ d.image)
     }
     if pg.img(d.path, 0) < 0 {
         print("missing image : " ++ d.path)
@@ -92,7 +93,6 @@ func res_desc (name) {
     set d.offset   = d.offset   || [0, 0]
     set d.origin   = d.origin   || :top_left
     set d.loop     = if d.loop == nil => true => d.loop
-    set DESCS@(name) = d
     d
 }
 
@@ -134,8 +134,8 @@ func res_surface (name, mod) {
 
 ;; The position of the level in the screen: a point `p` of the level
 ;; is drawn at `p - CAM`. The playfield moves it.
-val CAM  = [x=0, y=0]
-val ZERO = [x=0, y=0]
+pin CAM = [x=0, y=0]
+pin ZERO = [x=0, y=0]
 
 ;; How a description is drawn: its image, the size of its frames, the
 ;; number of frames per row, and the offset of the drawing.
@@ -175,21 +175,26 @@ func look (d, anchor) {
 ;; It emits `:frame [n]` to its parent task at each new frame, and
 ;; terminates when an animation that does not loop ends.
 task Sprite (name, pos, o) {
-    val opt = o || []
-    val d = if opt.turn => res_desc(name ++ "/left") => res_desc(name)
-    val l = look(d, opt.anchor)
-    val r = if opt.turn => look(res_desc(name ++ "/right"), opt.anchor) => l
+    ;; the options, read once: `o` may be a constructor of the caller,
+    ;; or a table it keeps, or nil
+    val turn  = o && o.turn
+    val world = o && o.world
+    val back  = o && o.back
+    val first = (o && o.frame) || 0
+    val d = if turn => res_desc(name ++ "/left") => res_desc(name)
+    pin l = look(d, o && o.anchor)
+    pin r = look(if turn => res_desc(name ++ "/right") => d, o && o.anchor)
     val n = d.array@0 * d.array@1
-    val delay = opt.speed || d.speed
+    val delay = (o && o.speed) || d.speed
     val loops = ifs {
-        opt.once  => false
-        opt.cycle => true
+        o && o.once  => false
+        o && o.cycle => true
         else      => d.loop
     }
-    val cam = if opt.world || opt.cam => CAM => ZERO
+    val cam = if world || (o && o.cam) => CAM => ZERO
 
     ;; the frame is the data of the drawing, which the time advances
-    var frame = if opt.back => n - 1 - (opt.frame || 0) => opt.frame || 0
+    var frame = if back => n - 1 - first => first
 
     var t = 0
     val total = delay * n
@@ -200,7 +205,7 @@ task Sprite (name, pos, o) {
             set t = t % total
         }
         if !done || loops {
-            val f = if opt.back => n - 1 - (t // delay) => t // delay
+            val f = if back => n - 1 - (t // delay) => t // delay
             if f != frame {
                 set frame = f
                 emit @(:parent) :frame [n=f]
@@ -210,10 +215,10 @@ task Sprite (name, pos, o) {
     }
 
     par :any {
-        if opt.still || (delay == 0) || ((n == 1) && loops) {
+        if (o && o.still) || (delay == 0) || ((n == 1) && loops) {
             await(false)
         } else {
-            if opt.world {
+            if world {
                 loop on :tick {
                     until advance(33)
                 }
@@ -250,14 +255,14 @@ task Image (img, pos) {
 ;;; FONTS ;;;
 
 ;; Fonts by name, read once from their descriptions.
-val FONTS_CACHE = []
+pin FONTS_CACHE = []
 
 func font (name) {
     val c = FONTS_CACHE@(name)
     if c ?? :number {
         return c
     }
-    val d = data_load("data/images/fonts/" ++ name ++ ".font.atm")
+    pin d = data_load("data/images/fonts/" ++ name ++ ".font.atm")
     val f = pg.font_new(d.size, d.char_spacing || 1.0, d.vertical_spacing || 1.0)
     loop _, im in d.images {
         val img = pg.img("data/" ++ im.filename, 0)
@@ -271,14 +276,14 @@ func font (name) {
 }
 
 ;; The fonts of the original, by their names there.
-val FONT = [
+pin FONT = [
     chalk_large  = font("chalk-40px"),
     chalk_normal = font("chalk-20px"),
     chalk_small  = font("chalk-16px"),
     pingus_small = font("pingus-small-20px"),
 ]
 
-val ORIGIN = [left=0, center=1, right=2]
+pin ORIGIN = [left=0, center=1, right=2]
 
 ;; text(font, s, x, y [, origin [, alpha]]): a text, with the origin at
 ;; the top (`:left`, `:center`, or `:right`).
@@ -292,7 +297,7 @@ func text_width (f, s) {
 
 ;; Breaks a text in lines of at most `w` pixels.
 func break_lines (f, s, w) {
-    val lines = []
+    pin lines = []
     var cur = ""
     loop _, word in string.split(s) {
         val try = if cur == "" => word => cur ++ " " ++ word
@@ -312,22 +317,23 @@ func break_lines (f, s, w) {
 ;;; TRANSLATIONS ;;;
 
 ;; The texts of the current language, from `data/po/` (see tools/po.py),
-;; or nil for English, the language of the data.
-var LANG = nil
+;; or nil for English, the language of the data. A field of a pinned
+;; table, which owns the texts of each language it receives.
+pin LANG = [texts=nil]
 
 func tr (s) {
-    (LANG && LANG@(s)) || s
+    (LANG.texts && LANG.texts@(s)) || s
 }
 
 func lang_set (code) {
-    set LANG = if (code == nil) || (code == "en") => nil =>
+    set LANG.texts = if (code == nil) || (code == "en") => nil =>
         data_load("data/po/" ++ code ++ ".po.atm").texts
 }
 
 ;; The languages with enough texts, with English first.
 func langs () {
-    val v = ["en"]
-    val idx = data_load("data/po/index.atm")
+    pin v = ["en"]
+    pin idx = data_load("data/po/index.atm")
     loop _, l in idx {
         if l.texts >= 100 {
             vector.insert(v, l.lang)
@@ -354,7 +360,7 @@ func music (name) {
 
 ;; The last position of the mouse, for the tasks that need it between
 ;; its events.
-val MOUSE = [x=0, y=0, moved=false]
+pin MOUSE = [x=0, y=0, moved=false]
 
 spawn {
     loop e on :sdl.mouse.motion {
@@ -369,7 +375,7 @@ spawn {
 ;; The options of the player, with the defaults of the official game.
 ;; `screens/options.atm` loads the saved ones over these, and changes
 ;; them; the game reads them here (the scrolling of the playfield).
-val OPTIONS = [
+pin OPTIONS = [
     fullscreen = false,         ;; the size of the desktop
     grab       = false,         ;; the mouse stays in the window
     cursor     = false,         ;; the cursor drawn by the game
