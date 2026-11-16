@@ -39,6 +39,39 @@ work found, in the order it was found:
   spawn, and the scroll is a float that wraps by one size, as the
   original.
 
+## The new rules of `pin` (`ia-atmos/lang` `98ad03a`, 2026-11-15)
+
+Every dynamic value belongs to a block; `val` and `var` only refer to a
+value that has an owner, and the first declaration of a fresh value is
+`pin`. The migration of the port, with the traces and screenshots of
+the tests identical. Of the 159 traces of the demos, 156 are as before;
+3 changed, and now match the official game: a bisection of
+`aliens6-phil` on the pre-migration port puts the change in the
+compiler, at `c467e60` (a loop over a pool tolerates the aborts of its
+tasks), not in the migration (see `fidelity.md`):
+
+- 128 lines changed only from `val`/`var` to `pin`.
+- 15 places rewritten, by kind:
+  - a cache or a list owns the value, which is completed in place
+    (`res_desc`, `level_flatten`, `levelsets`, the paths of the
+    worldmap): the fresh value is stored first, and then referred to;
+  - a variable that received fresh values became a pinned table, or a
+    field of one (`ACTIONS`, filled by fields; `LANG.texts`; the
+    slowest file of `tools/check.atm`);
+  - a value that is sometimes fresh and sometimes owned (`x || []`):
+    the options of `Sprite` are read into locals from the parameter;
+    the defaults of the save, of a prefab position and of a color
+    became scalars; the overrides of a prefab always make a copy;
+  - a task owns what it receives: the rectangle of an item of a list
+    is built in the spawn;
+  - a function gives a value that is either loaded or a default
+    (`save_load`);
+  - a fresh result that was indexed and dropped (`levelsets()@i`) is
+    pinned once.
+- Two `[y]` wrappers in the walker and the basher, which made a
+  result of a loop a table, became the number (0 is true in Atmos):
+  one table less per pingu per tick.
+
 ## Measured
 
 - **Speed**: a task wake costs about 55 ns (2000 tasks, 1000 events,

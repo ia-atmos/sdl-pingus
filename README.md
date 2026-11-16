@@ -130,7 +130,7 @@ fixed random seed, and scripted keys and mouse:
       the official game ([doc/bench.md](doc/bench.md))
 - [x] P9 Later items: the 12 objects and 4 actions that Céu did not have
 - [x] The levels of the official game, and its timings: compared tick by
-      tick on its demos, 142 of 154 with the same trace
+      tick on its demos, 145 of 154 with the same trace
       ([doc/fidelity.md](doc/fidelity.md))
 - [x] Translations: the `.po` files of the game, chosen in the options
 - [x] The options of the official game (all but its choice of renderer)

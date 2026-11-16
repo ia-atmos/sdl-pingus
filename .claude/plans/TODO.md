@@ -6,8 +6,8 @@ items. Kept current: an item leaves this file when it is done, with
 the commit that did it.
 
 The port itself is complete: the plan (P0..P9), the official data, 21
-actions, the full options, the comparison with the official game (142
-of 154 demos with the same trace), the benchmark.
+actions, the full options, the comparison with the official game (145
+of 154 demos with the same trace), the benchmark, the new rules of `pin`.
 
 ## A. Decisions waiting for the author
 
@@ -19,7 +19,7 @@ of 154 demos with the same trace), the benchmark.
    Waits for the author (said by the compiler session).
    *Recommended:* do it, and mark them fixed in `doc/compiler.md`, with
    the commit of the compiler.
-2. **The 12 demos whose traces differ from the official game.** Late,
+2. **The 9 demos whose traces differ from the official game.** Late,
    small differences (one pixel, one tick, the order of deaths in a
    tick), listed in `doc/fidelity.md`.
    *Recommended:* investigate the 3 with an early difference
@@ -35,14 +35,14 @@ of 154 demos with the same trace), the benchmark.
    port is identical to its original on its runs, it may relax the
    exactness in favor of expressiveness, if the intent of the original
    author stays. Until then, a difference is a defect. This port is not
-   there yet: 142 of the 154 demos that the official game plays give the
-   same trace, 12 differ (A.2), 5 cannot be compared. An option, not a
+   there yet: 145 of the 154 demos that the official game plays give the
+   same trace, 9 differ (A.2), 5 cannot be compared. An option, not a
    task. Candidates, the four places that read poorly because they copy
    the original (objects that poll every tick, the order of reactions in
    a tick by the order of spawns, the teleporter writing a position,
    clocks by arithmetic), and the floats of 32 bits.
    *Recommended:* first decide A.2 (whether to reach 154 of 154, or
-   accept the 12 as the limit); then tag the faithful commit, and relax
+   accept the 9 as the limit); then tag the faithful commit, and relax
    in small commits, each with what it gives up and gains, the outputs
    replaced in the same commit, and a document of the deliberate
    differences; never mixed with the move to `env-sdl` (B.11), which
