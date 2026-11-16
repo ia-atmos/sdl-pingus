@@ -11,8 +11,10 @@ task Bomber (p, g) {
     ;; pingu moves, and dies after that if the clock has ended
     pin s = spawn Sprite(pspr(p, "bomber/left"), p, PSPR1)
     par :any {
+        ;; the clock ends in a tick before the move of that tick (the
+        ;; sprite reacts first): the pingu moves, and dies, in its turn
         await(s)
-        await :tock
+        move(p)
         :dead
     } with {
         ;; it moves, and may drown or splash up to the frame 9
