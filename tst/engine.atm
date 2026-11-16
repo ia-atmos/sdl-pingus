@@ -19,6 +19,6 @@ spawn {
 }
 
 val w, h = res_frame_size("core/start/ok")
-val r = [x=400-(w//2), y=300-(h//2), w=w, h=h]
+pin r = [x=400-(w//2), y=300-(h//2), w=w, h=h]
 await Button(r, "core/start/ok", "core/start/ok_hover", "core/start/ok_clicked")
 print("clicked")
