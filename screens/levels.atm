@@ -38,7 +38,11 @@ task List (items, per, height, title, draw, can, marker) {
                          w=680 - 90, h=height - 1],
                         draw, can, marker)
                 }
-                await :any vis
+                ;; named, then given: as the last expression of the
+                ;; block, the await raises an escape of the pool
+                ;; (reported to the compiler)
+                val chosen = await :any vis
+                chosen
             } with {
                 await Button(up, "core/menu/arrow_up", "core/menu/arrow_up_hover", "core/menu/arrow_up_pressed")
                 :up
@@ -62,8 +66,7 @@ task Item (it_, i, r, draw, can, marker) {
     val _, mh = sdl.size(marker)
     spawn {
         ;; the marker, under the item, while the mouse is over it
-        ;; a name, not a pin: the closure holds `r`, which the task owns
-        val over = \(x, y) { inside(r, x, y) }
+        pin over = \(x, y) { inside(r, x, y) }
         if !over(MOUSE.x, MOUSE.y) {
             await :mouse.motion until over(it.x, it.y)
         }
@@ -93,7 +96,7 @@ task Item (it_, i, r, draw, can, marker) {
 
 ;; The levelsets, with the levels that the game supports.
 func levelsets () {
-    pin out = []
+    val out = []
     loop f in io.lines("data/levelsets/index.txt") {
         ;; the list owns the levelset, which is completed in place, and
         ;; removed if it has no level the port supports
