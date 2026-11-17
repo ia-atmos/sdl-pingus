@@ -38,11 +38,7 @@ task List (items, per, height, title, draw, can, marker) {
                          w=680 - 90, h=height - 1],
                         draw, can, marker)
                 }
-                ;; named, then given: as the last expression of the
-                ;; block, the await raises an escape of the pool
-                ;; (reported to the compiler)
-                val chosen = await :any vis
-                chosen
+                await :any vis
             } with {
                 await Button(up, "core/menu/arrow_up", "core/menu/arrow_up_hover", "core/menu/arrow_up_pressed")
                 :up
