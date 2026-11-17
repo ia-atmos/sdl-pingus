@@ -165,7 +165,7 @@ task FakeExit (g, o) {
         par :any {
             await(s)
         } with {
-            await :frame until it.n == 4
+            await :sprite.frame until it.n == 4
             loop _, t in g.pingus {
                 if zone(t.pub) {
                     emit @t :pingu.set [act=:splashed]

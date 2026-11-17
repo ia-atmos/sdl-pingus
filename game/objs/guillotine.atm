@@ -24,7 +24,7 @@ task Guillotine (g, o) {
         par :any {
             await(s)
         } with {
-            await :frame until it.n == 7
+            await :sprite.frame until it.n == 7
             sound("splash", 0.5)
             await(false)
         }

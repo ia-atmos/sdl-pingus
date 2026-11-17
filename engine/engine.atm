@@ -172,7 +172,7 @@ func look (d, anchor) {
 ;;            the data;
 ;;  - back:   the frames go backwards.
 ;;
-;; It emits `:frame [n]` to its parent task at each new frame, and
+;; It emits `:sprite.frame [n]` to its parent task at each new frame, and
 ;; terminates when an animation that does not loop ends.
 task Sprite (name, pos, o) {
     ;; the options, read once: `o` may be a constructor of the caller,
@@ -204,7 +204,7 @@ task Sprite (name, pos, o) {
             val f = if back => n - 1 - (t // delay) => t // delay
             if f != frame {
                 set frame = f
-                emit @(:parent) :frame [n=f]
+                emit @(:parent) :sprite.frame [n=f]
             }
         }
         done && !loops

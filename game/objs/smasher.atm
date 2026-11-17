@@ -30,7 +30,7 @@ task Smasher (g, o) {
         par :any {
             await Sprite("traps/smasher", pos, one)
         } with {
-            await :frame until it.n == last
+            await :sprite.frame until it.n == last
         }
         sound "tenton"
         loop _ in 20 {
@@ -49,7 +49,7 @@ task Smasher (g, o) {
         par :any {
             await Sprite("traps/smasher", pos, one ++ [back=true])
         } with {
-            await :frame until it.n == 0
+            await :sprite.frame until it.n == 0
         }
     }
 }

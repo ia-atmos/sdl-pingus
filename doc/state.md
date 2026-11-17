@@ -14,7 +14,7 @@ The classes:
   is removed, a loop awaits N ticks (`Ticks(n)`).
 - **dual**: data of a sprite that its users read to decide (the frame,
   "is finished"): it is removed from the users, the sprite signals its
-  frames (`:frame [n]`) and terminates when it ends.
+  frames (`:sprite.frame [n]`) and terminates when it ends.
 - **action**: `set_action(x)`: it is removed, the action returns the
   next one.
 
@@ -26,14 +26,14 @@ justified in a comment, or removed.
 
 | Unit | Variable (C++) | Class | Céu | Atmos |
 |------|----------------|-------|-----|-------|
-| Basher | sprite | dual | spawn, reads `frame` | `Sprite`, awaits `:frame` |
+| Basher | sprite | dual | spawn, reads `frame` | `Sprite`, awaits `:sprite.frame` |
 | | basher_c | period | `loop i`, `await dt` x3 | `Ticks(3)` |
 | | first_bash | control | var | the first bash before the loop |
 | | set_action() | action | `escape` | the result of the task |
 | Blocker | sprite | data | spawn | `Sprite` |
-| Bomber | sprite | dual | reads `frame` | awaits `:frame` |
+| Bomber | sprite | dual | reads `frame` | awaits `:sprite.frame` |
 | | particle_thrown, sound_played, gfx_exploded, colmap_exploded | control | sequence | sequence |
-| Bridger | walk_sprite, build_sprite | dual | reads `frame`, awaits end | awaits `:frame`, awaits the sprite |
+| Bridger | walk_sprite, build_sprite | dual | reads `frame`, awaits end | awaits `:sprite.frame`, awaits the sprite |
 | | block_build | control | `await` | `await` |
 | | bricks | data | var | the loop index; `p.bricks` for the display |
 | | mode | control | sequence | sequence |

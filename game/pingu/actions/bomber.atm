@@ -18,7 +18,7 @@ task Bomber (p, g) {
         :dead
     } with {
         ;; it moves, and may drown or splash up to the frame 9
-        watching :frame until it.n == 10 {
+        watching :sprite.frame until it.n == 10 {
             loop on :tick {
                 val v = p.vy
                 move(p)
@@ -37,11 +37,11 @@ task Bomber (p, g) {
             await :tick
         }
     } with {
-        await :frame until it.n == 10
+        await :sprite.frame until it.n == 10
         sound("plop", 0.5)
         await(false)
     } with {
-        await :frame until it.n == 13
+        await :sprite.frame until it.n == 13
         loop _ in 50 {
             spawn @(g.particles) PinguParticle(g, trunc(p.x), trunc(p.y) - 5)
         }

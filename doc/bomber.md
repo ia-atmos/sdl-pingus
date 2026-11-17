@@ -48,9 +48,9 @@ task Bomber (p, g) {
     } with {
         await Mover(p)
     } with {
-        await :frame until it.n == 10
+        await :sprite.frame until it.n == 10
         sound("plop", 0.5)
-        await :frame until it.n == 13
+        await :sprite.frame until it.n == 13
         loop _ in 50 {
             spawn @(g.particles) PinguParticle(g, p.x, p.y - 5)
         }
@@ -74,8 +74,8 @@ task Bomber (p, g) {
   the sprite that its users read, which `cmp/state.md` of the study
   calls a "dual" variable: data for the sprite, control for its users.
   In Atmos, the sprite signals each new frame to its parent task,
-  `:frame [n]`, and the bomber awaits the event:
-  `await :frame until it.n == 10`. The frame is no longer read from
+  `:sprite.frame [n]`, and the bomber awaits the event:
+  `await :sprite.frame until it.n == 10`. The frame is no longer read from
   outside.
 - `watching sprite` of Céu (the bomber ends if the animation ends) is a
   branch of the `par :any` that awaits the sprite task: `await(s)`.
