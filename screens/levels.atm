@@ -62,7 +62,8 @@ task Item (it_, i, r, draw, can, marker) {
     val _, mh = sdl.size(marker)
     spawn {
         ;; the marker, under the item, while the mouse is over it
-        pin over = \(x, y) { inside(r, x, y) }
+        ;; a name, not a pin: the closure holds `r`, which the task owns
+        val over = \(x, y) { inside(r, x, y) }
         if !over(MOUSE.x, MOUSE.y) {
             await :mouse.motion until over(it.x, it.y)
         }
