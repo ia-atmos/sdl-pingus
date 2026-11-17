@@ -149,7 +149,7 @@ task Game (path) {
 
     ;; the actions in the level, in the order of the buttons
     pin acts = do {
-        pin v = []
+        val v = []
         loop _, a in ACTIONS_PLAYER {
             if head.actions@(a) {
                 vector.insert(v, a)

@@ -13,7 +13,7 @@ pin OBJS_KNOWN = [
 ]
 
 func level_load (path) {
-    pin lvl = data_load(path)
+    val lvl = data_load(path)
     ;; a name in pieces, as `""Crystal-Desert" Temple"` of a level
     val n = lvl.head.levelname
     set lvl.head.levelname = ifs {
@@ -83,7 +83,7 @@ func obj_z (o) {
 ;; official game sets them up (a stable sort: the order of the file for
 ;; the same depth). The ground, water and holes depend on this order.
 func level_objects (lvl) {
-    pin v = []
+    val v = []
     level_flatten(lvl.objects, 0, 0, nil, v)
     vector.sort(v, \(a, b) { obj_z(a) < obj_z(b) })
     v

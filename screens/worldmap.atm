@@ -8,8 +8,8 @@
 ;; The graph of a worldmap: nodes by name, and their neighbors with the
 ;; points of the paths between them.
 func wm_load (path) {
-    pin wm = data_load(path)
-    pin nodes = []
+    val wm = data_load(path)
+    val nodes = []
     loop _, n in wm.graph.nodes {
         set nodes@(n.dot.name) = [
             name = n.dot.name, tag = n.tag,
@@ -79,7 +79,7 @@ func wm_path (wm, a, b) {
     if !from@(b) {
         return nil
     }
-    pin path = [b]
+    val path = [b]
     loop {
         while path@0 != a
         vector.insert(path, 0, from@(path@0))

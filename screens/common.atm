@@ -77,7 +77,7 @@ func save_load () {
     }
     val s = io.read(f, :all)
     io.close(f)
-    pin ok, v = catch true {
+    val ok, v = catch true {
         X.load(s)
     }
     if ok && (v ?? :table) => v => [levels=[]]
@@ -111,7 +111,7 @@ func level_solved (path) {
 
 ;; The index of the levels that the game supports (see tools/convert.py).
 pin LEVELS_OK = do {
-    pin t = []
+    val t = []
     pin idx = data_load("data/levels.atm")
     loop i in #idx {
         val l = idx@i
