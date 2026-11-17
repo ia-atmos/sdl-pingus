@@ -11,7 +11,7 @@ task Credits () {
     pin y = [v=H - 50]
     spawn {
         val cx = W // 2
-        loop on :sdl.draw {
+        loop on :draw {
             var yy = trunc(y.v)
             loop _, l in lines {
                 val c = string.sub(l, 0, 0)
@@ -42,12 +42,12 @@ task Credits () {
     } with {
         ;; the speed: slow, or fast while fast forward is on
         loop {
-            watching :sdl.key.dn until X.xin(it.name, ["F", "Space"]) {
+            watching :key.dn until X.xin(it.key, ["F", "Space"]) {
                 loop us on :clock {
                     set y.v -= (us / 1000) * 0.035
                 }
             }
-            watching :sdl.key.dn until X.xin(it.name, ["F", "Space"]) {
+            watching :key.dn until X.xin(it.key, ["F", "Space"]) {
                 loop us on :clock {
                     set y.v -= (us / 1000) * 0.45
                 }

@@ -8,7 +8,7 @@ task Story (path) {
     spawn Board()
     music(st.music)
     spawn {
-        loop on :sdl.draw {
+        loop on :draw {
             text(FONT.chalk_large, tr(st.title), W//2, (H//2) - 200, :center)
         }
     }
@@ -24,7 +24,7 @@ task Story (path) {
             ;; player wants it all
             pin shown = [n=0, t=0]
             spawn {
-                loop on :sdl.draw {
+                loop on :draw {
                     if shown.n > 0 {
                         text(FONT.chalk_normal, string.sub(txt, 0, shown.n - 1), (W//2) - 280, (H//2) + 35)
                     }
@@ -39,13 +39,13 @@ task Story (path) {
             } with {
                 await Button(nr, "core/misc/next", "core/misc/next_hover", "core/misc/next")
             } with {
-                await :sdl.key.dn until X.xin(it.name, ["F", "Space", "Return"])
+                await :key.dn until X.xin(it.key, ["F", "Space", "Return"])
             }
             set shown.n = #txt
             par :any {
                 await Button(nr, "core/misc/next", "core/misc/next_hover", "core/misc/next")
             } with {
-                await :sdl.key.dn until X.xin(it.name, ["F", "Space", "Return"])
+                await :key.dn until X.xin(it.key, ["F", "Space", "Return"])
             }
         }
         true

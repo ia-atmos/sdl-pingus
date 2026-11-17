@@ -1,30 +1,26 @@
-;; The SDL environment of the game, over `engine/pingus.h`.
+;; The platform of the game: the environment `ia-atmos/env-sdl` (a
+;; checkout next to this repository, `../env-sdl`, at the commit that the
+;; README gives), and what the game adds to it in `engine/pingus.h`:
+;; images with modifiers and crops, bitmap fonts, the ground maps, the
+;; mover of the pingus.
 ;;
-;; It extends `lib/sdl.atm` of the compiler with what the game needs:
-;; mouse, images with modifiers and cropping, bitmap fonts, music, the
-;; ground maps in C, and a test mode with scripted mouse.
+;; The environment runs the program inside the loop of SDL, which emits,
+;; once per frame (see `doc/api.md` of the environment):
 ;;
-;; The program runs inside the loop of SDL, which emits, once per frame:
+;;      :key.dn [key], :key.up [key]            a key was pressed or released
+;;      :mouse.motion [x,y]                     the mouse moved
+;;      :mouse.button.dn [x,y,button]           a button was pressed (1 left, 3 right)
+;;      :mouse.button.up [x,y,button]           a button was released
+;;      :quit                                   the window was closed
+;;      (time)                                  so that `await 1s` and `:clock` work
+;;      :frame [n,us], then :draw               a frame, and its drawing
 ;;
-;;      :sdl.key.dn [name]          a key was pressed  (name: 'P', 'Escape', ...)
-;;      :sdl.key.up [name]          a key was released
-;;      :sdl.mouse.motion [x,y]     the mouse moved
-;;      :sdl.mouse.dn [x,y,but]     a button was pressed (1 left, 3 right)
-;;      :sdl.mouse.up [x,y,but]     a button was released
-;;      :sdl.quit                   the window was closed
-;;      (time)                      so that `await 1s` and `:clock` work
-;;      :sdl.draw                   to redraw the screen
-;;
-;; Test mode, with `SDL_VIDEODRIVER=dummy`:
-;;
-;;      PINGUS_FRAMES=n:ms          runs `n` frames of `ms` milliseconds
-;;      PINGUS_KEYS=f:dn:P,...      presses or releases keys at frames
-;;      PINGUS_MOUSE=f:dn:x:y:b,... moves (mv), presses (dn), or releases
-;;                                  (up) the mouse at frames
-;;      PINGUS_SHOT=f:x.png,...     saves the screen at frames
-;;      PINGUS_MUTE=1               no audio
-;;      PINGUS_FPS=n                frames per second (0: no cap)
-;;      PINGUS_COUNT=1              prints the number of frames at exit
+;; The test mode of the environment, with `SDL_VIDEODRIVER=dummy`:
+;; `SDL_ATM_FRAMES=n:ms`, `SDL_ATM_KEYS`, `SDL_ATM_MOUSE`, `SDL_ATM_SHOT`,
+;; `SDL_ATM_MUTE`. The game adds `PINGUS_FPS=n` (frames per second) and
+;; `PINGUS_COUNT=1` (the number of frames, printed at the end).
+
+include "../../env-sdl/sdl.atm"
 
 ```:prelude
 #include "engine/pingus.h"
@@ -33,45 +29,42 @@
 val W = 800
 val H = 600
 
+sdl.window [
+    title   = "Pingus",
+    width   = W,
+    height  = H,
+    logical = [W, H],
+    fps     = tonumber(os.getenv("PINGUS_FPS") || "40"),
+]
+
+;; The images, by their path, modifier and crop: each one is loaded once.
+pin IMGS = []
+
+;; The sounds, by their path.
+pin SOUNDS = []
+
 pin pg = [
-    ;; pg.img(path, mod [, [cx,cy,cw,ch]]): an image, or -1
+    ;; pg.img(path, mod [, [cx,cy,cw,ch]]): an image (cropped, then
+    ;; rotated or flipped by the modifier), or nil
     img = func (path, mod, c) {
         val cx, cy, cw, ch = if c => (c@0, c@1, c@2, c@3) => (0, 0, 0, 0)
-        `:number pg_img_load(pg_cstr($path), pg_int($mod), pg_int($cx), pg_int($cy), pg_int($cw), pg_int($ch))`
+        val k = path ++ "#" ++ tostring(mod) ++ "#" ++ tostring(cx) ++ "," ++
+                tostring(cy) ++ "," ++ tostring(cw) ++ "," ++ tostring(ch)
+        if IMGS@(k) == nil {
+            set IMGS@(k) = `:value pg_img_load(pg_cstr($path), pg_int($mod), pg_int($cx), pg_int($cy), pg_int($cw), pg_int($ch))`
+        }
+        IMGS@(k)
     },
 
-    ;; pg.size(img): width and height
-    size = func (i) {
-        val w = `:number ({ PgImg* p = pg_img(pg_int($i)); p ? p->w : 0; })`
-        val h = `:number ({ PgImg* p = pg_img(pg_int($i)); p ? p->h : 0; })`
-        return w, h
-    },
-
-    ;; pg.draw(img, x, y): the whole image at x,y
-    draw = func (i, x, y) {
-        `pg_img_draw(pg_int($i), 0,0,0,0, pg_int($x),pg_int($y), 0,0, 255);`
-    },
-
-    ;; pg.part(img, sx,sy,sw,sh, x,y [,alpha]): a part of the image at x,y
-    part = func (i, sx, sy, sw, sh, x, y, a) {
-        val alpha = if a == nil => 255 => a
-        `pg_img_draw(pg_int($i), pg_int($sx),pg_int($sy),pg_int($sw),pg_int($sh), pg_int($x),pg_int($y), 0,0, pg_int($alpha));`
-    },
-
-    ;; pg.scale(img, x,y,w,h): the whole image stretched into a rectangle
-    scale = func (i, x, y, w, h) {
-        `pg_img_draw(pg_int($i), 0,0,0,0, pg_int($x),pg_int($y), pg_int($w),pg_int($h), 255);`
-    },
-
-    ;; pg.fill(0xRRGGBBAA, x,y,w,h), pg.rect(...), pg.line(c, x1,y1,x2,y2)
-    fill = func (c, x, y, w, h) {
-        `pg_fill((int64_t)a_dbl($c), pg_int($x),pg_int($y),pg_int($w),pg_int($h));`
-    },
-    rect = func (c, x, y, w, h) {
-        `pg_rect((int64_t)a_dbl($c), pg_int($x),pg_int($y),pg_int($w),pg_int($h));`
-    },
-    line = func (c, x1, y1, x2, y2) {
-        `pg_line((int64_t)a_dbl($c), pg_int($x1),pg_int($y1),pg_int($x2),pg_int($y2));`
+    ;; pg.sound(path [, vol]): plays a sound, loaded once
+    sound = func (path, vol) {
+        if SOUNDS@(path) == nil {
+            set SOUNDS@(path) = sdl.sound(path)
+        }
+        val snd = SOUNDS@(path)
+        if snd {
+            sdl.play(snd, if vol == nil => 1.0 => vol)
+        }
     },
 
     ;; fonts: see `font` in `engine/engine.atm`
@@ -79,7 +72,7 @@ pin pg = [
         `:number pg_font_new(pg_int($size), a_dbl($cs), a_dbl($vs))`
     },
     font_glyph = func (f, u, img, x1, y1, x2, y2, ox, oy, adv) {
-        `pg_font_glyph(pg_int($f), pg_int($u), pg_int($img), pg_int($x1), pg_int($y1), pg_int($x2), pg_int($y2), pg_int($ox), pg_int($oy), pg_int($adv));`
+        `pg_font_glyph(pg_int($f), pg_int($u), $img, pg_int($x1), pg_int($y1), pg_int($x2), pg_int($y2), pg_int($ox), pg_int($oy), pg_int($adv));`
     },
     font_draw = func (f, txt, x, y, origin, a) {
         val alpha = if a == nil => 255 => a
@@ -87,26 +80,6 @@ pin pg = [
     },
     font_width = func (f, txt) {
         `:number pg_font_width(pg_int($f), pg_cstr($txt))`
-    },
-
-    ;; sounds and music
-    sound = func (path, vol) {
-        val v = if vol == nil => 1.0 => vol
-        `pg_sound(pg_cstr($path), a_dbl($v));`
-    },
-    music = func (path) {
-        `pg_music(pg_cstr($path));`
-    },
-    volume = func (snd, mus) {
-        `pg_volume(a_dbl($snd), a_dbl($mus));`
-    },
-    ;; pg.display(full, w, h, grab, soft): see `pg_display`
-    display = func (full, w, h, grab, soft) {
-        val f, g, c = (if full => 1 => 0), (if grab => 1 => 0), (if soft => 1 => 0)
-        `pg_display(pg_int($f), pg_int($w), pg_int($h), pg_int($g), pg_int($c));`
-    },
-    music_stop = func () {
-        `pg_music_stop();`
     },
 
     ;; the ground: see `engine/pingus.h`
@@ -120,13 +93,13 @@ pin pg = [
         `:number pg_map_get(pg_int($x), pg_int($y))`
     },
     map_put = func (img, x, y, type) {
-        `pg_map_put(pg_int($img), pg_int($x), pg_int($y), pg_int($type));`
+        `pg_map_put($img, pg_int($x), pg_int($y), pg_int($type));`
     },
     map_col = func (img, x, y, type) {
-        `pg_map_col(pg_int($img), pg_int($x), pg_int($y), pg_int($type));`
+        `pg_map_col($img, pg_int($x), pg_int($y), pg_int($type));`
     },
     map_remove = func (gfx, col, x, y) {
-        `pg_map_remove(pg_int($gfx), pg_int($col), pg_int($x), pg_int($y));`
+        `pg_map_remove($gfx, $col, pg_int($x), pg_int($y));`
     },
     ;; pg.move(x, y, vx, vy, h): the mover of the pingus, in C
     move = func (x, y, vx, vy, h) {
@@ -145,15 +118,17 @@ pin pg = [
     map_small = func (x, y, w, h) {
         `pg_map_small(pg_int($x), pg_int($y), pg_int($w), pg_int($h));`
     },
-
-    ;; the frame number, and whether this is the test mode
-    frame = func () {
-        `:number PG_FRAME`
-    },
-    testing = func () {
-        `:boolean PG_TEST`
-    },
 ]
+
+;; The number of frames, at the end, for the benchmark.
+spawn {
+    if os.getenv("PINGUS_COUNT") {
+        defer {
+            print("frames: " ++ tostring(sdl.frame()))
+        }
+        await(false)
+    }
+}
 
 ;; The ground types of the collision map.
 pin GP = [

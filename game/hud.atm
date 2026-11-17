@@ -38,14 +38,14 @@ task ActionButton (g, i, act, n) {
         }
     } with {
         val f = FONT.pingus_small
-        loop on :sdl.draw {
+        loop on :draw {
             text(f, g.actions@(act), r.x + r.w - 5, r.y + 9, :right)
         }
     } with {
         loop {
-            await :sdl.mouse.motion until inside(r, it.x, it.y)
-            watching :sdl.mouse.motion until !inside(r, it.x, it.y) {
-                loop on :sdl.draw {
+            await :mouse.motion until inside(r, it.x, it.y)
+            watching :mouse.motion until !inside(r, it.x, it.y) {
+                loop on :draw {
                     text(FONT.pingus_small, tr(ACTION_NAME@(act)), r.x + r.w + 5, r.y + 9)
                 }
             }
@@ -58,8 +58,8 @@ task ActionButton (g, i, act, n) {
 task ActionKeys (g, acts) {
     val n = #acts
     loop {
-        val e = await :sdl.key.dn
-        val k = tonumber(e.name)
+        val e = await :key.dn
+        val k = tonumber(e.key)
         if k && (k >= 0) && (k <= 9) {
             val i = if k == 0 => 9 => k - 1
             if i < n {
@@ -74,7 +74,7 @@ task ActionKeys (g, acts) {
 task Counters (g) {
     val c = g.counter
     spawn Sprite("core/buttons/info", [x=W//2, y=0], [anchor=:top_center])
-    loop on :sdl.draw {
+    loop on :draw {
         text(FONT.pingus_small,
             string.format(tr("Released:%3d/%d   Out:%3d   Saved:%3d/%d"),
                 c.released, c.allowed, c.alive, c.exited, c.to_save),
@@ -86,7 +86,7 @@ task Time (g) {
     if g.limit < 0 {
         await(false)
     }
-    loop on :sdl.draw {
+    loop on :draw {
         text(FONT.pingus_small, time_str(math.max(0, g.limit - g.time)), W - 30, 3, :right)
     }
 }
@@ -99,8 +99,8 @@ task SmallMap (g) {
     pin r = [x=5, y=H-105, w=175, h=100]
     val ent = res_surface("core/misc/smallmap_entrance")
     val ext = res_surface("core/misc/smallmap_exit")
-    val ew, eh = pg.size(ent)
-    val xw, xh = pg.size(ext)
+    val ew, eh = sdl.size(ent)
+    val xw, xh = sdl.size(ext)
     val func cam_to (x, y) {
         set CAM.x = (((x - r.x) * g.w) // r.w) - (W//2)
         set CAM.y = (((y - r.y) * g.h) // r.h) - (H//2)
@@ -108,10 +108,10 @@ task SmallMap (g) {
     }
     par {
         loop {
-            val e = await :sdl.mouse.dn until (it.but == 1) && inside(r, it.x, it.y)
+            val e = await :mouse.button.dn until (it.button == 1) && inside(r, it.x, it.y)
             cam_to(e.x, e.y)
-            watching :sdl.mouse.up {
-                loop m on :sdl.mouse.motion {
+            watching :mouse.button.up {
+                loop m on :mouse.motion {
                     if inside(r, m.x, m.y) {
                         cam_to(m.x, m.y)
                     }
@@ -119,25 +119,25 @@ task SmallMap (g) {
             }
         }
     } with {
-        loop on :sdl.draw {
+        loop on :draw {
             pg.map_small(r.x, r.y, r.w, r.h)
             loop _, m in g.marks {
                 if m.tag == :entrance {
-                    pg.draw(ent, r.x + ((m.x*r.w)//g.w) - (ew//2), r.y + ((m.y*r.h)//g.h) - eh)
+                    sdl.draw(ent, r.x + ((m.x*r.w)//g.w) - (ew//2), r.y + ((m.y*r.h)//g.h) - eh)
                 } else {
-                    pg.draw(ext, r.x + ((m.x*r.w)//g.w) - (xw//2), r.y + ((m.y*r.h)//g.h) - xh)
+                    sdl.draw(ext, r.x + ((m.x*r.w)//g.w) - (xw//2), r.y + ((m.y*r.h)//g.h) - xh)
                 }
             }
             ;; the view
             val vw = math.min(r.w, (W*r.w)//g.w)
             val vh = math.min(r.h, (H*r.h)//g.h)
-            pg.rect(0x00FF00FF, r.x + ((CAM.x*r.w)//g.w), r.y + ((CAM.y*r.h)//g.h), vw, vh)
+            sdl.rect(0x00FF00FF, r.x + ((CAM.x*r.w)//g.w), r.y + ((CAM.y*r.h)//g.h), vw, vh)
             ;; the pingus
             loop _, t in g.pingus {
                 val q = t.pub
                 val x = r.x + ((q.x*r.w)//g.w)
                 val y = r.y + ((q.y*r.h)//g.h)
-                pg.line(0xFFFF00FF, x, y, x, y-2)
+                sdl.line(0xFFFF00FF, x, y, x, y-2)
             }
         }
     }
@@ -175,12 +175,12 @@ task FastForward (g) {
         loop {
             watching :game.ff.on {
                 spawn Sprite("core/buttons/hbuttonbgb", r)
-                await :sdl.mouse.dn until (it.but == 1) && inside(r, it.x, it.y)
+                await :mouse.button.dn until (it.button == 1) && inside(r, it.x, it.y)
                 emit @(:parent) :game.ff.on
             }
             watching :game.ff.off {
                 spawn Sprite("core/buttons/hbuttonbg", r)
-                await :sdl.mouse.up until it.but == 1
+                await :mouse.button.up until it.button == 1
                 emit @(:parent) :game.ff.off
             }
         }

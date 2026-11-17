@@ -16,7 +16,7 @@ func digger_dig (p, final) {
     val gfx = if final => res_surface("pingus/common/digger_radius_final_gfx") =>
                           res_surface("pingus/common/digger_radius_gfx")
     val col = if final => gfx => r
-    val w, h = pg.size(r)
+    val w, h = sdl.size(r)
     ground_remove(gfx, col, trunc(p.x) - (w//2), trunc(p.y) - h + 2)
     set p.x = trunc(p.x)
     set p.y = trunc(p.y) + 1

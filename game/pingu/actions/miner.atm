@@ -4,7 +4,7 @@
 func miner_mine (p, name) {
     val gfx = res_surface("pingus/common/" ++ name ++ "_gfx")
     val col = res_surface("pingus/common/" ++ name)
-    val w, h = pg.size(col)
+    val w, h = sdl.size(col)
     ground_remove(gfx, col, trunc(p.x) - (w//2) + p.dir, trunc(p.y) - h + 2)
 }
 

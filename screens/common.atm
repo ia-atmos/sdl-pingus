@@ -35,7 +35,7 @@ task Back () {
 
 ;; Label(r, s): a text with a label under `r`, forever.
 task Label (s, x, y, f) {
-    loop on :sdl.draw {
+    loop on :draw {
         text(f || FONT.chalk_normal, s, x, y, :center)
     }
 }
@@ -48,12 +48,12 @@ task LabelButton (s, x, y) {
         await Click(r)
     } with {
         loop {
-            await :sdl.mouse.motion until inside(r, it.x, it.y)
+            await :mouse.motion until inside(r, it.x, it.y)
             sound "tick"
-            await :sdl.mouse.motion until !inside(r, it.x, it.y)
+            await :mouse.motion until !inside(r, it.x, it.y)
         }
     } with {
-        loop on :sdl.draw {
+        loop on :draw {
             text(f, s, x, y)
         }
     }
@@ -61,7 +61,7 @@ task LabelButton (s, x, y) {
 
 ;; A key, by its name in SDL.
 task Key (name) {
-    await :sdl.key.dn until it.name == name
+    await :key.dn until it.key == name
 }
 
 ;;; PROGRESS ;;;

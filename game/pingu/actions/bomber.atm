@@ -47,7 +47,7 @@ task Bomber (p, g) {
         }
         val gfx = res_surface("other/bomber_radius_gfx")
         val col = res_surface("other/bomber_radius")
-        val w, h = pg.size(col)
+        val w, h = sdl.size(col)
         ground_remove(gfx, col, trunc(p.x) - (w//2), trunc(p.y) - (w//2) - 16)
         spawn Sprite(pspr(p, "explo"), p, PSPR1)
         await(false)

@@ -1,7 +1,7 @@
 ;; The engine of the game, in Atmos: data files, sprites, fonts, the
 ;; mouse, and the widgets of the screens.
 ;;
-;; A sprite is a task: it draws itself on `:sdl.draw`, advances its
+;; A sprite is a task: it draws itself on `:draw`, advances its
 ;; frame with the time, signals each new frame to its parent task, and
 ;; terminates when an animation that does not loop ends. Its users keep
 ;; no frame counters and no "is finished" flags: they await the sprite.
@@ -83,7 +83,7 @@ func res_desc (name) {
             "data" ++ d.image =>
             path_norm(dirname(base) ++ "/" ++ d.image)
     }
-    if pg.img(d.path, 0) < 0 {
+    if pg.img(d.path, 0) == nil {
         print("missing image : " ++ d.path)
         set d.path = "data/images/core/misc/404.png"
     }
@@ -121,7 +121,7 @@ func res_surface (name, mod) {
        (d.array@0 != 1) || (d.array@1 != 1)
     {
         val full = pg.img(d.path, 0)
-        val iw, ih = pg.size(full)
+        val iw, ih = sdl.size(full)
         val w = if d.size => d.size@0 => iw // d.array@0
         val h = if d.size => d.size@1 => ih // d.array@1
         pg.img(d.path, m, [d.position@0, d.position@1, w, h])
@@ -141,7 +141,7 @@ pin ZERO = [x=0, y=0]
 ;; number of frames per row, and the offset of the drawing.
 func look (d, anchor) {
     val img = pg.img(d.path, 0)
-    val iw, ih = pg.size(img)
+    val iw, ih = sdl.size(img)
     val fw = if d.size => d.size@0 => iw // d.array@0
     val fh = if d.size => d.size@1 => ih // d.array@1
     val ox1, oy1 = origin(d.origin, fw, fh)
@@ -225,9 +225,9 @@ task Sprite (name, pos, o) {
             }
         }
     } with {
-        loop on :sdl.draw {
+        loop on :draw {
             val k = if pos.dir == 1 => r => l
-            pg.part(k.img,
+            sdl.part(k.img,
                 k.px + k.fw*(frame % k.ax), k.py + k.fh*(frame // k.ax),
                 k.fw, k.fh, pos.x - cam.x - k.dx, pos.y - cam.y - k.dy)
         }
@@ -237,14 +237,14 @@ task Sprite (name, pos, o) {
 ;; The size of the frames of a resource.
 func res_frame_size (name) {
     val d = res_desc(name)
-    val iw, ih = pg.size(pg.img(d.path, 0))
+    val iw, ih = sdl.size(pg.img(d.path, 0))
     if d.size => (d.size@0, d.size@1) => (iw // d.array@0, ih // d.array@1)
 }
 
 ;; Image(img, pos): draws an image with no animation, forever.
 task Image (img, pos) {
-    loop on :sdl.draw {
-        pg.draw(img, pos.x, pos.y)
+    loop on :draw {
+        sdl.draw(img, pos.x, pos.y)
     }
 }
 
@@ -346,9 +346,9 @@ func sound (name, vol) {
 
 func music (name) {
     if (name == nil) || (name == "") || (name == "none") {
-        pg.music_stop()
+        sdl.music_stop()
     } else {
-        pg.music("data/music/" ++ name)
+        sdl.music("data/music/" ++ name)
     }
 }
 
@@ -359,7 +359,7 @@ func music (name) {
 pin MOUSE = [x=0, y=0, moved=false]
 
 spawn {
-    loop e on :sdl.mouse.motion {
+    loop e on :mouse.motion {
         set MOUSE.x = e.x
         set MOUSE.y = e.y
         set MOUSE.moved = true
@@ -396,8 +396,8 @@ func inside (r, x, y) {
 task Click (r, but) {
     val b = but || 1
     loop {
-        await :sdl.mouse.dn until (it.but == b) && inside(r, it.x, it.y)
-        val e = await :sdl.mouse.up until it.but == b
+        await :mouse.button.dn until (it.button == b) && inside(r, it.x, it.y)
+        val e = await :mouse.button.up until it.button == b
         until inside(r, e.x, e.y)
     }
 }
@@ -406,11 +406,11 @@ task Click (r, but) {
 ;; `r`, and plays `snd` when it enters. It never terminates.
 task Hover (r, name, snd) {
     loop {
-        await :sdl.mouse.motion until inside(r, it.x, it.y)
+        await :mouse.motion until inside(r, it.x, it.y)
         if snd {
             sound(snd)
         }
-        watching :sdl.mouse.motion until !inside(r, it.x, it.y) {
+        watching :mouse.motion until !inside(r, it.x, it.y) {
             await Sprite(name, r)
         }
     }
@@ -423,16 +423,16 @@ task Button (r, normal, hover, pressed) {
         await Click(r)
     } with {
         loop {
-            watching :sdl.mouse.motion until inside(r, it.x, it.y) {
+            watching :mouse.motion until inside(r, it.x, it.y) {
                 await Sprite(normal, r)
             }
             sound "tick"
-            watching :sdl.mouse.motion until !inside(r, it.x, it.y) {
+            watching :mouse.motion until !inside(r, it.x, it.y) {
                 loop {
-                    watching :sdl.mouse.dn until inside(r, it.x, it.y) {
+                    watching :mouse.button.dn until inside(r, it.x, it.y) {
                         await Sprite(hover, r)
                     }
-                    watching :sdl.mouse.up {
+                    watching :mouse.button.up {
                         await Sprite(pressed, r)
                     }
                 }
@@ -444,11 +444,11 @@ task Button (r, normal, hover, pressed) {
 ;; Wood(): the wooden background of some screens, tiled, forever.
 task Wood () {
     val img = res_surface("core/menu/wood")
-    val w, h = pg.size(img)
-    loop on :sdl.draw {
+    val w, h = sdl.size(img)
+    loop on :draw {
         loop y in (0, H // h) {
             loop x in (0, W // w) {
-                pg.draw(img, x*w, y*h)
+                sdl.draw(img, x*w, y*h)
             }
         }
     }

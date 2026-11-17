@@ -135,7 +135,7 @@ task Game (path) {
     ;; the layers, in the order of drawing
     pin bgs = tasks()
     spawn {
-        loop on :sdl.draw {
+        loop on :draw {
             pg.map_draw(-CAM.x, -CAM.y)
         }
     }
@@ -281,8 +281,8 @@ task Game (path) {
 
     ;; the keys of the game
     spawn {
-        loop e on :sdl.key.dn {
-            match e.name {
+        loop e on :key.dn {
+            match e.key {
                 "P"     => emit :game.pause
                 "S"     => emit :game.step
                 "A"     => emit :game.armageddon
@@ -293,8 +293,8 @@ task Game (path) {
         }
     }
     spawn {
-        loop e on :sdl.key.up {
-            if (e.name == "F") || (e.name == "Space") {
+        loop e on :key.up {
+            if (e.key == "F") || (e.key == "Space") {
                 emit :game.ff.off
             }
         }
@@ -329,7 +329,7 @@ task Game (path) {
         }
         await :tick until g.time >= g.limit
     } with {
-        await :sdl.key.dn until it.name == "Escape"
+        await :key.dn until it.key == "Escape"
         true
     }
     if quit != true {

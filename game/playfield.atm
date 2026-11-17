@@ -28,8 +28,8 @@ task Playfield (g) {
     par {
         ;; a click on a pingu gives it the selected action, if there is
         ;; one left
-        loop e on :sdl.mouse.dn {
-            if e.but == 1 {
+        loop e on :mouse.button.dn {
+            if e.button == 1 {
                 val t = pingu_at(g, e.x, e.y)
                 val act = g.next
                 if t && act && can(t.pub, act) && ((g.actions@(act) || 0) > 0) {
@@ -43,11 +43,11 @@ task Playfield (g) {
         ;; level follows the mouse (drag and drop), or scrolls at a speed
         ;; from the point of the click (a band)
         loop {
-            val e = await :sdl.mouse.dn until it.but == 3
-            watching :sdl.mouse.up until it.but == 3 {
+            val e = await :mouse.button.dn until it.button == 3
+            watching :mouse.button.up until it.button == 3 {
                 if OPTIONS.dragdrop {
                     val cx, cy = CAM.x, CAM.y
-                    loop on :sdl.mouse.motion {
+                    loop on :mouse.motion {
                         set CAM.x = cx + (e.x - MOUSE.x)
                         set CAM.y = cy + (e.y - MOUSE.y)
                         cam_clamp(g)
@@ -60,12 +60,12 @@ task Playfield (g) {
                             cam_clamp(g)
                         }
                     } with {
-                        loop on :sdl.draw {
-                            pg.line(0x00FF00FF, MOUSE.x, MOUSE.y, e.x, e.y-15)
-                            pg.line(0x0000FFFF, MOUSE.x, MOUSE.y, e.x, e.y+15)
-                            pg.line(0x00FFFFFF, MOUSE.x, MOUSE.y, e.x+15, e.y)
-                            pg.line(0xFFFF00FF, MOUSE.x, MOUSE.y, e.x-15, e.y)
-                            pg.line(0xFF0000FF, MOUSE.x, MOUSE.y, e.x, e.y)
+                        loop on :draw {
+                            sdl.line(0x00FF00FF, MOUSE.x, MOUSE.y, e.x, e.y-15)
+                            sdl.line(0x0000FFFF, MOUSE.x, MOUSE.y, e.x, e.y+15)
+                            sdl.line(0x00FFFFFF, MOUSE.x, MOUSE.y, e.x+15, e.y)
+                            sdl.line(0xFFFF00FF, MOUSE.x, MOUSE.y, e.x-15, e.y)
+                            sdl.line(0xFF0000FF, MOUSE.x, MOUSE.y, e.x, e.y)
                         }
                     }
                 }
@@ -91,14 +91,14 @@ task Playfield (g) {
     } with {
         ;; scrolling: the arrow keys, while pressed
         loop {
-            val e = await :sdl.key.dn until X.xin(it.name, ["Left", "Right", "Up", "Down"])
-            val dx, dy = match e.name {
+            val e = await :key.dn until X.xin(it.key, ["Left", "Right", "Up", "Down"])
+            val dx, dy = match e.key {
                 "Left"  => (-1, 0)
                 "Right" => (1, 0)
                 "Up"    => (0, -1)
                 else    => (0, 1)
             }
-            watching :sdl.key.up until it.name == e.name {
+            watching :key.up until it.key == e.key {
                 loop us on :clock {
                     set CAM.x += dx * (us // 2000)
                     set CAM.y += dy * (us // 2000)
@@ -114,10 +114,10 @@ task Playfield (g) {
         val left = res_surface("game/cursors/arrow_left")
         val right = res_surface("game/cursors/arrow_right")
         val func center (img, x, y) {
-            val w, h = pg.size(img)
-            pg.draw(img, x - (w//2), y - (h//2))
+            val w, h = sdl.size(img)
+            sdl.draw(img, x - (w//2), y - (h//2))
         }
-        loop on :sdl.draw {
+        loop on :draw {
             val t = pingu_at(g, MOUSE.x, MOUSE.y)
             if t && !ACTION_UNCATCHABLE@(t.pub.act) {
                 val q = t.pub

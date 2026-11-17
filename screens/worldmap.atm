@@ -97,7 +97,7 @@ func wm_cam (wm, x, y) {
 task WmPingu (wm, me) {
     pin pos = [x=wm.nodes@(me.at).x, y=wm.nodes@(me.at).y, dir=0]
     spawn {
-        loop on :sdl.draw {
+        loop on :draw {
             wm_cam(wm, pos.x, pos.y)
         }
     }
@@ -158,8 +158,8 @@ task WmDot (wm, n, v) {
         do {
             spawn Sprite(img, pos, [cam=true, anchor=:center])
             loop {
-                await :sdl.mouse.motion until over(it.x, it.y)
-                watching :sdl.mouse.motion until !over(it.x, it.y) {
+                await :mouse.motion until over(it.x, it.y)
+                watching :mouse.motion until !over(it.x, it.y) {
                     par {
                         if !n.story && open {
                             await Sprite(img ++ "_hl", pos, [cam=true, anchor=:center])
@@ -169,12 +169,12 @@ task WmDot (wm, n, v) {
                             }
                         }
                     } with {
-                        loop on :sdl.draw {
+                        loop on :draw {
                             text(FONT.chalk_small, if open => tr(name) => "???", n.x - CAM.x, n.y - CAM.y - 40, :center)
                         }
                     } with {
                         loop {
-                            val e = await :sdl.mouse.dn until it.but == 1
+                            val e = await :mouse.button.dn until it.button == 1
                             if open && ok {
                                 emit @v :wm.click [node=n.name]
                             } else {
@@ -208,7 +208,7 @@ task WmView (wm) {
         [x=W - w - 10, y=H - h - 10, w=w, h=h]
     }
     spawn {
-        loop on :sdl.draw {
+        loop on :draw {
             text(FONT.chalk_large, tr(wm.head.name), W//2, 10, :center)
         }
     }

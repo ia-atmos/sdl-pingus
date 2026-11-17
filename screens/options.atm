@@ -22,10 +22,11 @@ pin RESOLUTIONS = ["800x600", "1024x768", "1280x960", "1280x720", "1600x900", "1
 
 func options_apply () {
     val o = OPTIONS
-    pg.volume((o.master * o.sound) / 10000.0, (o.master * o.music) / 10000.0)
+    sdl.volume((o.master * o.sound) / 10000.0, (o.master * o.music) / 10000.0)
     lang_set(o.lang)
     pin r = string.split(o.resolution, "x")
-    pg.display(o.fullscreen, tonumber(r@0) || W, tonumber(r@1) || H, o.grab, o.cursor)
+    ;; the cursor of the system is shown unless the game draws its own
+    sdl.display(o.fullscreen, tonumber(r@0) || W, tonumber(r@1) || H, o.grab, !o.cursor)
 }
 
 ;; the saved options over the defaults, if of the same type (the saves of
@@ -62,8 +63,8 @@ task CheckBox (key, s, col, row) {
             option_set(key, !OPTIONS@(key))
         }
     } with {
-        loop on :sdl.draw {
-            pg.draw(if OPTIONS@(key) => yes => no, r.x, r.y)
+        loop on :draw {
+            sdl.draw(if OPTIONS@(key) => yes => no, r.x, r.y)
             text(FONT.chalk_normal, tr(s), r.x + 40, r.y)
         }
     }
@@ -77,7 +78,7 @@ task ChoiceBox (key, s, choices, col, row, names) {
     pin box = [x=r.x + 140, y=r.y, w=r.w - 140, h=r.h]
     par {
         loop {
-            val e = await :sdl.mouse.dn until (it.but == 1) && inside(box, it.x, it.y)
+            val e = await :mouse.button.dn until (it.button == 1) && inside(box, it.x, it.y)
             val i = loop i, c in choices {
                 until c == OPTIONS@(key), i
             } || 0
@@ -85,7 +86,7 @@ task ChoiceBox (key, s, choices, col, row, names) {
             option_set(key, choices@((i + d) % #choices))
         }
     } with {
-        loop on :sdl.draw {
+        loop on :draw {
             val f = FONT.chalk_normal
             text(f, tr(s), r.x, r.y)
             text(f, "<", box.x, box.y)
@@ -108,10 +109,10 @@ task SliderBox (key, s, col, row) {
     }
     par {
         loop {
-            val e = await :sdl.mouse.dn until (it.but == 1) && inside(box, it.x, it.y)
+            val e = await :mouse.button.dn until (it.button == 1) && inside(box, it.x, it.y)
             option_set(key, value(e.x))
-            watching :sdl.mouse.up until it.but == 1 {
-                loop m on :sdl.mouse.motion {
+            watching :mouse.button.up until it.button == 1 {
+                loop m on :mouse.motion {
                     val v = value(m.x)
                     if v != OPTIONS@(key) {
                         option_set(key, v)
@@ -120,7 +121,7 @@ task SliderBox (key, s, col, row) {
             }
         }
     } with {
-        loop on :sdl.draw {
+        loop on :draw {
             val f = FONT.chalk_normal
             val n = OPTIONS@(key) // (100 // STEPS)
             text(f, tr(s), r.x, r.y)
@@ -141,7 +142,7 @@ task Options () {
     spawn Wood()
     spawn Board()
     spawn {
-        loop on :sdl.draw {
+        loop on :draw {
             text(FONT.chalk_large, tr("Option Menu"), W // 2, (H // 2) - 240, :center)
             text(FONT.chalk_normal, tr("Close"), (W // 2) + 245 + 30, (H // 2) + 150 - 20, :center)
         }
@@ -196,7 +197,7 @@ task Overlay () {
                     } with {
                         ;; alternates each frame, as the original, so that
                         ;; a frame still on the screen shows
-                        loop on :sdl.draw {
+                        loop on :draw {
                             set n += 1
                             set odd = !odd
                             text(FONT.pingus_small, if odd => s => "+ " ++ s ++ " +", W // 2, 35, :center)

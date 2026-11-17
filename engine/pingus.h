@@ -1,22 +1,20 @@
-// The C side of the engine of the game.
+// The C of the game, over the environment `ia-atmos/env-sdl`.
 //
-// It is included by `engine/sdl.atm`, in a prelude, after the header of
-// the runtime of Atmos. It holds what is not game logic, and what works
-// per pixel:
+// It is included by `engine/sdl.atm`, in a prelude, after the one of
+// the environment, and reaches SDL through the door in C of the
+// environment (`sdl_ren`, `sdl_sfc`, `sdl_tex`, `sdl_new_image`). It
+// holds what is of the game, and what works per pixel:
 //
-//   - the driver: window, the loop of frames, and the events of SDL;
-//   - images: loading, modifiers (rotations and flips), and a cache by
-//     name, so that an image is loaded once;
-//   - drawing: images, rectangles, lines;
+//   - images: loading, crops and modifiers (rotations and flips), as
+//     RGBA32 surfaces, given to the environment as its images;
 //   - bitmap fonts, from the `.font` descriptions;
-//   - sounds and music;
 //   - the ground: the collision map (a ground type per pixel) and the
 //     ground map (its image), with put and remove through masks;
-//   - the test mode, with no screen, scripted keys and mouse, and
-//     screenshots.
+//   - the mover of the pingus, in `float`, as the original;
+//   - the small map.
 //
-// Values cross to Atmos as numbers: an image or a font is an index in
-// a table of this file, which lives until the program ends.
+// The window, the loop of frames, the events, the shapes, the sounds,
+// and the test mode are of the environment.
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,12 +25,8 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_mixer.h>
 
-static SDL_Window*   PG_WIN = NULL;
-static SDL_Renderer* PG_REN = NULL;
-static int           PG_W   = 800;
-static int           PG_H   = 600;
-static int           PG_SND = 0;        // audio is open
-static int           PG_TEST = 0;       // test mode: fixed frames
+static int PG_W = 800;      // the size the game draws in
+static int PG_H = 600;
 
 static int pg_int (AVal v) {
     return a_isnum(v) ? (int) a_dbl(v) : 0;
@@ -45,17 +39,6 @@ static const char* pg_cstr (AVal v) {
 ///////////////////////////////////////////////////////////////////////////////
 // IMAGES
 ///////////////////////////////////////////////////////////////////////////////
-
-typedef struct {
-    char*         key;
-    SDL_Surface*  sfc;      // RGBA32, kept for masks
-    SDL_Texture*  tex;      // created on the first draw
-    int           w, h;
-} PgImg;
-
-#define PG_IMGS_MAX 4096
-static PgImg PG_IMGS[PG_IMGS_MAX];
-static int   PG_IMGS_N = 0;
 
 // The modifiers of the data files, as numbers:
 //   0 ROT0  1 ROT90  2 ROT180  3 ROT270
@@ -90,29 +73,21 @@ static SDL_Surface* pg_modify (SDL_Surface* src, int mod) {
 }
 
 // Loads an image, crops it to `cw x ch` at `cx,cy` (if `cw>0`), and
-// applies a modifier. Returns its index, or -1.
-static int pg_img_load (const char* path, int mod, int cx, int cy, int cw, int ch) {
+// applies a modifier: an image of the environment, with an RGBA32
+// surface (the masks of the ground read its alpha), or nil. The cache
+// by name is in Atmos (`pg.img`).
+static AVal pg_img_load (const char* path, int mod, int cx, int cy, int cw, int ch) {
     if (path == NULL) {
-        return -1;
-    }
-    char key[1024];
-    snprintf(key, sizeof(key), "%s#%d#%d,%d,%d,%d", path, mod, cx, cy, cw, ch);
-    for (int i=0; i<PG_IMGS_N; i++) {
-        if (!strcmp(PG_IMGS[i].key, key)) {
-            return i;
-        }
-    }
-    if (PG_IMGS_N == PG_IMGS_MAX) {
-        return -1;
+        return a_nil();
     }
     SDL_Surface* raw = IMG_Load(path);
     if (raw == NULL) {
-        return -1;
+        return a_nil();
     }
     SDL_Surface* sfc = SDL_ConvertSurfaceFormat(raw, SDL_PIXELFORMAT_RGBA32, 0);
     SDL_FreeSurface(raw);
     if (sfc == NULL) {
-        return -1;
+        return a_nil();
     }
     if (cw > 0 && ch > 0) {
         SDL_Surface* sub = SDL_CreateRGBSurfaceWithFormat(0, cw, ch, 32, SDL_PIXELFORMAT_RGBA32);
@@ -128,79 +103,45 @@ static int pg_img_load (const char* path, int mod, int cx, int cy, int cw, int c
         sfc = m;
     }
     SDL_SetSurfaceBlendMode(sfc, SDL_BLENDMODE_BLEND);
-    PgImg* img = &PG_IMGS[PG_IMGS_N];
-    img->key = strdup(key);
-    img->sfc = sfc;
-    img->tex = NULL;
-    img->w   = sfc->w;
-    img->h   = sfc->h;
-    return PG_IMGS_N++;
+    return sdl_new_image(sfc);
 }
 
-static PgImg* pg_img (int i) {
-    return (i>=0 && i<PG_IMGS_N) ? &PG_IMGS[i] : NULL;
-}
+// The surface of an image, with its size, for the masks of the ground.
+typedef struct {
+    SDL_Surface*  sfc;
+    int           w, h;
+} PgImg;
 
-static SDL_Texture* pg_tex (PgImg* img) {
-    if (img->tex == NULL && PG_REN != NULL) {
-        img->tex = SDL_CreateTextureFromSurface(PG_REN, img->sfc);
-        SDL_SetTextureBlendMode(img->tex, SDL_BLENDMODE_BLEND);
+static PgImg* pg_img (AVal v, PgImg* out) {
+    SDL_Surface* sfc = sdl_sfc(v);
+    if (sfc == NULL) {
+        return NULL;
     }
-    return img->tex;
+    out->sfc = sfc;
+    out->w   = sfc->w;
+    out->h   = sfc->h;
+    return out;
 }
 
-// Draws the part `sx,sy,sw,sh` of an image at `dx,dy`, with the
-// same size, or at `dw x dh` if given.
-static void pg_img_draw (int i, int sx, int sy, int sw, int sh, int dx, int dy, int dw, int dh, int alpha) {
-    PgImg* img = pg_img(i);
-    if (img == NULL || PG_REN == NULL) {
+// Draws the part `sx,sy,sw,sh` of an image at `dx,dy`, for the fonts.
+static void pg_img_part (AVal v, int sx, int sy, int sw, int sh, int dx, int dy, int alpha) {
+    SDL_Renderer* ren = sdl_ren();
+    if (ren == NULL || dx >= PG_W || dy >= PG_H || dx+sw <= 0 || dy+sh <= 0) {
         return;
     }
-    if (sw <= 0) { sx = 0; sy = 0; sw = img->w; sh = img->h; }
-    if (dw <= 0) { dw = sw; dh = sh; }
-    if (dx >= PG_W || dy >= PG_H || dx+dw <= 0 || dy+dh <= 0) {
-        return;     // out of the screen
+    SDL_Texture* tex = sdl_tex(v);
+    if (tex == NULL) {
+        return;
     }
-    SDL_Texture* tex = pg_tex(img);
     SDL_Rect s = { sx, sy, sw, sh };
-    SDL_Rect d = { dx, dy, dw, dh };
+    SDL_Rect d = { dx, dy, sw, sh };
     if (alpha < 255) {
         SDL_SetTextureAlphaMod(tex, alpha<0 ? 0 : alpha);
     }
-    SDL_RenderCopy(PG_REN, tex, &s, &d);
+    SDL_RenderCopy(ren, tex, &s, &d);
     if (alpha < 255) {
         SDL_SetTextureAlphaMod(tex, 255);
     }
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// SHAPES
-///////////////////////////////////////////////////////////////////////////////
-
-static void pg_color (int64_t rgba) {
-    SDL_SetRenderDrawBlendMode(PG_REN, SDL_BLENDMODE_BLEND);
-    SDL_SetRenderDrawColor(PG_REN, (rgba>>24)&0xFF, (rgba>>16)&0xFF,
-                                   (rgba>>8)&0xFF, rgba&0xFF);
-}
-
-static void pg_fill (int64_t rgba, int x, int y, int w, int h) {
-    if (PG_REN == NULL) return;
-    pg_color(rgba);
-    SDL_Rect r = { x, y, w, h };
-    SDL_RenderFillRect(PG_REN, &r);
-}
-
-static void pg_rect (int64_t rgba, int x, int y, int w, int h) {
-    if (PG_REN == NULL) return;
-    pg_color(rgba);
-    SDL_Rect r = { x, y, w, h };
-    SDL_RenderDrawRect(PG_REN, &r);
-}
-
-static void pg_line (int64_t rgba, int x1, int y1, int x2, int y2) {
-    if (PG_REN == NULL) return;
-    pg_color(rgba);
-    SDL_RenderDrawLine(PG_REN, x1, y1, x2, y2);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -211,14 +152,18 @@ typedef struct {
     int16_t x, y, w, h;     // in the image
     int16_t ox, oy;         // offset of the drawing
     int16_t adv;            // advance
-    int16_t img;            // the image, or -1 if absent
+    int16_t img;            // the image in the font, or -1 if absent
 } PgGlyph;
+
+#define PG_FONT_IMGS 8
 
 typedef struct {
     PgGlyph* glyphs;        // by unicode, 65536
     int      size;
     float    char_spacing;
     float    vertical_spacing;
+    AVal     imgs[PG_FONT_IMGS];    // kept alive by the program
+    int      imgs_n;
 } PgFont;
 
 #define PG_FONTS_MAX 16
@@ -237,15 +182,27 @@ static int pg_font_new (int size, double cs, double vs) {
     f->size = size;
     f->char_spacing = cs;
     f->vertical_spacing = size * vs;
+    f->imgs_n = 0;
     return PG_FONTS_N++;
 }
 
-static void pg_font_glyph (int fi, int u, int img, int x1, int y1, int x2, int y2,
+static void pg_font_glyph (int fi, int u, AVal img, int x1, int y1, int x2, int y2,
                            int ox, int oy, int adv) {
-    if (fi<0 || fi>=PG_FONTS_N || u<0 || u>=65536) {
+    if (fi<0 || fi>=PG_FONTS_N || u<0 || u>=65536 || sdl_sfc(img)==NULL) {
         return;
     }
-    PgGlyph g = { x1, y1, x2-x1, y2-y1, ox, oy, adv, img };
+    PgFont* f = &PG_FONTS[fi];
+    int k = 0;
+    while (k < f->imgs_n && sdl_sfc(f->imgs[k]) != sdl_sfc(img)) {
+        k++;
+    }
+    if (k == f->imgs_n) {
+        if (k == PG_FONT_IMGS) {
+            return;
+        }
+        f->imgs[f->imgs_n++] = img;
+    }
+    PgGlyph g = { x1, y1, x2-x1, y2-y1, ox, oy, adv, k };
     PG_FONTS[fi].glyphs[u] = g;
 }
 
@@ -298,7 +255,7 @@ static int pg_font_width (int fi, const char* s) {
 // Draws a text. The origin is 0 (left), 1 (center), or 2 (right) of
 // the top of the text, as in the original.
 static void pg_font_draw (int fi, const char* s, int x, int y, int origin, int alpha) {
-    if (fi<0 || fi>=PG_FONTS_N || s==NULL || PG_REN==NULL) {
+    if (fi<0 || fi>=PG_FONTS_N || s==NULL || sdl_ren()==NULL) {
         return;
     }
     PgFont* f = &PG_FONTS[fi];
@@ -311,8 +268,8 @@ static void pg_font_draw (int fi, const char* s, int x, int y, int origin, int a
             if (u < 65536 && f->glyphs[u].img >= 0) {
                 PgGlyph* g = &f->glyphs[u];
                 if (g->w > 0 && g->h > 0)       // a space has no image
-                pg_img_draw(g->img, g->x, g->y, g->w, g->h,
-                            (int)dx + g->ox, (int)fy + g->oy, 0, 0, alpha);
+                pg_img_part(f->imgs[g->img], g->x, g->y, g->w, g->h,
+                            (int)dx + g->ox, (int)fy + g->oy, alpha);
                 dx += g->adv + f->char_spacing;
             }
         }
@@ -320,101 +277,6 @@ static void pg_font_draw (int fi, const char* s, int x, int y, int origin, int a
             break;
         }
         fy += f->vertical_spacing;
-    }
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// SOUNDS AND MUSIC
-///////////////////////////////////////////////////////////////////////////////
-
-static double PG_SND_VOL;
-static void pg_sound (const char* path, double volume) {
-    static struct { char* path; Mix_Chunk* snd; } SNDS[64];
-    static int N = 0;
-    if (!PG_SND || path==NULL) {
-        return;
-    }
-    Mix_Chunk* snd = NULL;
-    for (int i=0; i<N; i++) {
-        if (!strcmp(SNDS[i].path, path)) {
-            snd = SNDS[i].snd;
-        }
-    }
-    if (snd==NULL && N<64) {
-        snd = Mix_LoadWAV(path);
-        if (snd != NULL) {
-            SNDS[N].path = strdup(path);
-            SNDS[N].snd  = snd;
-            N++;
-        }
-    }
-    if (snd != NULL) {
-        int ch = Mix_PlayChannel(-1, snd, 0);
-        if (ch >= 0) {
-            Mix_Volume(ch, (int)(volume * PG_SND_VOL * MIX_MAX_VOLUME));
-        }
-    }
-}
-
-// The volumes of the sounds and of the music, from 0 to 1.
-static void pg_volume (double snd, double mus) {
-    PG_SND_VOL = snd;
-    if (PG_SND) {
-        Mix_Volume(-1, (int)(snd * MIX_MAX_VOLUME));
-        Mix_VolumeMusic((int)(mus * MIX_MAX_VOLUME));
-    }
-}
-
-static double PG_SND_VOL = 1.0;
-
-///////////////////////////////////////////////////////////////////////////////
-// DISPLAY
-///////////////////////////////////////////////////////////////////////////////
-
-// The display of the options. The game always draws at 800x600, and SDL
-// scales it to the window: `full` takes the size of the desktop, else
-// the window is `w` x `h`. `grab` keeps the mouse in the window, and
-// `soft` hides the cursor of the system (the game draws its own). The
-// test mode keeps its window of 800x600, so that its screenshots do not
-// depend on the options.
-static void pg_display (int full, int w, int h, int grab, int soft) {
-    SDL_RenderSetLogicalSize(PG_REN, PG_W, PG_H);
-    if (!PG_TEST) {
-        SDL_SetWindowFullscreen(PG_WIN, full ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
-        if (!full && w>0 && h>0) {
-            SDL_SetWindowSize(PG_WIN, w, h);
-            SDL_SetWindowPosition(PG_WIN, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
-        }
-    }
-    SDL_SetWindowGrab(PG_WIN, grab ? SDL_TRUE : SDL_FALSE);
-    SDL_ShowCursor(soft ? SDL_DISABLE : SDL_ENABLE);
-}
-
-static Mix_Music* PG_MUS = NULL;
-static char*      PG_MUS_PATH = NULL;
-
-static void pg_music_stop (void) {
-    if (PG_MUS != NULL) {
-        Mix_HaltMusic();
-        Mix_FreeMusic(PG_MUS);
-        PG_MUS = NULL;
-        free(PG_MUS_PATH);
-        PG_MUS_PATH = NULL;
-    }
-}
-
-static void pg_music (const char* path) {
-    if (!PG_SND || path==NULL) {
-        return;
-    }
-    if (PG_MUS_PATH != NULL && !strcmp(PG_MUS_PATH, path)) {
-        return;     // already playing
-    }
-    pg_music_stop();
-    PG_MUS = Mix_LoadMUS(path);
-    if (PG_MUS != NULL) {
-        PG_MUS_PATH = strdup(path);
-        Mix_PlayMusic(PG_MUS, -1);
     }
 }
 
@@ -501,9 +363,10 @@ static void pg_map_dirty (int x, int y, int w, int h) {
 
 // Puts an image in the ground map, and its opaque pixels in the
 // collision map with the given type.
-static void pg_map_put (int i, int x0, int y0, int type) {
+static void pg_map_put (AVal i, int x0, int y0, int type) {
     PgMap* m = &PG_MAP;
-    PgImg* img = pg_img(i);
+    PgImg img_;
+    PgImg* img = pg_img(i, &img_);
     if (img==NULL || m->col==NULL) {
         return;
     }
@@ -533,9 +396,10 @@ static void pg_map_put (int i, int x0, int y0, int type) {
 
 // Sets the type of the opaque pixels of an image in the collision map
 // only, whatever is there (to close or open a door).
-static void pg_map_col (int i, int x0, int y0, int type) {
+static void pg_map_col (AVal i, int x0, int y0, int type) {
     PgMap* m = &PG_MAP;
-    PgImg* img = pg_img(i);
+    PgImg img_;
+    PgImg* img = pg_img(i, &img_);
     if (img==NULL || m->col==NULL) {
         return;
     }
@@ -557,10 +421,11 @@ static void pg_map_col (int i, int x0, int y0, int type) {
 
 // Removes from the ground map the opaque pixels of `gi`, and from the
 // collision map those of `ci`, except where the ground is solid.
-static void pg_map_remove (int gi, int ci, int x0, int y0) {
+static void pg_map_remove (AVal gi, AVal ci, int x0, int y0) {
     PgMap* m = &PG_MAP;
-    PgImg* g = pg_img(gi);
-    PgImg* c = pg_img(ci);
+    PgImg g_, c_;
+    PgImg* g = pg_img(gi, &g_);
+    PgImg* c = pg_img(ci, &c_);
     if (g==NULL || c==NULL || m->col==NULL) {
         return;
     }
@@ -650,7 +515,7 @@ static int pg_move (float x, float y, float vx, float vy, float height) {
 // Draws the ground map, with the level at `ox,oy` of the screen.
 static void pg_map_draw (int ox, int oy) {
     PgMap* m = &PG_MAP;
-    if (m->col==NULL || PG_REN==NULL) {
+    if (m->col==NULL || sdl_ren()==NULL) {
         return;
     }
     for (int ty=0; ty<m->th; ty++) {
@@ -663,7 +528,7 @@ static void pg_map_draw (int ox, int oy) {
             int w = (tx==m->tw-1) ? m->w - tx*PG_TILE : PG_TILE;
             int h = (ty==m->th-1) ? m->h - ty*PG_TILE : PG_TILE;
             if (m->tiles[k] == NULL) {
-                m->tiles[k] = SDL_CreateTexture(PG_REN, SDL_PIXELFORMAT_RGBA32,
+                m->tiles[k] = SDL_CreateTexture(sdl_ren(), SDL_PIXELFORMAT_RGBA32,
                                 SDL_TEXTUREACCESS_STREAMING, w, h);
                 SDL_SetTextureBlendMode(m->tiles[k], SDL_BLENDMODE_BLEND);
                 m->dirty[k] = 1;
@@ -675,7 +540,7 @@ static void pg_map_draw (int ox, int oy) {
                 m->dirty[k] = 0;
             }
             SDL_Rect d = { x, y, w, h };
-            SDL_RenderCopy(PG_REN, m->tiles[k], NULL, &d);
+            SDL_RenderCopy(sdl_ren(), m->tiles[k], NULL, &d);
         }
     }
 }
@@ -684,14 +549,14 @@ static void pg_map_draw (int ox, int oy) {
 // when the collision map changes.
 static void pg_map_small (int x, int y, int w, int h) {
     PgMap* m = &PG_MAP;
-    if (m->col==NULL || PG_REN==NULL || w<=0 || h<=0) {
+    if (m->col==NULL || sdl_ren()==NULL || w<=0 || h<=0) {
         return;
     }
     if (m->small==NULL || m->small_w!=w || m->small_h!=h) {
         if (m->small != NULL) {
             SDL_DestroyTexture(m->small);
         }
-        m->small = SDL_CreateTexture(PG_REN, SDL_PIXELFORMAT_RGBA32,
+        m->small = SDL_CreateTexture(sdl_ren(), SDL_PIXELFORMAT_RGBA32,
                         SDL_TEXTUREACCESS_STREAMING, w, h);
         SDL_SetTextureBlendMode(m->small, SDL_BLENDMODE_BLEND);
         m->small_w = w;
@@ -722,209 +587,5 @@ static void pg_map_small (int x, int y, int w, int h) {
         free(px);
     }
     SDL_Rect d = { x, y, w, h };
-    SDL_RenderCopy(PG_REN, m->small, NULL, &d);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// DRIVER
-///////////////////////////////////////////////////////////////////////////////
-
-static AVal pg_field (AVal t, const char* k, AVal v) {
-    AVal key = a_strz(k);
-    a_setindex(t, key, v);
-    a_dec(key);
-    a_dec(v);
-    return t;
-}
-
-// Emits `:tag`, or `:tag [name=...]`, or `:tag [x=,y=,but=]`.
-static AStatus pg_emit (const char* tag, const char* name, int x, int y, int but) {
-    AVal t = a_strz(tag);
-    AVal evt = a_tab();
-    a_tag(evt, t);
-    if (name != NULL) {
-        pg_field(evt, "name", a_strz(name));
-    } else {
-        pg_field(evt, "x", a_int(x));
-        pg_field(evt, "y", a_int(y));
-        pg_field(evt, "but", a_int(but));
-    }
-    AStatus st = atm_emit(evt);
-    a_dec(evt);
-    a_dec(t);
-    return st;
-}
-
-static void pg_shot (const char* path) {
-    int w, h;
-    SDL_GetRendererOutputSize(PG_REN, &w, &h);
-    SDL_Surface* sfc = SDL_CreateRGBSurfaceWithFormat(0, w, h, 32, SDL_PIXELFORMAT_RGBA32);
-    SDL_RenderReadPixels(PG_REN, NULL, SDL_PIXELFORMAT_RGBA32, sfc->pixels, sfc->pitch);
-    IMG_SavePNG(sfc, path);
-    SDL_FreeSurface(sfc);
-}
-
-// The test script: the entries `frame:...` of a variable that are due.
-//
-//   PINGUS_KEYS   = f:dn:Name,f:up:Name,...
-//   PINGUS_MOUSE  = f:mv:x:y,f:dn:x:y:b,f:up:x:y:b,...
-//   PINGUS_SHOT   = f:path.png,...
-static AStatus pg_script (const char* var, int frame) {
-    AStatus st = A_OK;
-    const char* s = getenv(var);
-    while (s!=NULL && *s!='\0' && st==A_OK) {
-        char item[256];
-        size_t n = strcspn(s, ",");
-        snprintf(item, sizeof(item), "%.*s", (int)n, s);
-        s += n + (s[n] == ',');
-        char* arg = strchr(item, ':');
-        if (arg==NULL || atoi(item)!=frame) {
-            continue;
-        }
-        arg++;
-        if (!strcmp(var, "PINGUS_SHOT")) {
-            pg_shot(arg);
-        } else if (!strcmp(var, "PINGUS_KEYS")) {
-            if (!strncmp(arg, "dn:", 3)) {
-                st = pg_emit("sdl.key.dn", arg+3, 0, 0, 0);
-            } else if (!strncmp(arg, "up:", 3)) {
-                st = pg_emit("sdl.key.up", arg+3, 0, 0, 0);
-            }
-        } else {
-            int x=0, y=0, b=1;
-            sscanf(arg+3, "%d:%d:%d", &x, &y, &b);
-            if (!strncmp(arg, "mv:", 3)) {
-                st = pg_emit("sdl.mouse.motion", NULL, x, y, 0);
-            } else if (!strncmp(arg, "dn:", 3)) {
-                st = pg_emit("sdl.mouse.motion", NULL, x, y, 0);
-                if (st == A_OK) st = pg_emit("sdl.mouse.dn", NULL, x, y, b);
-            } else if (!strncmp(arg, "up:", 3)) {
-                st = pg_emit("sdl.mouse.up", NULL, x, y, b);
-            }
-        }
-    }
-    return st;
-}
-
-static int PG_FRAME = 0;
-
-int main (int argc, char** argv) {
-    if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO) != 0) {
-        SDL_Init(SDL_INIT_VIDEO);
-    }
-    PG_SND = getenv("PINGUS_MUTE")==NULL &&
-             (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024) == 0);
-    if (PG_SND) {
-        Mix_AllocateChannels(32);
-    }
-
-    // test mode: a fixed number of frames with a fixed duration
-    int frames = -1;
-    int fixed  = 0;
-    if (getenv("PINGUS_FRAMES") != NULL) {
-        sscanf(getenv("PINGUS_FRAMES"), "%d:%d", &frames, &fixed);
-        PG_TEST = 1;
-    }
-    // frame rate: 40 frames per second, as the original
-    int fps = 40;
-    if (getenv("PINGUS_FPS") != NULL) {
-        fps = atoi(getenv("PINGUS_FPS"));
-    }
-    int period = (fps > 0) ? 1000/fps : 0;
-
-    PG_WIN = SDL_CreateWindow("Pingus", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                              PG_W, PG_H, 0);
-    if (PG_WIN != NULL) {
-        PG_REN = SDL_CreateRenderer(PG_WIN, -1, 0);
-    }
-    if (PG_REN == NULL) {
-        fprintf(stderr, "sdl : %s\n", SDL_GetError());
-        exit(1);
-    }
-
-    atm_init(argc, argv);
-    AStatus st = atm_main();
-
-    Uint32 prv = SDL_GetTicks();
-    int quit = 0;
-    for (int frame=1; st==A_OK && !quit && atm_alive(); frame++) {
-        PG_FRAME = frame;
-        Uint32 t0 = SDL_GetTicks();
-        SDL_Event e;
-        while (st==A_OK && SDL_PollEvent(&e)) {
-            switch (e.type) {
-                case SDL_QUIT:
-                    st = pg_emit("sdl.quit", "", 0, 0, 0);
-                    quit = 1;
-                    break;
-                case SDL_KEYDOWN:
-                    if (!e.key.repeat) {
-                        st = pg_emit("sdl.key.dn", SDL_GetKeyName(e.key.keysym.sym), 0, 0, 0);
-                    }
-                    break;
-                case SDL_KEYUP:
-                    st = pg_emit("sdl.key.up", SDL_GetKeyName(e.key.keysym.sym), 0, 0, 0);
-                    break;
-                case SDL_MOUSEMOTION:
-                    st = pg_emit("sdl.mouse.motion", NULL, e.motion.x, e.motion.y, 0);
-                    break;
-                case SDL_MOUSEBUTTONDOWN:
-                    st = pg_emit("sdl.mouse.dn", NULL, e.button.x, e.button.y, e.button.button);
-                    break;
-                case SDL_MOUSEBUTTONUP:
-                    st = pg_emit("sdl.mouse.up", NULL, e.button.x, e.button.y, e.button.button);
-                    break;
-            }
-        }
-        if (st == A_OK) st = pg_script("PINGUS_KEYS",  frame);
-        if (st == A_OK) st = pg_script("PINGUS_MOUSE", frame);
-
-        // time
-        Uint32 now = SDL_GetTicks();
-        int ms = fixed ? fixed : (int)(now - prv);
-        prv = now;
-        if (st==A_OK && ms>0) {
-            st = atm_emit(a_int((int64_t)ms * 1000));
-        }
-
-        // screen
-        if (st == A_OK) {
-            SDL_SetRenderDrawColor(PG_REN, 0, 0, 0, 255);
-            SDL_RenderClear(PG_REN);
-            st = pg_emit("sdl.draw", "", 0, 0, 0);
-            pg_script("PINGUS_SHOT", frame);
-            SDL_RenderPresent(PG_REN);
-        }
-
-        if (frames>0 && frame>=frames) {
-            quit = 1;
-        } else if (!fixed && period>0) {
-            int spent = (int)(SDL_GetTicks() - t0);
-            if (spent < period) {
-                SDL_Delay(period - spent);
-            }
-        }
-    }
-
-    if (getenv("PINGUS_COUNT") != NULL) {
-        fprintf(stderr, "frames: %d\n", PG_FRAME);
-    }
-    if (st == A_OK) {
-        st = atm_stop();
-    }
-    fflush(stdout);
-    if (st == A_ESCAPE) {
-        st = a_escape_err();
-    }
-    if (st != A_OK) {
-        a_error_dump();
-    }
-    atm_quit();
-    pg_map_free();
-    pg_music_stop();
-    if (PG_SND) {
-        Mix_CloseAudio();
-    }
-    SDL_Quit();
-    return (st == A_OK) ? 0 : 1;
+    SDL_RenderCopy(sdl_ren(), m->small, NULL, &d);
 }

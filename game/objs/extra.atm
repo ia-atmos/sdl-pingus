@@ -11,8 +11,8 @@
 task SolidColorBackground (g, o) {
     val c = o.colori
     val rgba = if c => (c@0 << 24) | (c@1 << 16) | (c@2 << 8) | c@3 => 0x000000FF
-    loop on :sdl.draw {
-        pg.fill(rgba, 0, 0, W, H)
+    loop on :draw {
+        sdl.fill(rgba, 0, 0, W, H)
     }
 }
 
@@ -38,9 +38,9 @@ task StarfieldBackground (g, o) {
             }
         }
     } with {
-        loop on :sdl.draw {
+        loop on :draw {
             loop _, s in stars {
-                pg.draw(s.img, s.x - CAM.x, s.y - CAM.y)
+                sdl.draw(s.img, s.x - CAM.x, s.y - CAM.y)
             }
         }
     }
@@ -132,8 +132,8 @@ task RainGenerator (g, o) {
                     set a.v -= 64
                 }
             } with {
-                loop on :sdl.draw {
-                    pg.fill(0xFFFFFF00 | math.max(0, a.v), 0, 0, W, H)
+                loop on :draw {
+                    sdl.fill(0xFFFFFF00 | math.max(0, a.v), 0, 0, W, H)
                 }
             }
         }
@@ -255,17 +255,17 @@ task TeleporterTarget (g, o) {
 task IceBlock (g, o) {
     pin pos = [x=o.position@0, y=o.position@1]
     val cmap = res_surface("worldobjs/iceblock_cmap")
-    val w, h = pg.size(cmap)
+    val w, h = sdl.size(cmap)
     ground_put(cmap, pos.x, pos.y, GP.ground)
     pin contact = \{ zone_any(g, pos, 0, -4, w, h) }
     pin ice = [thick=1.0]
     spawn {
         val d = res_desc("worldobjs/iceblock")
         val n = d.array@0 * d.array@1
-        loop on :sdl.draw {
+        loop on :draw {
             pin k = look(d, nil)
             val f = trunc((1.0 - ice.thick) * (n - 1))
-            pg.part(k.img, k.fw * f, 0, k.fw, k.fh, pos.x - CAM.x, pos.y - CAM.y)
+            sdl.part(k.img, k.fw * f, 0, k.fw, k.fh, pos.x - CAM.x, pos.y - CAM.y)
         }
     }
     loop {
@@ -343,9 +343,9 @@ task SwitchDoor (g, o) {
     val box = res_surface("worldobjs/switchdoor_box")
     val tile = res_surface("worldobjs/switchdoor_tile")
     val tcmap = res_surface("worldobjs/switchdoor_tile_cmap")
-    val _, bh = pg.size(box)
-    val _, th = pg.size(tcmap)
-    val _, tth = pg.size(tile)
+    val _, bh = sdl.size(box)
+    val _, th = sdl.size(tcmap)
+    val _, tth = sdl.size(tile)
     pin col = \(type) {
         pg.map_col(box, pos.x, pos.y, type)
         loop i in n {
@@ -355,10 +355,10 @@ task SwitchDoor (g, o) {
     col(GP.solid)
     pin door = [h=n]
     spawn {
-        loop on :sdl.draw {
-            pg.draw(box, pos.x - CAM.x, pos.y - CAM.y)
+        loop on :draw {
+            sdl.draw(box, pos.x - CAM.x, pos.y - CAM.y)
             loop i in door.h {
-                pg.draw(tile, pos.x - CAM.x, pos.y + (i * tth) + bh - CAM.y)
+                sdl.draw(tile, pos.x - CAM.x, pos.y + (i * tth) + bh - CAM.y)
             }
         }
     }

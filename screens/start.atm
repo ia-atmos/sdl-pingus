@@ -12,7 +12,7 @@ task Start (lvl) {
         val xl = b.x + 220
         val xr = b.x + b.w - 220
         val y = b.y + b.h - 160
-        loop on :sdl.draw {
+        loop on :draw {
             text(FONT.chalk_large, tr(head.levelname), b.x + (b.w//2), b.y + 50, :center)
             text(f, desc, b.x + 70, b.y + 110)
             text(f, tr("Number of Pingus: "), xl, y)
@@ -33,7 +33,7 @@ task Start (lvl) {
         await Back()
         false
     } with {
-        await :sdl.key.dn until X.xin(it.name, ["P", "F", "Space", "Return"])
+        await :key.dn until X.xin(it.key, ["P", "F", "Space", "Return"])
         true
     } with {
         await Key("Escape")

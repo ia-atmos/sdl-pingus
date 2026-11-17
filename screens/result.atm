@@ -30,7 +30,7 @@ task Result (r) {
     spawn {
         val f = FONT.chalk_normal
         val cx, cy = W//2, H//2
-        loop on :sdl.draw {
+        loop on :draw {
             text(FONT.chalk_large, tr(r.name), cx, cy - 200, :center)
             text(FONT.chalk_large, tr(if ok => "Success!" => "Failure!"), cx, cy - 140, :center)
             text(f, msg, cx, cy - 70, :center)
@@ -47,7 +47,7 @@ task Result (r) {
             await Ok()
             sound "yipee"
         } with {
-            await :sdl.key.dn until X.xin(it.name, ["P", "F", "Space", "Return", "Escape"])
+            await :key.dn until X.xin(it.key, ["P", "F", "Space", "Return", "Escape"])
         }
         false
     } else {
@@ -60,7 +60,7 @@ task Result (r) {
             await Back()
             false
         } with {
-            await :sdl.key.dn until X.xin(it.name, ["P", "F", "Space", "Return"])
+            await :key.dn until X.xin(it.key, ["P", "F", "Space", "Return"])
             true
         } with {
             await Key("Escape")

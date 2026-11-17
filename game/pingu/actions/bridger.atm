@@ -16,7 +16,7 @@ func bridger_brick (p, left) {
     }
     if p.dir == 1 {
         val b = res_surface("other/brick_right")
-        val w, h = pg.size(b)
+        val w, h = sdl.size(b)
         ground_put(b, trunc(p.x + 10 - w), trunc(p.y), GP.bridge)
     } else {
         ground_put(res_surface("other/brick_left"), trunc(p.x - 10), trunc(p.y), GP.bridge)

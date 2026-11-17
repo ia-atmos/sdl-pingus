@@ -7,14 +7,14 @@ val BASHER_MAX_DOWN   = 3
 func basher_bash (p) {
     val gfx = res_surface("pingus/common/bash_radius_gfx")
     val col = res_surface("pingus/common/bash_radius")
-    val w, h = pg.size(col)
+    val w, h = sdl.size(col)
     ground_remove(gfx, col, trunc(p.x) - (w//2), trunc(p.y) - h + 1)
 }
 
 ;; Something to bash within reach: from 0 to the width of the radius,
 ;; inclusive, as the original.
 func basher_something (p) {
-    val w, h = pg.size(res_surface("pingus/common/bash_radius"))
+    val w, h = sdl.size(res_surface("pingus/common/bash_radius"))
     loop x in (0, w) {
         val y = loop y in (BASHER_MIN_HEIGHT, BASHER_MAX_HEIGHT) {
             until rel(p, x, y) == GP.ground, true
