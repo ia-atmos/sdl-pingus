@@ -35,26 +35,38 @@ differ.
 |-------|-----------|--------|-------------------|
 | float mover, before the old level paths were linked | 39 | 33 | 87 |
 | all the fixes below | 142 | 12 | 5 |
-| the compiler `ia-atmos/lang` `c467e60` (the order of a loop over the pingus while traps kill them) | **145** | 9 | 5 |
+| the compiler `ia-atmos/lang` `c467e60` (the order of a loop over the pingus while traps kill them) | 145 | 9 | 5 |
+| the bomber, the smasher, and the basher as the official update | **149** | 5 | 5 |
 
-So 145 of the 154 demos that the official game plays give the same
+So 149 of the 154 demos that the official game plays give the same
 trace in the port: every pingu, every change of action, at the same
 tick and the same pixel, up to the tick 39000.
 
-The 9 left differ late, and by one pixel or one tick (the time of the
+The 5 left differ late, and by one pixel or one tick (the time of the
 first difference, out of the length of the trace):
 
 | Demo | First difference |
 |------|------------------|
-| hellmouth05-grumbel | tick 1265, a death 8 pixels higher |
 | indiana-yingwan | tick 1116, a splash the port does not have |
-| intensiv-timpany | tick 301, a death one pixel higher |
 | pingusworld3-pacho | tick 11626, one walker of 85 |
-| real6 | tick 630, a splash one tick and one pixel later |
 | snow1 | tick 2105, a death one tick earlier |
 | stone-castle-timpany | tick 1105, a splash the official game does not have |
-| stone5-grumbel | tick 936, a walker the official game does not have |
 | xmas-blockblow-timpany | tick 1627, deaths in another order |
+
+Four more were fixed by reading the per-tick trace of the first pingu
+that differs (`PINGUS_TRACE=2`) in both games:
+
+- `intensiv-timpany`: the bomber died at the end of its animation
+  before the move of that tick; the original advances its clock,
+  moves, and then dies. It also checks drowning and splashing only up
+  to the frame 9 of its clock.
+- `real6`: the smasher killed when its animation ended, one tick after
+  the original, which kills when its count reaches the last frame; it
+  may also trigger again one tick earlier.
+- `stone5-grumbel`: the basher looked for something to bash one pixel
+  short of the original (`x <= bash_reach`), and its first check, which
+  in the original finds something without looking, did look.
+- `hellmouth05-grumbel` was fixed by the same changes.
 
 Three more (`aliens4-phil`, `aliens6-phil`, `pacman3-yingwan`) differed
 by the order of the pingus that a trap killed in the same tick. A
