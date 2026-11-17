@@ -39,13 +39,13 @@ task Story (path) {
             } with {
                 await Button(nr, "core/misc/next", "core/misc/next_hover", "core/misc/next")
             } with {
-                await :key.dn until X.xin(it.key, ["F", "Space", "Return"])
+                await :key.dn until X.in(it.key, ["F", "Space", "Return"])
             }
             set shown.n = #txt
             par :any {
                 await Button(nr, "core/misc/next", "core/misc/next_hover", "core/misc/next")
             } with {
-                await :key.dn until X.xin(it.key, ["F", "Space", "Return"])
+                await :key.dn until X.in(it.key, ["F", "Space", "Return"])
             }
         }
         true

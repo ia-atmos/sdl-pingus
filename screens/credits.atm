@@ -42,12 +42,12 @@ task Credits () {
     } with {
         ;; the speed: slow, or fast while fast forward is on
         loop {
-            watching :key.dn until X.xin(it.key, ["F", "Space"]) {
+            watching :key.dn until X.in(it.key, ["F", "Space"]) {
                 loop us on :clock {
                     set y.v -= (us / 1000) * 0.035
                 }
             }
-            watching :key.dn until X.xin(it.key, ["F", "Space"]) {
+            watching :key.dn until X.in(it.key, ["F", "Space"]) {
                 loop us on :clock {
                     set y.v -= (us / 1000) * 0.45
                 }

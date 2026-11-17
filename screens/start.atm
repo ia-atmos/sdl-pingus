@@ -33,7 +33,7 @@ task Start (lvl) {
         await Back()
         false
     } with {
-        await :key.dn until X.xin(it.key, ["P", "F", "Space", "Return"])
+        await :key.dn until X.in(it.key, ["P", "F", "Space", "Return"])
         true
     } with {
         await Key("Escape")

@@ -51,7 +51,7 @@ pin pg = [
         val k = path ++ "#" ++ tostring(mod) ++ "#" ++ tostring(cx) ++ "," ++
                 tostring(cy) ++ "," ++ tostring(cw) ++ "," ++ tostring(ch)
         if IMGS@(k) == nil {
-            set IMGS@(k) = `:value pg_img_load(pg_cstr($path), pg_int($mod), pg_int($cx), pg_int($cy), pg_int($cw), pg_int($ch))`
+            set IMGS@(k) = `:atmos pg_img_load(pg_cstr($path), pg_int($mod), pg_int($cx), pg_int($cy), pg_int($cw), pg_int($ch))`
         }
         IMGS@(k)
     },

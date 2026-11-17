@@ -91,7 +91,7 @@ task Playfield (g) {
     } with {
         ;; scrolling: the arrow keys, while pressed
         loop {
-            val e = await :key.dn until X.xin(it.key, ["Left", "Right", "Up", "Down"])
+            val e = await :key.dn until X.in(it.key, ["Left", "Right", "Up", "Down"])
             val dx, dy = match e.key {
                 "Left"  => (-1, 0)
                 "Right" => (1, 0)

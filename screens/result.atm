@@ -47,7 +47,7 @@ task Result (r) {
             await Ok()
             sound "yipee"
         } with {
-            await :key.dn until X.xin(it.key, ["P", "F", "Space", "Return", "Escape"])
+            await :key.dn until X.in(it.key, ["P", "F", "Space", "Return", "Escape"])
         }
         false
     } else {
@@ -60,7 +60,7 @@ task Result (r) {
             await Back()
             false
         } with {
-            await :key.dn until X.xin(it.key, ["P", "F", "Space", "Return"])
+            await :key.dn until X.in(it.key, ["P", "F", "Space", "Return"])
             true
         } with {
             await Key("Escape")

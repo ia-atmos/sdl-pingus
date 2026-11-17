@@ -91,10 +91,10 @@ pin ACTION_UNCATCHABLE = [ drown=true, laserkill=true, smashed=true, splashed=tr
 ;; `CHANGE_ALLOWED` of the Céu rewrite was stricter).
 func allowed (a, b) {
     ifs {
-        X.xin(a, [:bomber, :splashed]) => false
-        a == :faller  => X.xin(b, [:floater, :climber, :bomber])
+        X.in(a, [:bomber, :splashed]) => false
+        a == :faller  => X.in(b, [:floater, :climber, :bomber])
         a == :floater => b == :bomber
-        a == :climber => X.xin(b, [:floater, :bomber, :jumper])
+        a == :climber => X.in(b, [:floater, :bomber, :jumper])
         else => true
     }
 }
@@ -218,7 +218,7 @@ task Pingu (g, x, y, dir, owner) {
         }
     }
     ;; the forced action, drown or splashed, ends in death
-    val st = if X.xin(end, [:drown, :splashed]) {
+    val st = if X.in(end, [:drown, :splashed]) {
         set p.act = end
         trace(g, p, end)
         await ACTIONS@(end)(p, g)
