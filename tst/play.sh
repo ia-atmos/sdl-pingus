@@ -13,8 +13,8 @@
 
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 HOME_DIR=$(mktemp -d)
-SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy PINGUS_MUTE=1 PINGUS_HOME="$HOME_DIR" \
-PINGUS_TRACE=1 PINGUS_FRAMES="$2:25" PINGUS_ORDERS="$3" \
-PINGUS_KEYS="2:dn:Return,3:dn:F${4:+,$4}" \
+SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy SDL_ATM_MUTE=1 PINGUS_HOME="$HOME_DIR" \
+PINGUS_TRACE=1 SDL_ATM_FRAMES="$2:25" PINGUS_ORDERS="$3" \
+SDL_ATM_KEYS="2:dn:Return,3:dn:F${4:+,$4}" \
     ${PINGUS_BIN:-"$ROOT/run.sh" main.atm} "$1"
 rm -rf "$HOME_DIR"

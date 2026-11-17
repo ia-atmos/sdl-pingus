@@ -20,7 +20,7 @@ cd "$ROOT"
 OUT=$ROOT/out
 mkdir -p "$OUT" tst/golden tst/shots
 FAIL=0
-export SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy PINGUS_MUTE=1
+export SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy SDL_ATM_MUTE=1
 
 check () {     # name, file
     if [ "$UPDATE" = 1 ]; then
@@ -34,6 +34,13 @@ check () {     # name, file
 }
 
 [ "$1" = "update" ] && UPDATE=1
+
+# screenshots are compared by their pixels, with the tool of the
+# environment (../env-sdl/tools/pngcmp.c)
+PNGCMP="$OUT/pngcmp"
+if [ ! -x "$PNGCMP" ] || [ ../env-sdl/tools/pngcmp.c -nt "$PNGCMP" ]; then
+    ${CC:-cc} -O1 ../env-sdl/tools/pngcmp.c -lSDL2 -lSDL2_image -o "$PNGCMP" || exit 1
+fi
 
 # one build of the game for all the tests
 if [ -n "$ASAN" ]; then
@@ -49,23 +56,23 @@ find data -name '*.atm' | sort > "$OUT/files.txt"
 check data "$OUT/data.out"
 
 # engine
-PINGUS_FRAMES=40:25 PINGUS_MOUSE="15:mv:400:300,20:dn:400:300:1,21:up:400:300:1" \
+SDL_ATM_FRAMES=40:25 SDL_ATM_MOUSE="15:mv:400:300,20:dn:400:300:1,21:up:400:300:1" \
     ./run.sh tst/engine.atm > "$OUT/engine.out" 2>&1
 check engine "$OUT/engine.out"
 
 # screens: the menu, the levelsets, a level started
 HD=$(mktemp -d)
-PINGUS_HOME=$HD PINGUS_FRAMES=150:25 \
-PINGUS_MOUSE="60:dn:275:350:1,61:up:275:350:1,100:mv:300:250,110:dn:300:250:1,111:up:300:250:1" \
-PINGUS_SHOT="50:$OUT/menu.png,90:$OUT/levelsets.png,140:$OUT/start.png" \
+PINGUS_HOME=$HD SDL_ATM_FRAMES=150:25 \
+SDL_ATM_MOUSE="59:mv:275:350,60:dn:275:350:1,61:up:275:350:1,100:mv:300:250,110:dn:300:250:1,111:up:300:250:1" \
+SDL_ATM_SHOT="50:$OUT/menu.png,90:$OUT/levelsets.png,140:$OUT/start.png" \
     "$PINGUS_BIN" > "$OUT/screens.out" 2>&1
-PINGUS_HOME=$HD PINGUS_FRAMES=300:25 PINGUS_KEYS="2:dn:Return" PINGUS_SHOT="290:$OUT/game.png" \
+PINGUS_HOME=$HD SDL_ATM_FRAMES=300:25 SDL_ATM_KEYS="2:dn:Return" SDL_ATM_SHOT="290:$OUT/game.png" \
     "$PINGUS_BIN" data/levels/tutorial/snow7-grumbel.pingus.atm >> "$OUT/screens.out" 2>&1
 rm -rf "$HD"
 for s in menu levelsets start game; do
     if [ "$UPDATE" = 1 ]; then
         cp "$OUT/$s.png" "tst/shots/$s.png"
-    elif cmp -s "$OUT/$s.png" "tst/shots/$s.png"; then
+    elif "$PNGCMP" "$OUT/$s.png" "tst/shots/$s.png" > /dev/null; then
         echo "ok      shot $s"
     else
         echo "FAIL    shot $s ($OUT/$s.png)"; FAIL=1
@@ -87,7 +94,7 @@ check options "$OUT/options.out"
 for s in options overlay; do
     if [ "$UPDATE" = 1 ]; then
         cp "$OUT/$s.png" "tst/shots/$s.png"
-    elif cmp -s "$OUT/$s.png" "tst/shots/$s.png"; then
+    elif "$PNGCMP" "$OUT/$s.png" "tst/shots/$s.png" > /dev/null; then
         echo "ok      shot $s"
     else
         echo "FAIL    shot $s ($OUT/$s.png)"; FAIL=1

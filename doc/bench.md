@@ -6,8 +6,8 @@ with `tools/measure.py`:
 
 ```
 ./run.sh -o /tmp/pingus main.atm
-env SDL_VIDEODRIVER=dummy PINGUS_MUTE=1 PINGUS_COUNT=1 [PINGUS_FPS=0] \
-    [PINGUS_KEYS=...] tools/measure.py 10 /tmp/pingus [LEVEL]
+env SDL_VIDEODRIVER=dummy SDL_ATM_MUTE=1 PINGUS_COUNT=1 [PINGUS_FPS=0] \
+    [SDL_ATM_KEYS=...] tools/measure.py 10 /tmp/pingus [LEVEL]
 ```
 
 The frame rate is capped at 40 frames per second, as the original,
@@ -36,7 +36,7 @@ with `-s -m --no-cfg-file -w`). Its frame cap is 40 fps, as the port;
 | Binary, stripped | 1.5 MB | 3.0 MB |
 
 Measured earlier with the port alone (keys are scripted only in the
-port, `PINGUS_KEYS`):
+port, `SDL_ATM_KEYS`):
 
 | Scenario | Peak memory | CPU in 10 s | Frames in 10 s |
 |----------|-------------|-------------|----------------|

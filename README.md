@@ -24,13 +24,20 @@ The plan, with the settled decisions and the milestones, is in
 
 ## Run
 
-It requires a checkout of the compiler, [ia-atmos/lang](https://github.com/ia-atmos/lang),
-built with `make`, next to this one (`../lang`), or its compiler
-in `ATMOS`; and the development files of SDL2, SDL2_image, and
-SDL2_mixer:
+It requires, next to this one:
+
+- a checkout of the compiler, [ia-atmos/lang](https://github.com/ia-atmos/lang),
+  built with `make` (`../lang`), or its compiler in `ATMOS`;
+- a checkout of the SDL environment,
+  [ia-atmos/env-sdl](https://github.com/ia-atmos/env-sdl), at the commit
+  `2723b34` (`../env-sdl`): the window, the events, the images, the
+  sounds, and the test mode are its; the game adds its C in
+  `engine/pingus.h` (images with modifiers, bitmap fonts, the ground);
+
+and the development files of SDL2, SDL2_image, SDL2_ttf, and SDL2_mixer:
 
 ```
-sudo apt-get install libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev
+sudo apt-get install libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev libsdl2-mixer-dev
 ./run.sh                                    # the menu
 ./run.sh main.atm data/levels/tutorial/snow7-grumbel.pingus.atm
 ./run.sh main.atm data/worldmaps/tutorial.worldmap.atm
@@ -48,8 +55,8 @@ the options anywhere. The progress is saved in `~/.pingus-atmos.atm`
 ```
 main.atm            the sequence of screens
 engine/             the engine
-    pingus.h        C: driver, images, fonts, sounds, ground maps
-    sdl.atm         the Atmos functions over it
+    pingus.h        C of the game: images with modifiers, fonts, ground maps, mover
+    sdl.atm         the environment env-sdl, and the Atmos functions over pingus.h
     engine.atm      sprites (a task each), fonts, mouse, widgets
 game/               the game screen
     game.atm        layers, clock, pause, armageddon, goal

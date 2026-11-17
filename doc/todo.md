@@ -15,7 +15,7 @@ cannot happen by construction), **open**, or **out** (out of scope).
 | TODO: fast forward in the worldmap | open | |
 | TODO: border of the worldmap | open | |
 | TODO: read/write inputs (demos) | partly | the demos of the original are read: `tools/demo.py` turns them into the orders of the test mode (`PINGUS_ORDERS`); recording is out |
-| cache of sprites, or performance is not viable | fixed | images are loaded once, in a cache of `engine/pingus.h`; sprite descriptions in `DESCS` |
+| cache of sprites, or performance is not viable | fixed | images are loaded once, in the cache `IMGS` of `engine/sdl.atm`; sprite descriptions in `DESCS` |
 | countdown action disable from the original | gone | no countdown actions in the data |
 | walker behind all | fixed | draw order is the order of the pools in the game |
 | BUG: at each restart, twice the pingus are created | gone | the pool of pingus is pinned in the game, a new one per game |

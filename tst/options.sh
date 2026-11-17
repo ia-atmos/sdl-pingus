@@ -8,16 +8,16 @@
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 OUT=${OUT:-$ROOT/out/tst}
 BIN=${PINGUS_BIN:-"$ROOT/run.sh main.atm"}
-export SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy PINGUS_MUTE=1
+export SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy SDL_ATM_MUTE=1
 mkdir -p "$OUT"
 
 # the screen: Print FPS, the next language, master volume off, the
 # software cursor, then Escape
 HD=$(mktemp -d)
 echo '[options=[sound=true, music=false], levels=[]]' > "$HD/.pingus-atmos.atm"
-PINGUS_HOME=$HD PINGUS_FRAMES=80:25 PINGUS_KEYS=10:dn:F5,60:dn:Escape \
-PINGUS_MOUSE="15:dn:90:370:1,16:up:90:370:1,20:dn:700:250:1,21:up:700:250:1,25:dn:700:330:1,26:mv:545:330,27:up:545:330:1,30:dn:90:255:1,31:up:90:255:1,35:mv:300:450" \
-PINGUS_SHOT="50:$OUT/options.png,75:$OUT/overlay.png" $BIN
+PINGUS_HOME=$HD SDL_ATM_FRAMES=80:25 SDL_ATM_KEYS=10:dn:F5,60:dn:Escape \
+SDL_ATM_MOUSE="15:dn:90:370:1,16:up:90:370:1,20:dn:700:250:1,21:up:700:250:1,25:dn:700:330:1,26:mv:545:330,27:up:545:330:1,30:dn:90:255:1,31:up:90:255:1,35:mv:300:450" \
+SDL_ATM_SHOT="50:$OUT/options.png,75:$OUT/overlay.png" $BIN
 cat "$HD/.pingus-atmos.atm"
 rm -rf "$HD"
 
@@ -26,8 +26,8 @@ L=data/levels/tutorial/snow7-grumbel.pingus.atm
 view () {      # name, options, mouse
     HD=$(mktemp -d)
     echo "[options=[$2], levels=[]]" > "$HD/.pingus-atmos.atm"
-    PINGUS_HOME=$HD PINGUS_FRAMES=90:25 PINGUS_KEYS=2:dn:Return PINGUS_MOUSE="$3" \
-    PINGUS_SHOT="85:$OUT/view-$1.png" $BIN $L > /dev/null 2>&1
+    PINGUS_HOME=$HD SDL_ATM_FRAMES=90:25 SDL_ATM_KEYS=2:dn:Return SDL_ATM_MOUSE="$3" \
+    SDL_ATM_SHOT="85:$OUT/view-$1.png" $BIN $L > /dev/null 2>&1
     rm -rf "$HD"
 }
 view base     "grab=false"                    "20:mv:400:300"

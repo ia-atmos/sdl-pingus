@@ -7,7 +7,8 @@
 #
 # Prints: peak memory (VmHWM, in MB), CPU time (user + system, in s),
 # and the elapsed time. With PINGUS_COUNT=1, the game prints its number
-# of frames at exit, which goes to the report too.
+# of frames at exit (`frames: n`, on its output), which goes to the
+# report too.
 
 import os
 import subprocess
@@ -28,7 +29,7 @@ def main ():
     secs = float(sys.argv[1])
     cmd = sys.argv[2:]
     t0 = time.time()
-    p = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     mem = 0.0
     while p.poll() is None and time.time() - t0 < secs:
         m = peak(p.pid)
@@ -40,7 +41,7 @@ def main ():
         mem = max(mem, m)
     if p.poll() is None:
         p.terminate()
-    _, err = p.communicate()
+    err, _ = p.communicate()
     elapsed = time.time() - t0
     ru = os.wait4 if False else None
     usage = __import__("resource").getrusage(__import__("resource").RUSAGE_CHILDREN)
