@@ -17,6 +17,18 @@ of 154 demos with the same trace), the benchmark, the new rules of `pin`.
    The author approved investigating the early ones: done, 149 of 154.
    *Recommended:* investigate these 5 the same way, with the per-tick
    traces, or accept them as the limit.
+3. **Undo the rewrites of the migration to `pin`?** The rules changed
+   again (`ia-atmos/lang` `0ba7afc`, `98547d3`, 2026-11-17): `val`/`var`
+   may hold a fresh value again, and a place that owns its value (a
+   `pin` variable, a field of a pinned table) may be reassigned. So the
+   15 rewrites of the migration could go back: the options of `Sprite`
+   as `val opt = o || NONE`, the caches filled in place (`res_desc`,
+   `levelsets`, the paths of the worldmap), the defaults `x || [...]`,
+   `ACTIONS`/`LANG.texts`/`slow` reassigned. Nothing breaks if they stay.
+   *Recommended:* go back only for `Sprite` (one local table reads
+   better than six locals) and leave the rest, which reads as well as
+   before; tests and the 159 traces identical.
+
 4. **Expressiveness over exactness, after full fidelity** (a rule of
    the author for every port, relayed by the compiler session): once a
    port is identical to its original on its runs, it may relax the
