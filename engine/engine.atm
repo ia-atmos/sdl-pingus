@@ -174,23 +174,21 @@ func look (d, anchor) {
 ;;
 ;; It emits `:sprite.frame [n]` to its parent task at each new frame, and
 ;; terminates when an animation that does not loop ends.
+;; The options of a sprite that has none.
+pin NO_OPTS = []
+
 task Sprite (name, pos, o) {
-    ;; the options, read once: `o` may be a constructor of the caller,
-    ;; or a table it keeps, or nil
-    val turn  = o && o.turn
-    val world = o && o.world
-    val back  = o && o.back
-    val first = (o && o.frame) || 0
-    val d = if turn => res_desc(name ++ "/left") => res_desc(name)
-    pin l = look(d, o && o.anchor)
-    pin r = look(if turn => res_desc(name ++ "/right") => d, o && o.anchor)
+    val opt = o || NO_OPTS
+    val d = if opt.turn => res_desc(name ++ "/left") => res_desc(name)
+    pin l = look(d, opt.anchor)
+    pin r = look(if opt.turn => res_desc(name ++ "/right") => d, opt.anchor)
     val n = d.array@0 * d.array@1
-    val delay = (o && o.speed) || d.speed
-    val loops = if o && (o.loop != nil) => o.loop => d.loop
-    val cam = if world || (o && o.cam) => CAM => ZERO
+    val delay = opt.speed || d.speed
+    val loops = if opt.loop == nil => d.loop => opt.loop
+    val cam = if opt.world || opt.cam => CAM => ZERO
 
     ;; the frame is the data of the drawing, which the time advances
-    var frame = if back => n - 1 - first => first
+    var frame = if opt.back => n - 1 - (opt.frame || 0) => opt.frame || 0
 
     var t = 0
     val total = delay * n
@@ -201,7 +199,7 @@ task Sprite (name, pos, o) {
             set t = t % total
         }
         if !done || loops {
-            val f = if back => n - 1 - (t // delay) => t // delay
+            val f = if opt.back => n - 1 - (t // delay) => t // delay
             if f != frame {
                 set frame = f
                 emit @(:parent) :sprite.frame [n=f]
@@ -211,10 +209,10 @@ task Sprite (name, pos, o) {
     }
 
     par :any {
-        if (o && o.still) || (delay == 0) || ((n == 1) && loops) {
+        if opt.still || (delay == 0) || ((n == 1) && loops) {
             await(false)
         } else {
-            if world {
+            if opt.world {
                 loop on :tick {
                     until advance(33)
                 }
@@ -328,7 +326,7 @@ func lang_set (code) {
 
 ;; The languages with enough texts, with English first.
 func langs () {
-    pin v = ["en"]
+    val v = ["en"]
     pin idx = data_load("data/po/index.atm")
     loop _, l in idx {
         if l.texts >= 100 {
