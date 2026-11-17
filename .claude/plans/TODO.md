@@ -17,18 +17,6 @@ of 154 demos with the same trace), the benchmark, the new rules of `pin`.
    The author approved investigating the early ones: done, 149 of 154.
    *Recommended:* investigate these 5 the same way, with the per-tick
    traces, or accept them as the limit.
-3. **Undo the rewrites of the migration to `pin`?** The rules changed
-   again (`ia-atmos/lang` `0ba7afc`, `98547d3`, 2026-11-17): `val`/`var`
-   may hold a fresh value again, and a place that owns its value (a
-   `pin` variable, a field of a pinned table) may be reassigned. So the
-   15 rewrites of the migration could go back: the options of `Sprite`
-   as `val opt = o || NONE`, the caches filled in place (`res_desc`,
-   `levelsets`, the paths of the worldmap), the defaults `x || [...]`,
-   `ACTIONS`/`LANG.texts`/`slow` reassigned. Nothing breaks if they stay.
-   *Recommended:* go back only for `Sprite` (one local table reads
-   better than six locals) and leave the rest, which reads as well as
-   before; tests and the 159 traces identical.
-
 4. **Expressiveness over exactness, after full fidelity** (a rule of
    the author for every port, relayed by the compiler session): once a
    port is identical to its original on its runs, it may relax the
@@ -122,6 +110,11 @@ of 154 demos with the same trace), the benchmark, the new rules of `pin`.
    2026-11-17): one live defect it found, the item of a list pinned a
    closure over its rectangle in an inner spawn (`75e3966`); tests, ASAN,
    and the 159 demo traces identical.
+8. Done: the second migration to `pin` (rules of 2026-11-17, declared
+   stable; `ia-atmos/lang` `b19fd76`), commits `2e14045` to `2aa6e7b`:
+   10 pins given away by their block became `val`; the options of
+   `Sprite` are one table again (A.3, as recommended); `pin over` again;
+   `X.in`, `:atmos`. Tests, ASAN, and the 159 demo traces identical.
 3. Done: the names of the repositories (`ia-atmos/sdl-pingus`,
    `ia-atmos/lang`, the link of the plan) in `run.sh`, `README.md`,
    `doc/compiler.md`, `tools/bench/README.md`.
