@@ -71,22 +71,8 @@ of 154 demos with the same trace), the benchmark, the new rules of `pin`.
     position), clocks as values (timings by arithmetic), `f32`. None is
     asked; the port works around them.
 
-11. **Work to come: the shared environment `ia-atmos/env-sdl`** (plan:
-    `ia-atmos/lang`, `.claude/plans/261113-env-sdl.md`; written by the
-    session `env-sdl`). The three games over SDL (this one, SNKRX,
-    Flare) will use it instead of a platform layer of their own. First,
-    that session inventories `engine/sdl.atm` and `engine/pingus.h` and
-    may ask what a function is for: answer it. Later, when it has what
-    Pingus needs, move the platform part of the layer there (driver,
-    images, fonts, sounds, test mode), with the 159 traces identical;
-    Pingus is planned to be the first. What is of the game stays here:
-    the ground and collision maps and the mover in C.
-    Status (2026-11-16): the design is approved (`ia-atmos/env-sdl`,
-    `doc/design.md`; the inventory of this layer is
-    `doc/inventory/pingus.md`, read at `45ea8be`). Pingus moves at E4,
-    when env-sdl gives the commit. Agreed: screenshots may be compared
-    by pixels; no test depends on the frame cap; the baseline is
-    `cc5fe72` (after the migration to `pin`).
+11. The benchmark with no frame cap (`PINGUS_FPS=0`) is not possible
+    over env-sdl (its `fps=0` is 60): asked of env-sdl.
 
 ## C. Reported, not acknowledged
 
@@ -118,6 +104,11 @@ of 154 demos with the same trace), the benchmark, the new rules of `pin`.
    `doc/bench.md` (`30b1d97`); the three demos with an early difference
    investigated and fixed: the bomber (`intensiv-timpany`), the smasher
    (`real6`), the basher (`stone5-grumbel`).
+6. Done: the move to the shared environment `ia-atmos/env-sdl`
+   (`2723b34`), commits `e9fd322` and `b7e125f`: all tests identical
+   (normal and ASAN, screenshots by pixels), the 159 demo traces
+   identical. The sprite event became `:sprite.frame`; two test
+   scripts move the mouse before a press.
 3. Done: the names of the repositories (`ia-atmos/sdl-pingus`,
    `ia-atmos/lang`, the link of the plan) in `run.sh`, `README.md`,
    `doc/compiler.md`, `tools/bench/README.md`.
