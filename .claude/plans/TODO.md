@@ -71,9 +71,6 @@ of 154 demos with the same trace), the benchmark, the new rules of `pin`.
     position), clocks as values (timings by arithmetic), `f32`. None is
     asked; the port works around them.
 
-11. The benchmark with no frame cap (`PINGUS_FPS=0`) is not possible
-    over env-sdl (its `fps=0` is 60): asked of env-sdl.
-
 ## C. Reported, not acknowledged
 
 1. The full options (commits `4280bbe` to `32a88e7`): all the options
@@ -105,10 +102,10 @@ of 154 demos with the same trace), the benchmark, the new rules of `pin`.
    investigated and fixed: the bomber (`intensiv-timpany`), the smasher
    (`real6`), the basher (`stone5-grumbel`).
 6. Done: the move to the shared environment `ia-atmos/env-sdl`
-   (`2723b34`), commits `e9fd322` and `b7e125f`: all tests identical
+   (`2723b34`, then `9fea770`: a scripted press moves the mouse first,
+   `fps=0` is no cap), commits `e9fd322` and `b7e125f`: all tests identical
    (normal and ASAN, screenshots by pixels), the 159 demo traces
-   identical. The sprite event became `:sprite.frame`; two test
-   scripts move the mouse before a press.
+   identical. The sprite event became `:sprite.frame`.
 3. Done: the names of the repositories (`ia-atmos/sdl-pingus`,
    `ia-atmos/lang`, the link of the plan) in `run.sh`, `README.md`,
    `doc/compiler.md`, `tools/bench/README.md`.

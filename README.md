@@ -30,7 +30,7 @@ It requires, next to this one:
   built with `make` (`../lang`), or its compiler in `ATMOS`;
 - a checkout of the SDL environment,
   [ia-atmos/env-sdl](https://github.com/ia-atmos/env-sdl), at the commit
-  `2723b34` (`../env-sdl`): the window, the events, the images, the
+  `9fea770` (`../env-sdl`): the window, the events, the images, the
   sounds, and the test mode are its; the game adds its C in
   `engine/pingus.h` (images with modifiers, bitmap fonts, the ground);
 

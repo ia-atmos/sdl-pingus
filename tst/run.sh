@@ -63,7 +63,7 @@ check engine "$OUT/engine.out"
 # screens: the menu, the levelsets, a level started
 HD=$(mktemp -d)
 PINGUS_HOME=$HD SDL_ATM_FRAMES=150:25 \
-SDL_ATM_MOUSE="59:mv:275:350,60:dn:275:350:1,61:up:275:350:1,100:mv:300:250,110:dn:300:250:1,111:up:300:250:1" \
+SDL_ATM_MOUSE="60:dn:275:350:1,61:up:275:350:1,100:mv:300:250,110:dn:300:250:1,111:up:300:250:1" \
 SDL_ATM_SHOT="50:$OUT/menu.png,90:$OUT/levelsets.png,140:$OUT/start.png" \
     "$PINGUS_BIN" > "$OUT/screens.out" 2>&1
 PINGUS_HOME=$HD SDL_ATM_FRAMES=300:25 SDL_ATM_KEYS="2:dn:Return" SDL_ATM_SHOT="290:$OUT/game.png" \
