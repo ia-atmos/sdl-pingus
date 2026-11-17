@@ -118,6 +118,10 @@ of 154 demos with the same trace), the benchmark, the new rules of `pin`.
    `fps=0` is no cap), commits `e9fd322` and `b7e125f`: all tests identical
    (normal and ASAN, screenshots by pixels), the 159 demo traces
    identical. The sprite event became `:sprite.frame`.
+7. Done: the compiler `ia-atmos/lang` `a4c465a` (the rules of `pin` of
+   2026-11-17): one live defect it found, the item of a list pinned a
+   closure over its rectangle in an inner spawn (`75e3966`); tests, ASAN,
+   and the 159 demo traces identical.
 3. Done: the names of the repositories (`ia-atmos/sdl-pingus`,
    `ia-atmos/lang`, the link of the plan) in `run.sh`, `README.md`,
    `doc/compiler.md`, `tools/bench/README.md`.
