@@ -25,6 +25,6 @@ FILE=${1:-main.atm}
 [ $# -gt 0 ] && shift
 
 export ATMOS_CFLAGS="${ATMOS_CFLAGS:--O2} -I$ROOT"
-export ATMOS_LDFLAGS="-lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -lm"
+export ATMOS_LDFLAGS="${ATMOS_LDFLAGS:+$ATMOS_LDFLAGS }-lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -lm"
 
 cd "$ROOT" && exec "$ATMOS" "$FILE" "$@"

@@ -24,31 +24,84 @@ The plan, with the settled decisions and the milestones, is in
 
 ## Run
 
-It requires, next to this one:
+From nothing, on Linux (Debian, Ubuntu); checked on a clean clone,
+with no screen (see below what could not be checked).
 
-- a checkout of the compiler, [ia-atmos/lang](https://github.com/ia-atmos/lang),
-  built with `make` (`../lang`), or its compiler in `ATMOS`;
-- a checkout of the SDL environment,
-  [ia-atmos/env-sdl](https://github.com/ia-atmos/env-sdl), at the commit
-  `9fea770` (`../env-sdl`): the window, the events, the images, the
-  sounds, and the test mode are its; the game adds its C in
-  `engine/pingus.h` (images with modifiers, bitmap fonts, the ground);
+1. The packages: a C compiler, `make`, `git`, and SDL2 with its image,
+   ttf and mixer libraries:
 
-and the development files of SDL2, SDL2_image, SDL2_ttf, and SDL2_mixer:
+   ```
+   sudo apt-get install build-essential git \
+       libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev libsdl2-mixer-dev
+   ```
+
+2. The three repositories, side by side in one directory (the game
+   finds the others as `../lang` and `../env-sdl`):
+
+   ```
+   mkdir atmos && cd atmos
+   git clone https://github.com/ia-atmos/lang
+   git clone https://github.com/ia-atmos/env-sdl
+   git clone https://github.com/ia-atmos/sdl-pingus
+   git -C env-sdl checkout 9fea770
+   ```
+
+   `lang` (the compiler) and `sdl-pingus` at `main`; `env-sdl` (the
+   window, the events, images, sounds, the test mode) at `9fea770`.
+
+3. The compiler (about 15 s):
+
+   ```
+   make -C lang
+   ```
+
+4. The game, with a window and sound (the first build takes about
+   30 s; `./run.sh` builds and runs):
+
+   ```
+   cd sdl-pingus
+   ./run.sh                                                    # the menu
+   ./run.sh main.atm data/levels/tutorial/snow7-grumbel.pingus.atm   # a level
+   ./run.sh main.atm data/worldmaps/tutorial.worldmap.atm      # the worldmap
+   ./run.sh -o pingus main.atm && ./pingus                     # build once, run many times
+   ```
+
+5. Play. The mouse: choose an action in the panel at the left (or with
+   the keys `1` to `0`), then click a pingu; the right button dragged
+   scrolls the view; a click on the small map moves the view. The keys,
+   in a level: `P` pause, `S` one step while paused, `F` or `Space` fast
+   forward (while held), `A` armageddon, the arrows scroll, `Escape`
+   leaves the level. `F5`, anywhere, shows the options (fullscreen,
+   volumes, language, ...). The progress is saved in
+   `~/.pingus-atmos.atm` (or in `$PINGUS_HOME`).
+
+6. The tests, with no screen (about 1 minute), and the demos of the
+   original game replayed in the port (about 15 minutes):
+
+   ```
+   tst/run.sh                  # all tests
+   ASAN=1 tst/run.sh           # the same, with the address sanitizer
+   tst/demos.sh                # the 159 demos, and how many solve their level
+   ```
+
+   The comparison with the official game, tick by tick
+   (`tools/compare-all.sh`), also needs the official game built with a
+   patch: see `tools/bench/README.md` and `doc/fidelity.md`.
+
+On macOS (not checked): `brew install sdl2 sdl2_image sdl2_ttf
+sdl2_mixer`, the same steps 2 and 3, and, before `./run.sh`, the paths
+of Homebrew:
 
 ```
-sudo apt-get install libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev libsdl2-mixer-dev
-./run.sh                                    # the menu
-./run.sh main.atm data/levels/tutorial/snow7-grumbel.pingus.atm
-./run.sh main.atm data/worldmaps/tutorial.worldmap.atm
-./run.sh -o pingus main.atm                 # builds only
+export ATMOS_CFLAGS="-O2 -I$(brew --prefix)/include"
+export ATMOS_LDFLAGS="-L$(brew --prefix)/lib"
 ```
 
-Keys in a level: `P` pause, `S` single step, `F` or `Space` fast
-forward (hold), `A` armageddon, `1` to `0` the actions, arrows to
-scroll, `Escape` to quit; the right button drags the view. `F5` shows
-the options anywhere. The progress is saved in `~/.pingus-atmos.atm`
-(or in `$PINGUS_HOME`).
+What was checked in a container with no screen: the packages, the
+clones, the build of the compiler and of the game, the menu, a level
+and the worldmap run (with screenshots), `tst/run.sh`, `ASAN=1
+tst/run.sh`, and `tst/demos.sh`. Not checked: a real window and sound,
+and macOS.
 
 ## Layout
 
