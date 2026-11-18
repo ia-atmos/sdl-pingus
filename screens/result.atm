@@ -75,7 +75,7 @@ task Play (path) {
     pin lvl = level_load(path)
     if await Start(lvl) {
         loop {
-            pin r = await Game(path)
+            val r = await Game(path)
             level_store(path, r)
             val again = await Result(r)
             until !again, r
