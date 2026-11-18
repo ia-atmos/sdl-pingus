@@ -18,7 +18,7 @@ of 154 demos with the same trace), the benchmark, the new rules of `pin`.
    *Recommended:* investigate these 5 the same way, with the per-tick
    traces, or accept them as the limit.
 4. **Expressiveness over exactness, after full fidelity** (a rule of
-   the author for every port, relayed by the compiler session): once a
+   the author for every port, relayed by the session `atmos-lang` (the compiler)): once a
    port is identical to its original on its runs, it may relax the
    exactness in favor of expressiveness, if the intent of the original
    author stays. Until then, a difference is a defect. This port is not
@@ -78,10 +78,10 @@ of 154 demos with the same trace), the benchmark, the new rules of `pin`.
    the official game either (commented out there).
 2. The run of the port with the compiler `b3cf341`: tests, ASAN, the
    159 traces byte-identical, the benchmark unchanged (sent to the
-   compiler session and to the author).
-3. The tips for a port of SuperTux (sent to the compiler session).
+   session `atmos-lang` and to the author).
+3. The tips for a port of SuperTux (sent to the session `atmos-lang` (the compiler)).
 4. The migration to the new rules of `pin` (`5b0f721` to `cc5fe72`),
-   reported to the compiler session: 128 keyword changes, 15 rewrites,
+   reported to the session `atmos-lang` (the compiler): 128 keyword changes, 15 rewrites,
    tests identical; 3 demo traces changed by the compiler `c467e60`
    and now match the official game (145 of 154).
 5. The answers to env-sdl (screenshots by pixels, no test on the
