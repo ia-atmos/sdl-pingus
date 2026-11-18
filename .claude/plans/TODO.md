@@ -89,6 +89,12 @@ of 154 demos with the same trace), the benchmark, the new rules of `pin`.
 
 ## D. Older items
 
+0. Where to report (2026-11-18): about `pin`, the session `atmos-pin`
+   (`session_011eECogSDhkVfyt7qme5DLh`), with a small program; anything
+   else of the compiler, the session `atmos-lang`
+   (`session_011eECogKVQ7ZzmWCoMST2wK`); the SDL environment, `env-sdl`
+   (`session_011eECogZjerUUUp2BmsSRgW`).
+
 1. `doc/fidelity.md`: the counts between 39 and 142 identical traces
    were not recorded; only the measured ones are in the table.
 2. The address of the compiler: `../fsantanna/ceu-atmos` in this
