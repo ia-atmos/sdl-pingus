@@ -30,9 +30,10 @@ func trace (g, p, act) {
     }
 }
 
-;; Orders(g): the orders of `PINGUS_ORDERS`, in sequence.
-task Orders (g) {
-    val s = os.getenv("PINGUS_ORDERS")
+;; Orders(g, orders): the orders, `tick:n:action,...`, in sequence: those
+;; given to the game (a `test` block), or else `PINGUS_ORDERS`.
+task Orders (g, orders) {
+    val s = orders || os.getenv("PINGUS_ORDERS")
     if !s || (s == "") {
         await(false)
     }
@@ -122,7 +123,7 @@ task Clock (g) {
 }
 
 ;; Game(path): plays a level, and returns its result.
-task Game (path) {
+task Game (path, orders) {
     pin lvl = level_load(path)
     val head = lvl.head
     pin objs = level_objects(lvl)
@@ -313,7 +314,7 @@ task Game (path) {
     }
     spawn ActionKeys(g, acts)
     spawn Playfield(g)
-    spawn Orders(g)
+    spawn Orders(g, orders)
 
     ;; the goal: all pingus out, all gone after the armageddon, or the
     ;; time is over; or the player quits
