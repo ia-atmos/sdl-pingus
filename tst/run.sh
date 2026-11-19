@@ -101,6 +101,11 @@ for s in options overlay; do
     fi
 done
 
+# the bomber level again, as a `test` block that drives the game itself
+# (the pilot atmos-lang#76): the window and the audio are still dummies
+./run.sh -t tst/bomber-test.atm > "$OUT/bomber-test.out" 2>&1
+check bomber-test "$OUT/bomber-test.out"
+
 # levels, 4 at a time
 grep -v '^#' tst/levels.txt | grep -v '^\s*$' | \
 while read name frames level orders keys; do

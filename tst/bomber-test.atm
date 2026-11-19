@@ -1,0 +1,32 @@
+;; The bomber tutorial, as `tst/levels.txt` plays it (`bomber`), in a
+;; `test` block: the game is driven by the block, with no environment
+;; variable of the test mode (the pilot atmos-lang#76).
+;;
+;;      SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy ./run.sh -t tst/bomber-test.atm
+;;
+;; The block emits what the loop of the environment would: 25ms of time
+;; per frame (`emit @:global`), then `:frame` and `:draw`; it gives the
+;; order of the bomber as the level test does (pingu 0 at the tick 250),
+;; quits with Escape after 800 frames, and checks the result of the game.
+
+include "../engine/engine.atm"
+include "../game/game.atm"
+
+test {
+    math.randomseed(0)
+    pin g = spawn Game("data/levels/tutorial/bomber-tutorial2-grumbel.pingus.atm", "250:0:bomber")
+    loop n in 800 {
+        emit @:global (25000)
+        emit(:frame [n=n+1, us=25000])
+        emit(:draw)
+    }
+    emit(:key.dn [key="Escape"])
+    ;; the bomber died at the tick 280 (as tst/golden/bomber.out), and
+    ;; no pingu is out yet
+    val r = g.ret
+    assert(r.time == 1000)
+    assert(r.killed == 1)
+    assert(r.saved == 0)
+    assert(r.total == 30)
+    print("ok")
+}
