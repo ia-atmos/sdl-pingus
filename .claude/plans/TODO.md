@@ -6,7 +6,7 @@ items. Kept current: an item leaves this file when it is done, with
 the commit that did it.
 
 The port itself is complete: the plan (P0..P9), the official data, 21
-actions, the full options, the comparison with the official game (149
+actions, the full options, the comparison with the official game (154
 of 154 demos with the same trace), the benchmark, the new rules of `pin`.
 
 ## Index of items (`#N`)
@@ -18,8 +18,8 @@ references in the history; the open ones are numbered here.
 
 | # | Item | State |
 |---|------|-------|
-| #1 | The 5 demos whose traces differ from the official game (A.2): investigate, or accept as the limit | waits for the author |
-| #2 | Expressiveness over exactness, after full fidelity (A.4) | waits for #1 |
+| #1 | The 5 demos whose traces differ from the official game (A.2) | done, by the session: each cause found and fixed; 154 of 154 identical |
+| #2 | Expressiveness over exactness, after full fidelity (A.4) | the condition holds now (154 of 154); an option: tag the faithful commit first, ask before a large change |
 | #3 | The remote of the checkout has the old address (B.0) | waits for the author (permission) |
 | #4 | Input configuration and controllers (B.1) | open |
 | #5 | Drawing offsets of the bridger and the climber (B.2) | done: the bridger as `get_look` of the original; the climber has no offset in the original |

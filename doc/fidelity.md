@@ -43,22 +43,29 @@ differ.
 | float mover, before the old level paths were linked | 39 | 33 | 87 |
 | all the fixes below | 142 | 12 | 5 |
 | the compiler `ia-atmos/lang` `c467e60` (the order of a loop over the pingus while traps kill them) | 145 | 9 | 5 |
-| the bomber, the smasher, and the basher as the official update | **149** | 5 | 5 |
+| the bomber, the smasher, and the basher as the official update | 149 | 5 | 5 |
+| the laser exit, the guillotine, the hammer, and the end of a level as the official update | **154** | 0 | 5 |
 
-So 149 of the 154 demos that the official game plays give the same
+So all the 154 demos that the official game plays give the same
 trace in the port: every pingu, every change of action, at the same
 tick and the same pixel, up to the tick 39000.
 
-The 5 left differ late, and by one pixel or one tick (the time of the
-first difference, out of the length of the trace):
+The last five were found the same way, by the per-tick trace of the
+first pingu that differs, each a tick of the official update that the
+port had not followed:
 
-| Demo | First difference |
-|------|------------------|
-| indiana-yingwan | tick 1116, a splash the port does not have |
-| pingusworld3-pacho | tick 11626, one walker of 85 |
-| snow1 | tick 2105, a death one tick earlier |
-| stone-castle-timpany | tick 1105, a splash the official game does not have |
-| xmas-blockblow-timpany | tick 1627, deaths in another order |
+- `snow1`: the official laser kill checks whether its clock has
+  finished before it advances it; the pingu dies at the tick after
+  the last frame.
+- `xmas-blockblow-timpany`: the official guillotine frees itself at
+  the start of the update in which its kill ends, and may kill again in
+  that same update.
+- `stone-castle-timpany`: the official hammer counts 13 steps and
+  splashes when the count reaches the last frame, one tick before the
+  end of its animation, each way.
+- `pingusworld3-pacho`: the official game ends a level when the time
+  is past 125 ticks after the goal, so 126 ticks.
+- `indiana-yingwan` was fixed by these.
 
 Four more were fixed by reading the per-tick trace of the first pingu
 that differs (`PINGUS_TRACE=2`) in both games:
