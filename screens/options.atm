@@ -154,7 +154,10 @@ task Options () {
     spawn CheckBox(:dragdrop,   "Drag&Drop Scrolling", 0, 5)
     spawn CheckBox(:fps,        "Print FPS",           0, 7)
     spawn ChoiceBox(:resolution, "Resolution:", RESOLUTIONS, 1, 0)
-    spawn ChoiceBox(:lang,       "Language:",   langs(),     1, 3, LANG_NAMES)
+    ;; the languages in the order of their names, as the original
+    pin ls = langs()
+    vector.sort(ls, \(a, b) { (LANG_NAMES@(a) || a) < (LANG_NAMES@(b) || b) })
+    spawn ChoiceBox(:lang,       "Language:",   ls,          1, 3, LANG_NAMES)
     spawn SliderBox(:master, "Master Volume:", 1, 5)
     spawn SliderBox(:sound,  "Sound Volume:",  1, 6)
     spawn SliderBox(:music,  "Music Volume:",  1, 7)
