@@ -23,7 +23,7 @@ references in the history; the open ones are numbered here.
 | #3 | The remote of the checkout has the old address (B.0) | waits for the author (permission) |
 | #4 | Input configuration and controllers (B.1) | open |
 | #5 | Drawing offsets of the bridger and the climber (B.2) | done: the bridger as `get_look` of the original; the climber has no offset in the original |
-| #6 | The worldmap: fast forward and its border (B.3) | open |
+| #6 | The worldmap: fast forward and its border (B.3) | done: fast forward 4 times, tested; the border, for a map smaller than the screen |
 | #7 | A test of blocker, faller, blocker (B.4) | done: `blockfall` in `tst/levels.txt` |
 | #8 | Fullscreen and resolution not seen on a real screen (B.5) | waits for #13 |
 | #9 | The languages in the order of their codes, not their names (B.6) | done: sorted by name, as the original |

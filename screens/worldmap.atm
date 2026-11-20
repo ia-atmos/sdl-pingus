@@ -87,15 +87,28 @@ func wm_path (wm, a, b) {
     path
 }
 
+;; A worldmap smaller than the screen is centered, as the original.
 func wm_cam (wm, x, y) {
-    set CAM.x = math.max(0, math.min(wm.head.width - W, x - (W//2)))
-    set CAM.y = math.max(0, math.min(wm.head.height - H, y - (H//2)))
+    set CAM.x = if wm.head.width < W => -((W - wm.head.width) // 2) =>
+        math.max(0, math.min(wm.head.width - W, x - (W//2)))
+    set CAM.y = if wm.head.height < H => -((H - wm.head.height) // 2) =>
+        math.max(0, math.min(wm.head.height - H, y - (H//2)))
 }
 
 ;; The pingu of the worldmap: walks to the target of the player, one
-;; edge at a time, at 100 pixels per second.
+;; edge at a time, at 100 pixels per second, 4 times as fast while
+;; fast forward (F or Space) is held, as the original.
 task WmPingu (wm, me) {
     pin pos = [x=wm.nodes@(me.at).x, y=wm.nodes@(me.at).y, dir=0]
+    pin speed = [k=1]
+    spawn {
+        loop {
+            await :key.dn until X.in(it.key, ["F", "Space"])
+            set speed.k = 4
+            await :key.up until X.in(it.key, ["F", "Space"])
+            set speed.k = 1
+        }
+    }
     spawn {
         loop on :draw {
             wm_cam(wm, pos.x, pos.y)
@@ -124,7 +137,7 @@ task WmPingu (wm, me) {
                 } with {
                     var t = 0.0
                     loop us on :clock {
-                        set t = math.min(len, t + ((us / 1000000) * 100))
+                        set t = math.min(len, t + ((us / 1000000) * 100 * speed.k))
                         set pos.x = a.x + (((b.x - a.x) * t) / len)
                         set pos.y = a.y + (((b.y - a.y) * t) / len)
                         until t >= len
@@ -203,6 +216,19 @@ task WmView (wm) {
         spawn @dots WmDot(wm, n, task)
     }
     spawn WmPingu(wm, me)
+    spawn {
+        ;; the border of a worldmap smaller than the screen, as the original
+        val bw = math.max(0, (W - wm.head.width) // 2)
+        val bh = math.max(0, (H - wm.head.height) // 2)
+        if (bw > 0) || (bh > 0) {
+            loop on :draw {
+                sdl.fill(0x000000FF, 0, 0, W, bh)
+                sdl.fill(0x000000FF, 0, H - bh, W, bh)
+                sdl.fill(0x000000FF, 0, bh, bw, H - (2 * bh))
+                sdl.fill(0x000000FF, W - bw, bh, bw, H - (2 * bh))
+            }
+        }
+    }
     pin lr = do {
         val w, h = res_frame_size("core/worldmap/leave_button_normal")
         [x=W - w - 10, y=H - h - 10, w=w, h=h]

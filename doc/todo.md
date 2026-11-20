@@ -12,8 +12,8 @@ cannot happen by construction), **open**, or **out** (out of scope).
 | BUG: playfield lines, background does not repeat | fixed | the background is tiled in both directions, with its parallax |
 | TODO: configuration of input events, controllers | out | the keys of the original are fixed in `game/game.atm` |
 | TODO: cursor | fixed | the option *Software Cursor* draws the cursor of the game, over all the screens (`Overlay` in `screens/options.atm`) |
-| TODO: fast forward in the worldmap | open | |
-| TODO: border of the worldmap | open | |
+| TODO: fast forward in the worldmap | fixed | the pingu walks 4 times as fast while F or Space is held, as `fast_forward_time_scale` of the original (tested in `tst/worldmap.sh`) |
+| TODO: border of the worldmap | fixed | a worldmap smaller than the screen is centered with a black border, as the original (none of the data is smaller than 800x600) |
 | TODO: read/write inputs (demos) | partly | the demos of the original are read: `tools/demo.py` turns them into the orders of the test mode (`PINGUS_ORDERS`); recording is out |
 | cache of sprites, or performance is not viable | fixed | images are loaded once, in the cache `IMGS` of `engine/sdl.atm`; sprite descriptions in `DESCS` |
 | countdown action disable from the original | gone | no countdown actions in the data |
