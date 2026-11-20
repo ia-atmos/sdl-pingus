@@ -23,14 +23,31 @@ func bridger_brick (p, left) {
     }
 }
 
+;; The offset of the drawing, by the bricks left, as `get_look` of the
+;; original: the first bricks are drawn closer to the pingu.
+func bridger_off (off, p) {
+    val n = BRIDGER_BRICKS - p.bricks
+    val x, y = ifs {
+        n == 0 => (-4, 0)
+        n == 1 => (0, 1)
+        n == 2 => (3, 2)
+        else   => (6, 4)
+    }
+    set off.x = -(x * p.dir)
+    set off.y = y
+}
+
 task Bridger (p, g) {
     ;; as the clocks of the original: a brick takes 15 frames of 66ms
     ;; (30 ticks), placed at the frame 7 (tick 14); a step up takes 4
     ;; frames (8 ticks), and is taken at the next tick
+    pin off = [x=0, y=0]
+    pin opts = PSPR ++ [off=off]
+    set p.bricks = BRIDGER_BRICKS
+    bridger_off(off, p)
     loop i {
-        set p.bricks = BRIDGER_BRICKS - i
         do {
-            spawn Sprite(pspr(p, "bridger"), p, PSPR)
+            spawn Sprite(pspr(p, "bridger"), p, opts)
             await Ticks(14)
             if i == BRIDGER_BRICKS {
                 return :waiter
@@ -40,10 +57,13 @@ task Bridger (p, g) {
                 return :walker
             }
             bridger_brick(p, BRIDGER_BRICKS - i - 1)
+            ;; the brick is placed: one less, as the original counts them
+            set p.bricks = BRIDGER_BRICKS - i - 1
+            bridger_off(off, p)
             await Ticks(16)
         }
         do {
-            spawn Sprite(pspr(p, "bridger_walk"), p, PSPR)
+            spawn Sprite(pspr(p, "bridger_walk"), p, opts)
             await Ticks(9)
         }
         if !bridger_free(p) {

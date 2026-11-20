@@ -170,7 +170,8 @@ func look (d, anchor) {
 ;;  - speed:  milliseconds per frame, instead of the one of the data;
 ;;  - loop:   whether it loops, whatever the data says, as `loop` of
 ;;            the data;
-;;  - back:   the frames go backwards.
+;;  - back:   the frames go backwards;
+;;  - off:    a table `[x,y]` added to the position at each drawing.
 ;;
 ;; It emits `:sprite.frame [n]` to its parent task at each new frame, and
 ;; terminates when an animation that does not loop ends.
@@ -186,6 +187,8 @@ task Sprite (name, pos, o) {
     val delay = opt.speed || d.speed
     val loops = if opt.loop == nil => d.loop => opt.loop
     val cam = if opt.world || opt.cam => CAM => ZERO
+    ;; an offset added to the position at each drawing (the look of an action)
+    val off = opt.off || ZERO
 
     ;; the frame is the data of the drawing, which the time advances
     var frame = if opt.back => n - 1 - (opt.frame || 0) => opt.frame || 0
@@ -227,7 +230,7 @@ task Sprite (name, pos, o) {
             val k = if pos.dir == 1 => r => l
             sdl.part(k.img,
                 k.px + k.fw*(frame % k.ax), k.py + k.fh*(frame // k.ax),
-                k.fw, k.fh, pos.x - cam.x - k.dx, pos.y - cam.y - k.dy)
+                k.fw, k.fh, pos.x - cam.x - k.dx + off.x, pos.y - cam.y - k.dy + off.y)
         }
     }
 }

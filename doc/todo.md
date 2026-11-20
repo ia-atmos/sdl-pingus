@@ -32,10 +32,10 @@ cannot happen by construction), **open**, or **out** (out of scope).
 | idle laser_exit | fixed | the laser exit is still, until a pingu enters it |
 | EXIT/LASER_EXIT take only 1 at a time | fixed | each tick checks all the pingus |
 | EXITER/LASERKILL in pingu.ceu | fixed | they are actions, as the others |
-| BUG: climber center | open | the positions match the official game (`doc/fidelity.md`); the drawing offset is not compared |
+| BUG: climber center | fixed | the positions match the official game (`doc/fidelity.md`), and the official climber has no offset of its own: it is drawn with the offset of its sprite, as the port |
 | global:world.pingus will simplify min.ceu | gone | the pingus are a pool of the game, which receive the game `g` |
 | bug of the WORLD_UPDATE needed | gone | `:tick` is an event of the game, emitted by its clock |
-| bridger offset | open | the bridger is drawn at the pingu, with no extra offset |
+| bridger offset | fixed | the offset of `get_look` of the original, by the bricks left and the direction (the option `off` of `Sprite`) |
 | test climber, wall-mode activation | fixed | `tst/levels.txt`: climber |
 | test previous action: Climber->Jumper->..., Blocker->Faller->Blocker | fixed | the previous action is an argument of the next action; the wall jump (climber, then jumper) is tested (`walljump` in `tst/levels.txt`), and a blocker that loses its ground to a bomber falls and lands as a blocker again, as the official faller (`blockfall`) |
 | SDL_DT for pingus/actions/sprites | gone | world sprites use `:tick`, screen sprites use `:clock` |
