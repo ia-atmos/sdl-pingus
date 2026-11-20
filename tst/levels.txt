@@ -9,6 +9,7 @@ armageddon  1500  tutorial/snow7-grumbel             -                 300:dn:A
 basher      1200  tutorial/basher-tutorial-grumbel   500:0:basher      -
 blocker     800   tutorial/solid-tutorial-grumbel    300:0:blocker     -
 bomber      800   tutorial/bomber-tutorial2-grumbel  250:0:bomber      -
+blockfall   1200  tutorial/solid-tutorial-grumbel    300:0:blocker,580:2:bomber -
 bridger     1200  tutorial/snow21-grumbel            200:0:bridger     -
 climber     1200  xskat/ok/climber-tutorial-lukis    200:0:climber     -
 digger      1200  tutorial/digger-tutorial2-grumbel  230:0:digger      -
