@@ -27,7 +27,7 @@ references in the history; the open ones are numbered here.
 | #7 | A test of blocker, faller, blocker (B.4) | open |
 | #8 | Fullscreen and resolution not seen on a real screen (B.5) | waits for #13 |
 | #9 | The languages in the order of their codes, not their names (B.6) | open |
-| #10 | Stale counts in `doc/fidelity.md` and `doc/bench.md` (B.7, B.8) | open |
+| #10 | Stale counts in `doc/fidelity.md` and `doc/bench.md` (B.7, B.8) | done: fidelity updated (12 solved); bench was right (4 ticks per 20 ms is 5 per frame of 25 ms) |
 | #11 | The 5 demos the official game cannot load (B.9) | no action possible |
 | #12 | Language features that would help (B.10) | sent to `atmos-lang`, informational |
 | #13 | The author's own test of Pingus, with the step by step of the README | waits for the author |

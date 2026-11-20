@@ -11,10 +11,17 @@ counts the levels still solved.
 | first version (release every `rate` ticks, exits before the pingus) | 8 | 82 | 69 |
 | release every `rate + 1` ticks, objects behind the pingus react after them (`:tock`), orders of the same tick together, two Escapes to end | 10 | 143 | 6 |
 | landing in the same tick as the collision, velocities clamped | 10 | 143 | 6 |
+| the fixes of the comparison with the official game (below), 149 of 154 traces as the official game | 12 | 141 | 6 |
 
 Solved now: the bomber, bridger, climber, digger and miner tutorials,
 `crystal2`, `crystalcave3-gunter`, `hellmouth04-grumbel`,
-`hellmouth10-grumbel`, `panic-cbrucher`.
+`hellmouth08-grumbel`, `hellmouth10-grumbel`, `panic-cbrucher`,
+`winter2-chei`.
+
+Few demos solve their level in the official game either: they were
+recorded with older engines, and only 38 of the 154 that the official
+game plays save any pingu there. The measure of fidelity is therefore
+the comparison of traces below, not the count of solved levels.
 
 A demo replays only if the game is the same, tick by tick: one pingu one
 pixel off at the time of a click misses the click.
