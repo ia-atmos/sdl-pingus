@@ -19,7 +19,7 @@ references in the history; the open ones are numbered here.
 | # | Item | State |
 |---|------|-------|
 | #1 | The 5 demos whose traces differ from the official game (A.2) | done, by the session: each cause found and fixed; 154 of 154 identical |
-| #2 | Expressiveness over exactness, after full fidelity (A.4) | the condition holds now (154 of 154); an option: tag the faithful commit first, ask before a large change |
+| #2 | Expressiveness over exactness, after full fidelity (A.4) | the condition holds now (154 of 154); the faithful commit is `3ef9c0f`, recorded in `doc/fidelity.md` (a tag `faithful-154` was refused by the permissions of the session: HTTP 403 on push); an option, ask before a large change |
 | #3 | The remote of the checkout has the old address (B.0) | waits for the author (permission) |
 | #4 | Input configuration and controllers (B.1) | open |
 | #5 | Drawing offsets of the bridger and the climber (B.2) | done: the bridger as `get_look` of the original; the climber has no offset in the original |

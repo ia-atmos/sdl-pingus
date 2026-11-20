@@ -46,6 +46,10 @@ differ.
 | the bomber, the smasher, and the basher as the official update | 149 | 5 | 5 |
 | the laser exit, the guillotine, the hammer, and the end of a level as the official update | **154** | 0 | 5 |
 
+The faithful version is the commit `3ef9c0f` (2026-11-20): any later
+change that alters a trace on purpose is listed here as a deliberate
+difference.
+
 So all the 154 demos that the official game plays give the same
 trace in the port: every pingu, every change of action, at the same
 tick and the same pixel, up to the tick 39000.
