@@ -34,6 +34,8 @@ references in the history; the open ones are numbered here.
 | #14 | A pin given away by `until`, missed by the warning (`atmos-pin#11`); fixed in Pingus (`0c6ab51`), and in the compiler on the branch `pin` | done here; waits for the merge |
 | #15 | The pilot `atmos-lang#76`: the bomber level as a `test` block (`tst/bomber-test.atm`, `f0c33d5`, `5519184`); the dummy drivers remain, for env-sdl | done, reported |
 | #16 | Five more levels as `test` blocks (`tst/levels-test.atm`): digger, blocker, miner, basher, the wall jump; traces as the goldens up to tick 1500 | done, by the session |
+| #17 | For the paper (`paper-games#4`): the CPU of the game logic alone, port and original, with the drawing skipped in both (median of 3, ms per frame, the ratio), in `doc/bench.md` | open, by the session |
+| #18 | Whether the floats kept in C (`pg_move`, `pg.f32`) can go back to Atmos with `ATMOS_REAL=float` | open, by the session |
 
 ## A. Decisions waiting for the author
 
