@@ -105,6 +105,8 @@ done
 # (the pilot atmos-lang#76): the window and the audio are still dummies
 ./run.sh -t tst/bomber-test.atm > "$OUT/bomber-test.out" 2>&1
 check bomber-test "$OUT/bomber-test.out"
+./run.sh -t tst/levels-test.atm > "$OUT/levels-test.out" 2>&1
+check levels-test "$OUT/levels-test.out"
 
 # levels, 4 at a time
 grep -v '^#' tst/levels.txt | grep -v '^\s*$' | \

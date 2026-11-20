@@ -1,0 +1,51 @@
+;; Levels of `tst/levels.txt` as `test` blocks: each one drives the game
+;; by itself (time, frames, the orders, Escape) and checks the result
+;; at the tick 1500. Their traces are those of `tst/golden/` up to that
+;; tick (the level tests run with fast forward, these at normal speed).
+;;
+;;      SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy ./run.sh -t tst/levels-test.atm
+
+include "../engine/engine.atm"
+include "../game/game.atm"
+
+;; Plays a level for 1200 frames of 25ms (1500 ticks of the world),
+;; then quits; the pingus saved and killed.
+func play (level, orders) {
+    math.randomseed(0)
+    pin g = spawn Game("data/levels/" ++ level ++ ".pingus.atm", orders)
+    loop n in 1200 {
+        emit @:global (25000)
+        emit(:frame [n=n+1, us=25000])
+        emit(:draw)
+    }
+    emit(:key.dn [key="Escape"])
+    val r = g.ret
+    print(string.format("%-40s saved %d, killed %d, of %d", level, r.saved, r.killed, r.total))
+    return r.saved, r.killed
+}
+
+test {
+    val s, k = play("tutorial/digger-tutorial2-grumbel", "230:0:digger")
+    assert((s == 7) && (k == 0))
+}
+
+test {
+    val s, k = play("tutorial/solid-tutorial-grumbel", "300:0:blocker")
+    assert((s == 0) && (k == 5))
+}
+
+test {
+    val s, k = play("tutorial/miner-tutorial2-grumbel", "300:0:miner")
+    assert((s == 0) && (k == 0))
+}
+
+test {
+    val s, k = play("tutorial/basher-tutorial-grumbel", "500:0:basher")
+    assert((s == 0) && (k == 0))
+}
+
+test {
+    ;; the wall jump: a climber, then a jumper
+    val s, k = play("xskat/new/stone3-marcotte", "200:0:climber,480:0:jumper")
+    assert((s == 0) && (k == 0))
+}
