@@ -2,7 +2,9 @@
 ;; `test` block: the game is driven by the block, with no environment
 ;; variable of the test mode (the pilot atmos-lang#76).
 ;;
-;;      SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy ./run.sh -t tst/bomber-test.atm
+;;      ./run.sh -t tst/bomber-test.atm
+;;
+;; Under -t the environment opens no window and no audio (env-sdl).
 ;;
 ;; The block emits what the loop of the environment would: 25ms of time
 ;; per frame (`emit @:global`), then `:frame` and `:draw`; it gives the

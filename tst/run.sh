@@ -101,11 +101,14 @@ for s in options overlay; do
     fi
 done
 
-# the bomber level again, as a `test` block that drives the game itself
-# (the pilot atmos-lang#76): the window and the audio are still dummies
-./run.sh -t tst/bomber-test.atm > "$OUT/bomber-test.out" 2>&1
+# levels as `test` blocks that drive the game themselves (the pilot
+# atmos-lang#76): under -t the environment opens no window and no audio,
+# so they run with none of the variables of the test mode
+env -u SDL_VIDEODRIVER -u SDL_AUDIODRIVER -u SDL_ATM_MUTE \
+    ./run.sh -t tst/bomber-test.atm > "$OUT/bomber-test.out" 2>&1
 check bomber-test "$OUT/bomber-test.out"
-./run.sh -t tst/levels-test.atm > "$OUT/levels-test.out" 2>&1
+env -u SDL_VIDEODRIVER -u SDL_AUDIODRIVER -u SDL_ATM_MUTE \
+    ./run.sh -t tst/levels-test.atm > "$OUT/levels-test.out" 2>&1
 check levels-test "$OUT/levels-test.out"
 
 # levels, 4 at a time

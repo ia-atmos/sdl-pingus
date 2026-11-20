@@ -43,11 +43,11 @@ with no screen (see below what could not be checked).
    git clone https://github.com/ia-atmos/lang
    git clone https://github.com/ia-atmos/env-sdl
    git clone https://github.com/ia-atmos/sdl-pingus
-   git -C env-sdl checkout 9fea770
+   git -C env-sdl checkout b309151
    ```
 
    `lang` (the compiler) and `sdl-pingus` at `main`; `env-sdl` (the
-   window, the events, images, sounds, the test mode) at `9fea770`.
+   window, the events, images, sounds, the test mode) at `b309151`.
 
 3. The compiler (about 15 s):
 

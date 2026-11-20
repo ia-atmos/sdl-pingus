@@ -3,7 +3,7 @@
 ;; at the tick 1500. Their traces are those of `tst/golden/` up to that
 ;; tick (the level tests run with fast forward, these at normal speed).
 ;;
-;;      SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy ./run.sh -t tst/levels-test.atm
+;;      ./run.sh -t tst/levels-test.atm
 
 include "../engine/engine.atm"
 include "../game/game.atm"
