@@ -43,11 +43,14 @@ with no screen (see below what could not be checked).
    git clone https://github.com/ia-atmos/lang
    git clone https://github.com/ia-atmos/env-sdl
    git clone https://github.com/ia-atmos/sdl-pingus
-   git -C env-sdl checkout b309151
+   git -C lang checkout d062543
+   git -C env-sdl checkout 94cb414
    ```
 
-   `lang` (the compiler) and `sdl-pingus` at `main`; `env-sdl` (the
-   window, the events, images, sounds, the test mode) at `b309151`.
+   The compiler (`lang`) and the environment (`env-sdl`: the window, the
+   events, images, sounds, the test mode) at the commits with which the
+   tests of this repository last passed; `sdl-pingus` at `main`. The two
+   go together: a newer compiler may need a newer environment.
 
 3. The compiler (about 15 s):
 
