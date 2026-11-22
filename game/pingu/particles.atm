@@ -12,10 +12,10 @@ task PinguParticle (g, x, y) {
         pg.map_get(pos.x, pos.y) != GP.nothing
     }
 
-    loop _ in 50 + math.random(0, 74) {
+    loop in 50 + math.random(0, 74) {
         await :tick
         set vy += PINGU.gravity
-        loop _ in trunc(math.abs(vy)) {
+        loop in trunc(math.abs(vy)) {
             val s = if vy > 0 => 1 => -1
             set pos.y += s
             if hit() {
@@ -24,7 +24,7 @@ task PinguParticle (g, x, y) {
                 break
             }
         }
-        loop _ in trunc(math.abs(vx)) {
+        loop in trunc(math.abs(vx)) {
             val s = if vx > 0 => 1 => -1
             set pos.x += s
             if hit() {
@@ -41,7 +41,7 @@ task SmokeParticle (x, y, vx, vy) {
     pin pos = [x=x, y=y]
     val name = if math.random(0, 1) == 0 => "particles/smoke" => "particles/smoke2"
     spawn Sprite(name, pos, [world=true])
-    loop _ in 25 + math.random(0, 9) {
+    loop in 25 + math.random(0, 9) {
         await :tick
         set pos.x += vx
         set pos.y += vy

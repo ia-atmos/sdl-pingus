@@ -22,7 +22,7 @@ task StarfieldBackground (g, o) {
     pin stars = []
     loop _, k in [:small, :middle, :large] {
         val img = res_surface("game/stars/" ++ k ++ "_star")
-        loop _ in o@(k ++ "_stars") || 0 {
+        loop in o@(k ++ "_stars") || 0 {
             vector.insert(stars, [img=img, x=math.random(0, g.w - 1),
                                   y=math.random(0, g.h - 1), dx=math.random(1, 5)])
         }
@@ -82,7 +82,7 @@ task SnowFlake (g, x, colliding) {
 task SnowGenerator (g, o) {
     val n = if o.intensity == nil => 1.0 => o.intensity
     loop on :tick {
-        loop _ in math.floor(n) + (if (n - math.floor(n)) > math.random() => 1 => 0) {
+        loop in math.floor(n) + (if (n - math.floor(n)) > math.random() => 1 => 0) {
             spawn @(g.weather) SnowFlake(g, math.random(0, g.w - 1), math.random(0, 2) == 0)
         }
     }
@@ -127,7 +127,7 @@ task RainGenerator (g, o) {
             ;; the flash fades in 4 ticks
             pin a = [v=255]
             par :any {
-                loop _ in 4 {
+                loop in 4 {
                     await :tick
                     set a.v -= 64
                 }
@@ -139,7 +139,7 @@ task RainGenerator (g, o) {
         }
     }
     loop on :tick {
-        loop _ in 16 {
+        loop in 16 {
             spawn @(g.weather) RainDrop(g, math.random(0, (g.w * 2) - 1))
         }
     }

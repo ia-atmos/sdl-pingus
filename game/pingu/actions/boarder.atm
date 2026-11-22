@@ -18,7 +18,7 @@ task Boarder (p, g) {
             ;; until the position is the target, which with a fraction
             ;; never happens)
             val nx = pg.f32(p.x + (p.dir * speed))
-            loop _ in trunc(speed) {
+            loop in trunc(speed) {
                 val ox = p.x
                 set p.x = ox + p.dir
                 if rel(p, 1, 0) != GP.nothing {

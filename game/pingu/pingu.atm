@@ -141,7 +141,7 @@ task Mover (p) {
 
 ;; Ticks(n): awaits `n` ticks of the world.
 task Ticks (n) {
-    loop _ in n {
+    loop in n {
         await :tick
     }
 }

@@ -111,7 +111,7 @@ task Clock (g) {
                 loop {
                     while late >= 20
                     set late -= 20
-                    loop _ in 4 {
+                    loop in 4 {
                         set g.time += 1
                         emit @(:parent) :tick
                         emit @(:parent) :tock

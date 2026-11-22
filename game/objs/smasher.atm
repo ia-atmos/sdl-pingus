@@ -33,7 +33,7 @@ task Smasher (g, o) {
             await :sprite.frame until it.n == last
         }
         sound "tenton"
-        loop _ in 20 {
+        loop in 20 {
             spawn @(g.smoke) SmokeParticle(pos.x + 20 + math.random(0, 259), pos.y + 180,
                                             math.random() - 0.5, math.random() - 0.5)
         }

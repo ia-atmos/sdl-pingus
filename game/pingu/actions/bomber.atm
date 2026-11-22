@@ -42,7 +42,7 @@ task Bomber (p, g) {
         await(false)
     } with {
         await :sprite.frame until it.n == 13
-        loop _ in 50 {
+        loop in 50 {
             spawn @(g.particles) PinguParticle(g, trunc(p.x), trunc(p.y) - 5)
         }
         val gfx = res_surface("other/bomber_radius_gfx")
