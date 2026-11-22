@@ -9,7 +9,7 @@
 ;; it returns selects the next one.
 ;;
 ;; The options are global: F5, or the button of the menu, pause the
-;; screens (a `toggle` block) and show the options over them. The
+;; screens (a `mute` block) and show the options over them. The
 ;; overlay (the cursor of the game, the frames per second) is the last
 ;; branch, so that it draws over all the others.
 
@@ -39,7 +39,7 @@ pin args = [...]
 val file = args@0
 
 par :any {
-    toggle on :screens {
+    mute on :screens.mute {
         ifs {
             file == nil => {
                 loop {
@@ -78,9 +78,9 @@ par :any {
 } with {
     loop {
         await <:go.options || :key.dn [key="F5"]>
-        emit :screens [false]
+        emit :screens.mute [true]
         await Options()
-        emit :screens [true]
+        emit :screens.mute [false]
     }
 } with {
     ;; on top of all the screens: the cursor of the game, the frames

@@ -21,7 +21,7 @@ The game loop does not emit the update of the world while
 
 `game/game.atm`: the time of the world comes from a task, the `Clock`,
 which emits `:tick` to the game. Pausing the world is pausing that
-task with `toggle`:
+task with `mute`:
 
 ```
 pin clock = spawn Clock()
@@ -30,7 +30,7 @@ pin clock = spawn Clock()
 spawn {
     loop {
         val e = await <:game.pause || :game.step>
-        toggle clock(false)
+        mute clock(true)
         if e ?? :game.step {
             emit :tick
         }
@@ -41,7 +41,7 @@ spawn {
                 emit :tick
             }
         }
-        toggle clock(true)
+        mute clock(false)
     }
 }
 ```
@@ -95,25 +95,25 @@ the options.
 
 ```
 par :any {
-    toggle on :screens {
+    mute on :screens.mute {
         <...the menu and the screens...>
     }
 } with {
     loop {
-        await <:go.options || :sdl.key.dn [name="F5"]>
-        emit :screens [false]
+        await <:go.options || :key.dn [name="F5"]>
+        emit :screens.mute [true]
         await Options()
-        emit :screens [true]
+        emit :screens.mute [false]
     }
 } with {
     await Overlay()         ;; the cursor of the game, the frames
 } with {
-    await :sdl.quit
+    await :quit
 }
 ```
 
-- `toggle on :screens` is the `pause/if` of Céu. When off, the block
-  receives no event at all, not even `:sdl.draw`: the paused screen is
+- `mute on :screens.mute` is the `pause/if` of Céu. When muted, the block
+  receives no event at all, not even `:draw`: the paused screen is
   not drawn, and the options take the screen.
 - The menu asks for the options with a global event,
   `emit @(:global) :go.options`, since the menu is a task deep inside

@@ -6,7 +6,7 @@
 ;;    ground, liquids and exits, particles, pingus, front hotspots, and
 ;;    the other objects; then the panel and the playfield;
 ;;  - the world moves with `:tick` (20ms), which the Clock emits to the
-;;    game; pausing the world is pausing the Clock (`toggle`);
+;;    game; pausing the world is muting the Clock (`mute`);
 ;;  - the game ends when its goal is reached; then the block ends, and
 ;;    with it every pingu, particle, and object.
 
@@ -247,7 +247,7 @@ task Game (path, orders) {
     spawn {
         loop {
             val e = await <:game.pause || :game.step>
-            toggle clock(false)
+            mute clock(true)
             if e ?? :game.step {
                 set g.time += 1
                 emit :tick
@@ -262,7 +262,7 @@ task Game (path, orders) {
                     emit :tock
                 }
             }
-            toggle clock(true)
+            mute clock(false)
         }
     }
 

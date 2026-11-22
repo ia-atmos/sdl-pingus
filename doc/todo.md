@@ -7,7 +7,7 @@ cannot happen by construction), **open**, or **out** (out of scope).
 | Issue (Céu) | Port | How |
 |-------------|------|-----|
 | smallmap viewport vs total rectangles do not match (snow17) | fixed | the view is drawn from `CAM` and the size of the level, with the same scale as the map |
-| pause/fwd with mouse/buttons have bugs | fixed | the clock of the world is paused with `toggle`, and the buttons follow the events `:game.pause`, `:game.ff.on/off` (tested in `tst/clicks.sh`) |
+| pause/fwd with mouse/buttons have bugs | fixed | the clock of the world is paused with `mute`, and the buttons follow the events `:game.pause`, `:game.ff.on/off` (tested in `tst/clicks.sh`) |
 | gfx: menu icebergs, fade, credits below blackboard | fixed (icebergs, credits) | the layers of the menu move; the credits are only drawn inside the board |
 | BUG: playfield lines, background does not repeat | fixed | the background is tiled in both directions, with its parallax |
 | TODO: configuration of input events, controllers | out | the keys of the original are fixed in `game/game.atm` |

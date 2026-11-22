@@ -49,7 +49,7 @@ loop _, page in st.pages {
     <...the image of the page...>
     val shown = [n=0, t=0]
     spawn {
-        loop on :sdl.draw {
+        loop on :draw {
             text(FONT.chalk_normal, string.sub(txt, 0, shown.n - 1), ...)
         }
     }
@@ -62,13 +62,13 @@ loop _, page in st.pages {
     } with {
         await Button(nr, "core/misc/next", "core/misc/next_hover", "core/misc/next")
     } with {
-        await :sdl.key.dn until X.xin(it.name, ["F", "Space", "Return"])
+        await :key.dn until X.xin(it.name, ["F", "Space", "Return"])
     }
     set shown.n = #txt
     par :any {
         await Button(nr, "core/misc/next", "core/misc/next_hover", "core/misc/next")
     } with {
-        await :sdl.key.dn until X.xin(it.name, ["F", "Space", "Return"])
+        await :key.dn until X.xin(it.name, ["F", "Space", "Return"])
     }
 }
 ```

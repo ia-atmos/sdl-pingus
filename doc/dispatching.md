@@ -38,7 +38,7 @@ task Sprite (name, pos, o) {
             until advance(33)
         }
     } with {
-        loop on :sdl.draw {
+        loop on :draw {
             pg.part(k.img, <...the frame...>, pos.x - cam.x - k.dx, pos.y - cam.y - k.dy)
         }
     }
@@ -53,7 +53,7 @@ task Bomber (p, g) {
 ## Discussion
 
 - As in Céu, there is no `draw` nor `update` to forward: every task
-  awaits `:sdl.draw` and the time (`:tick`, or `:clock`) itself. The
+  awaits `:draw` and the time (`:tick`, or `:clock`) itself. The
   tree of tasks is the dispatch.
 - The draw order is the order of the tree: the game pins its layers as
   pools, in order (backgrounds, the ground, liquids and exits,

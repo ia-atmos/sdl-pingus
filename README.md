@@ -43,7 +43,7 @@ with no screen (see below what could not be checked).
    git clone https://github.com/ia-atmos/lang
    git clone https://github.com/ia-atmos/env-sdl
    git clone https://github.com/ia-atmos/sdl-pingus
-   git -C lang checkout d062543
+   git -C lang checkout 4b4d3c4
    git -C env-sdl checkout 94cb414
    ```
 

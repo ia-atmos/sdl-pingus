@@ -81,11 +81,11 @@ justified in a comment, or removed.
 | PinguParticle | livetime | period | `loop i in [0->livetime[` | `loop _ in n` |
 | | particles | lifespan | pool | pool |
 | SmokeParticle | livetime | period | loop | loop |
-| SmallMap | scroll_mode | control | --- | `watching :sdl.mouse.up` |
+| SmallMap | scroll_mode | control | --- | `watching :mouse.button.up` |
 | SmallMapImage | update_count | period | var | the C map rebuilds on change |
-| Playfield | mouse_scrolling | control | --- | `watching :sdl.mouse.up until it.but == 3` |
+| Playfield | mouse_scrolling | control | --- | `watching :mouse.button.up until it.but == 3` |
 | Armageddon | pressed, press_time | control | loop, `watching 1s` | loop, `watching 1s` |
-| PauseButton | is_paused | control | var in `input.ceu` | the code position (`toggle clock`) |
+| PauseButton | is_paused | control | var in `input.ceu` | the code position (`mute clock`) |
 | FastForward | is_fast_forwarded | control | var in `input.ceu` | the code position of the clock |
 | | do_single_step | control | var | `emit :tick` |
 | GoalManager | in_armageddon | control | var | `await :game.armageddon` in a branch |

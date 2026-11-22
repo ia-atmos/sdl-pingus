@@ -45,6 +45,6 @@ The Atmos code is in this repository.
 | `escape v` | `return v`, the last value, or `break v` |
 | `do ... finalize ... end` | `defer { ... }` |
 | `event T e`, `emit e(v)`, `await e` | `emit :e [v]`, `await :e` (tags) |
-| `pause/if e do ... end` | `toggle t(false)`, `toggle on :e { ... }` |
+| `pause/if e do ... end` | `mute t(true)`, `mute on :e { ... }` |
 | `var&` alias to data of another unit | a table shared by reference, or `pub` |
 | `outer.x` | a variable captured by the closure, or an argument |
