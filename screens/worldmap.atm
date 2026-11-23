@@ -231,7 +231,7 @@ task WmView (wm) {
     }
     pin lr = do {
         val w, h = res_frame_size("core/worldmap/leave_button_normal")
-        [x=W - w - 10, y=H - h - 10, w=w, h=h]
+        [x=0, y=H - 37, w=w, h=h]   ;; as the original
     }
     spawn {
         loop on :draw {
@@ -242,6 +242,9 @@ task WmView (wm) {
         await Button(lr, "core/worldmap/leave_button_normal", "core/worldmap/leave_button_hover",
                          "core/worldmap/leave_button_pressed")
         nil
+    } with {
+        ;; over the button
+        await Label(tr("Leave?"), 44, H - 25, FONT.chalk_small)
     } with {
         await Key("Escape")
         nil
