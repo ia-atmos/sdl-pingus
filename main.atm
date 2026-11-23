@@ -35,8 +35,7 @@ func ends (s, suffix) {
     (#s >= #suffix) && (string.sub(s, #s - #suffix) == suffix)
 }
 
-pin args = [...]
-val file = args@0
+val file = ...
 
 par :any {
     mute on :screens.mute {
@@ -58,7 +57,7 @@ par :any {
                 pin ls = data_load(file)
                 set ls.paths = []
                 loop _, l in ls.levels {
-                    vector.insert(ls.paths, "data/levels/" ++ l.filename ++ ".pingus.atm")
+                    set ls.paths@+ = "data/levels/" ++ l.filename ++ ".pingus.atm"
                 }
                 loop {
                     val j = await Levels(ls)
