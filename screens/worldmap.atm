@@ -87,12 +87,16 @@ func wm_path (wm, a, b) {
     path
 }
 
-;; A worldmap smaller than the screen is centered, as the original.
+;; A worldmap smaller than the screen is centered, as the original. The
+;; camera follows the pingu in whole pixels (`static_cast<int>` of the
+;; original): with a fraction, each drawing truncated its own position,
+;; and what was partly out of the screen moved a pixel apart.
 func wm_cam (wm, x, y) {
+    val px, py = trunc(x), trunc(y)
     set CAM.x = if wm.head.width < W => -((W - wm.head.width) // 2) =>
-        math.max(0, math.min(wm.head.width - W, x - (W//2)))
+        math.max(0, math.min(wm.head.width - W, px - (W//2)))
     set CAM.y = if wm.head.height < H => -((H - wm.head.height) // 2) =>
-        math.max(0, math.min(wm.head.height - H, y - (H//2)))
+        math.max(0, math.min(wm.head.height - H, py - (H//2)))
 }
 
 ;; The pingu of the worldmap: walks to the target of the player, one
