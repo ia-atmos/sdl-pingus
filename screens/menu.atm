@@ -59,6 +59,7 @@ task Menu () {
     }
     par :any {
         await MenuButton(-125, -20, "Story")
+        sound "letsgo"      ;; as the original (PingusMenu::do_start)
         :story
     } with {
         await MenuButton(125, -20, "Credits")
