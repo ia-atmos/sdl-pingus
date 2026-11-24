@@ -121,7 +121,10 @@ references in the history; the open ones are numbered here.
 
 ## D. Older items
 
-0. Where to report (2026-11-18): about `pin`, the session `atmos-pin`
+0. Coordination, status and questions for the author (2026-11-24): the
+   session `atmos` (`session_011eECohhJbc4GMpAj3yyeEo`); measurements and
+   merges of the compiler stay with `atmos-lang`.
+   Where to report (2026-11-18): about `pin`, the session `atmos-pin`
    (`session_011eECogSDhkVfyt7qme5DLh`), with a small program; anything
    else of the compiler, the session `atmos-lang`
    (`session_011eECogKVQ7ZzmWCoMST2wK`); the SDL environment, `env-sdl`
