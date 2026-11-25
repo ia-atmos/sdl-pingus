@@ -333,10 +333,8 @@ task Game (path, orders) {
         await :key.dn until it.key == "Escape"
         true
     }
-    ;; as the original, the world goes on until the time is past 125
-    ;; ticks after the goal (`exit_time < time`): 126 ticks
     if quit != true {
-        await Ticks(126)
+        await Ticks(125)
     }
 
     [

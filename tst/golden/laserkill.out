@@ -17,7 +17,7 @@ view 380 240
   711 pingu  1 laserkill  402  477
   722 pingu  0 splashed  1178 1199
   723 pingu  0 dead      1178 1199
-  729 pingu  1 dead       402  477
+  728 pingu  1 dead       402  477
   754 pingu  4 faller     780  440
   786 pingu  4 walker     780  525
   810 pingu  2 faller    1081  544
@@ -30,7 +30,7 @@ view 380 240
  1013 pingu  3 laserkill  402  477
  1024 pingu  2 splashed  1178 1199
  1025 pingu  2 dead      1178 1199
- 1031 pingu  3 dead       402  477
+ 1030 pingu  3 dead       402  477
  1056 pingu  6 faller     780  440
  1088 pingu  6 walker     780  525
  1112 pingu  4 faller    1081  544
@@ -43,11 +43,11 @@ view 380 240
  1315 pingu  5 laserkill  402  477
  1326 pingu  4 splashed  1178 1199
  1327 pingu  4 dead      1178 1199
- 1333 pingu  5 dead       402  477
+ 1332 pingu  5 dead       402  477
  1414 pingu  6 faller    1081  544
  1454 pingu  6 walker    1081  683
  1551 pingu  6 faller    1178  683
  1617 pingu  7 laserkill  402  477
  1628 pingu  6 splashed  1178 1199
  1629 pingu  6 dead      1178 1199
- 1635 pingu  7 dead       402  477
+ 1634 pingu  7 dead       402  477

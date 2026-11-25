@@ -6,11 +6,7 @@ task Guillotine (g, o) {
         ;; idle, until a pingu is under it
         val dir = watching :guillotine.kill {
             spawn Sprite("traps/guillotineidle", pos, [world=true])
-            ;; as the original, which frees the guillotine at the start of
-            ;; the update in which its kill ends, and may kill again in
-            ;; that same update: the first check is in the tick that the
-            ;; kill ended, and then at each tick
-            loop {
+            loop on :tick {
                 loop _, t in g.pingus {
                     val q = t.pub
                     if (q.x > pos.x+38) && (q.x < pos.x+42) && (q.y > pos.y+90) && (q.y < pos.y+98) {
@@ -19,7 +15,6 @@ task Guillotine (g, o) {
                         emit :guillotine.kill [dir=d]
                     }
                 }
-                await :tick
             }
         }
         ;; the kill

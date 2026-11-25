@@ -2,8 +2,5 @@
 
 task Laserkill (p, g) {
     await Sprite("other/laser_kill", p, [world=true, turn=true])
-    ;; the original checks whether its clock has finished before it
-    ;; advances it: the pingu dies at the tick after the last frame
-    await :tick
     :dead
 }

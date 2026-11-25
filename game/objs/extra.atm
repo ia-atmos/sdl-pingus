@@ -180,28 +180,16 @@ task FakeExit (g, o) {
 task Hammer (g, o) {
     pin pos = [x=o.position@0, y=o.position@1]
     pin one = [world=true, speed=33, loop=false]
-    ;; as the count of the original (13 steps): down one frame per tick,
-    ;; it splashes at the last frame, and goes up to the first frame,
-    ;; from which it goes down again at the next tick
-    val d = res_desc("traps/hammer")
-    val last = (d.array@0 * d.array@1) - 1
+    ;; down, one frame per tick, it splashes, and goes up
     loop {
-        par :any {
-            await Sprite("traps/hammer", pos, one)
-        } with {
-            await :sprite.frame until it.n == last
-        }
+        await Sprite("traps/hammer", pos, one)
         loop _, t in g.pingus {
             val q = t.pub
             if (q.act != :splashed) && in_zone(pos, q, 55, 146, 77, 185) {
                 emit @t :pingu.set [act=:splashed]
             }
         }
-        par :any {
-            await Sprite("traps/hammer", pos, one ++ [back=true])
-        } with {
-            await :sprite.frame until it.n == 0
-        }
+        await Sprite("traps/hammer", pos, one ++ [back=true])
     }
 }
 

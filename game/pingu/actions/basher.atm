@@ -59,10 +59,7 @@ task Basher (p, g) {
                         turn(p)
                         return :walker
                     }
-                    ;; the first check finds something without looking, as
-                    ;; the original (a step that does not fall always
-                    ;; reaches the check)
-                    (i == 0) || basher_something(p) => {
+                    basher_something(p) => {
                         if (c % 2) == 0 {
                             basher_bash(p)
                         }
