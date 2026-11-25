@@ -45,13 +45,14 @@ differ.
 | the compiler `ia-atmos/lang` `c467e60` (the order of a loop over the pingus while traps kill them) | 145 | 9 | 5 |
 | the bomber, the smasher, and the basher as the official update | 149 | 5 | 5 |
 | the laser exit, the guillotine, the hammer, and the end of a level as the official update | **154** | 0 | 5 |
+| the timings of a tick relaxed (`17480e9`, `49c7fff`): see the deliberate differences | 146 | 8 | 5 |
 
 The faithful version is the commit `3ef9c0f` (2026-11-20): any later
 change that alters a trace on purpose is listed here as a deliberate
 difference.
 
-So all the 154 demos that the official game plays give the same
-trace in the port: every pingu, every change of action, at the same
+So, at `3ef9c0f`, all the 154 demos that the official game plays gave
+the same trace in the port: every pingu, every change of action, at the same
 tick and the same pixel, up to the tick 39000.
 
 The last five were found the same way, by the per-tick trace of the
@@ -137,6 +138,31 @@ Found with the traces of both games:
 A danger (water, out of the screen) no longer aborts an action from
 outside: as the official game, the actions check the water themselves,
 and only leaving the screen kills a pingu at any time.
+
+## Deliberate differences
+
+After the faithful version, the timings of a tick that are accidents of
+the official update went back to the forms of Atmos (an action ends
+when its animation ends, a trap acts at a frame of its sprite), keeping
+the intent: what kills, what saves, and about when. Each differs from
+the official game by a tick or a few pixels, and in 8 demos that
+changes a trace (2026-11-25):
+
+| Demo | Cause | The difference |
+|------|-------|----------------|
+| `hellmouth05-grumbel` | the bomber dies at the end of its animation | a falling bomber dies 8 pixels higher |
+| `intensiv-timpany` | the same | bombers die 1 pixel higher |
+| `real6` | the smasher smashes when its animation ends | a pingu is smashed 1 tick later, 1 pixel ahead |
+| `indiana-yingwan` | the hammer smashes when its animation ends | a pingu walks past the hammer, and is smashed at the next stroke (15 ticks later) |
+| `stone-castle-timpany` | the same | a pingu that the original lets pass is smashed |
+| `snow1` | the laser kill ends with its animation | the pingus die 1 tick earlier |
+| `xmas-blockblow-timpany` | the guillotine checks at each tick, after its kill | another pingu of the queue is taken first, and the order of the deaths changes |
+| `pingusworld3-pacho` | the end of a level, 125 ticks after the goal | the level ends 1 tick earlier, before the last change of a pingu |
+
+The other changes of `17480e9` (the basher looks for something to bash
+at every check, the spike kills when its frame 3 starts) change no
+trace. The relaxed actions are those that the earlier list of fixes
+names; the rest of the port is still the official update, tick by tick.
 
 ## What the demos do not cover
 
