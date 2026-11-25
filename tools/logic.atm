@@ -1,0 +1,23 @@
+;; The game logic alone, for the benchmark (doc/bench.md): a level with
+;; the orders of a demo, played to its end, one tick of the world
+;; (20ms) per step, with no `:draw`: nothing is drawn, the CPU is that of
+;; the logic (the pingus, the objects, the ground maps).
+;;
+;;      LEVEL=data/levels/....pingus.atm ORDERS="t:n:act,..." \
+;;          ./run.sh -t tools/logic.atm
+
+include "../engine/engine.atm"
+include "../game/game.atm"
+
+test {
+    math.randomseed(0)
+    pin g = spawn Game(os.getenv("LEVEL"), os.getenv("ORDERS") || "")
+    var n = 0
+    loop {
+        until g.ret
+        set n += 1
+        emit @:global (20000)
+        emit(:frame [n=n, us=20000])
+    }
+    print(string.format("ticks %d, saved %d, killed %d", g.ret.time, g.ret.saved, g.ret.killed))
+}
