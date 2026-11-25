@@ -137,3 +137,24 @@ Found with the traces of both games:
 A danger (water, out of the screen) no longer aborts an action from
 outside: as the official game, the actions check the water themselves,
 and only leaving the screen kills a pingu at any time.
+
+## What the demos do not cover
+
+The comparison checks the trace of the logic only (each change of
+action of each pingu, with its tick and position), and only in the
+levels that have a demo. It does not see the drawing, the sound, the
+screens out of a level, nor what no demo exercises. Counted on the 154
+official traces (2026-11-25):
+
+- Actions never exercised: `angel`, `boarder`, `smashed`, `superman`
+  (none of them was in the Céu rewrite; they are checked against the
+  official code only by reading). `laserkill` is in 1 demo.
+- Objects never in a compared level: `fake_exit` (11 levels) and
+  `starfield_background` (4, drawing only). Few: `conveyorbelt` (2
+  demos), `hammer` (3), `smasher` and `iceblock` (4), `laser_exit` (5),
+  `guillotine` and `teleporter` (6).
+
+The rest is exercised widely: `walker` and `faller` in more than 146
+demos, `bridger`, `blocker`, `waiter`, `basher` in 77 to 109,
+`splashed` in 60, `drown` in 33.
+

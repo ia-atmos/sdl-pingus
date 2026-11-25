@@ -43,6 +43,8 @@ references in the history; the open ones are numbered here.
 | #23 | Dead code found in the evaluation of #2: the task `Mover` has no caller, and the branch of `Pingu` for a forced `:drown`/`:splashed` cannot run since `Danger` only gives `:dead` | open (removal with identical traces) |
 | #24 | The weather costs about 18 ms of CPU per tick in `pingusworld3-pacho` (5 snow generators and rain): a task per flake and per drop, where the original has a vector; found by #17 | open (one task for all the particles of a generator, as the stars; no trace changes) |
 | #25 | The laser exit may have the off-by-one that the guillotine had (it waits for the next tick after its animation); no demo exercises it | open (to check against the official code) |
+| #26 | (b) The coverage of the demos: never compared, the actions `angel`, `boarder`, `smashed`, `superman` and the object `fake_exit`; few, the laser exit, the conveyor belt, the hammer, the smasher, the ice (`doc/fidelity.md`) | done; the uncovered ones to check by reading against the official code |
+| #27 | (a) Screenshots of the official game compared with the port, pixel by pixel, in the screens and levels | open, approved by the author |
 
 ## A. Decisions waiting for the author
 
