@@ -116,9 +116,9 @@ done
 # levels, 4 at a time
 grep -v '^#' tst/levels.txt | grep -v '^\s*$' | \
 while read name frames level orders keys; do
-    [ "$orders" = "-" ] && orders=""
-    [ "$keys" = "-" ] && keys=""
-    echo "tst/play.sh data/levels/$level.pingus.atm $frames '$orders' '$keys' > $OUT/$name.out 2>&1"
+    # "-" for none, passed as is: xargs removes the quotes of an empty
+    # argument, which then shifted the keys into the orders
+    echo "tst/play.sh data/levels/$level.pingus.atm $frames $orders $keys > $OUT/$name.out 2>&1"
 done | xargs -P 4 -I{} sh -c {}
 for name in $(grep -v '^#' tst/levels.txt | grep -v '^\s*$' | awk '{print $1}'); do
     check "$name" "$OUT/$name.out"
