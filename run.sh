@@ -25,6 +25,8 @@ FILE=${1:-main.atm}
 [ $# -gt 0 ] && shift
 
 export ATMOS_CFLAGS="${ATMOS_CFLAGS:--O2} -I$ROOT"
+# the reals of the game are `float`, as those of the original
+export ATMOS_FLOAT=32
 export ATMOS_LDFLAGS="${ATMOS_LDFLAGS:+$ATMOS_LDFLAGS }-lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -lm"
 
 cd "$ROOT" && exec "$ATMOS" "$FILE" "$@"

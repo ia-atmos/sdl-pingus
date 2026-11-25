@@ -208,19 +208,17 @@ view 237 88
   231 pingu 64 walker    1171  321
   236 pingu 99 exited    1840  324
   241 pingu 74 faller    1171  264
-  251 pingu  0 faller      46  633
+  252 pingu  0 faller      46  633
   257 pingu 44 exiter    1840  324
   267 pingu 74 walker    1171  321
   274 pingu 44 exited    1840  324
   275 pingu 72 faller    1171  264
-  287 pingu  0 walker      46  747
+  288 pingu  0 walker      46  747
   289 pingu 43 exiter    1840  324
-  293 pingu  0 faller      52  748
   301 pingu 72 walker    1171  321
   306 pingu 43 exited    1840  324
   314 pingu 81 faller    1171  264
   323 pingu 33 exiter    1840  324
-  331 pingu  0 walker      52  877
   332 pingu 68 faller    1171  264
   340 pingu 33 exited    1840  324
   340 pingu 81 walker    1171  321
@@ -228,12 +226,13 @@ view 237 88
   358 pingu 37 exiter    1840  324
   369 pingu 83 faller    1171  264
   375 pingu 37 exited    1840  324
+  383 pingu  0 faller      52  748
   392 pingu 35 exiter    1840  324
   395 pingu 83 walker    1171  321
   407 pingu 82 faller    1171  264
   409 pingu 35 exited    1840  324
   411 pingu  4 faller    1147  293
-  419 pingu  0 faller      19  884
+  421 pingu  0 walker      52  877
   426 pingu 31 exiter    1840  324
   433 pingu  4 walker    1147  332
   433 pingu 82 walker    1171  321
@@ -243,7 +242,6 @@ view 237 88
   460 pingu 69 walker    1171  321
   461 pingu  2 walker    1147  332
   461 pingu 27 exiter    1840  324
-  462 pingu  0 walker      19 1049
   462 pingu 59 faller    1171  264
   468 pingu  6 faller    1147  293
   478 pingu  4 faller    1102  338
@@ -255,6 +253,7 @@ view 237 88
   496 pingu 28 exiter    1840  324
   497 pingu  3 faller    1147  293
   506 pingu  2 faller    1102  338
+  509 pingu  0 faller      19  884
   513 pingu 28 exited    1840  324
   517 pingu 95 walker    1171  321
   519 pingu  3 walker    1147  332
@@ -268,6 +267,7 @@ view 237 88
   550 pingu 26 exited    1840  324
   551 pingu  5 walker    1147  332
   551 pingu  6 walker    1102  356
+  552 pingu  0 walker      19 1049
   556 pingu  7 faller    1147  293
   564 pingu  3 faller    1102  338
   570 pingu 25 exiter    1840  324
