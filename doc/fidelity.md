@@ -118,8 +118,10 @@ Read in the official code first:
 
 Found with the traces of both games:
 
-- positions and velocities are `float` (32 bits): the mover is in C
-  (`pg_move`), and gravity accumulates in `float`, as the original;
+- positions and velocities are `float` (32 bits), as the original:
+  the build has `ATMOS_FLOAT=32` (`run.sh`), so the reals of Atmos are
+  `float`, and the mover and the gravity are in Atmos (the mover was in
+  C, `pg_move`, until #18);
 - objects are at their real positions (the conversion had rounded
   them), and are set up in the order of their depth, which decides
   which of two objects acts first on a pingu in a tick;

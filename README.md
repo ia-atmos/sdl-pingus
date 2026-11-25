@@ -111,7 +111,7 @@ and macOS.
 ```
 main.atm            the sequence of screens
 engine/             the engine
-    pingus.h        C of the game: images with modifiers, fonts, ground maps, mover
+    pingus.h        C of the game: images with modifiers, fonts, ground maps
     sdl.atm         the environment env-sdl, and the Atmos functions over pingus.h
     engine.atm      sprites (a task each), fonts, mouse, widgets
 game/               the game screen
