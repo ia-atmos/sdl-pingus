@@ -30,7 +30,7 @@ references in the history; the open ones are numbered here.
 | #10 | Stale counts in `doc/fidelity.md` and `doc/bench.md` (B.7, B.8) | done: fidelity updated (12 solved); bench was right (4 ticks per 20 ms is 5 per frame of 25 ms) |
 | #11 | The 5 demos the official game cannot load (B.9) | no action possible |
 | #12 | Language features that would help (B.10) | sent to `atmos-lang`, informational |
-| #13 | The author's own test of Pingus, with the step by step of the README (it pins the compiler `98e4787` and env-sdl `94cb414`, 2026-11-22) | waits for the author (he will test) |
+| #13 | The author's own test of Pingus, with the step by step of the README | done (the author, 2026-11-25): it found #19, #20, #21, all fixed |
 | #14 | A pin given away by `until`, missed by the warning (`atmos-pin#11`); fixed in Pingus (`0c6ab51`), and in the compiler on the branch `pin` | done here; waits for the merge |
 | #15 | The pilot `atmos-lang#76`: the bomber level as a `test` block (`tst/bomber-test.atm`, `f0c33d5`, `5519184`); the dummy drivers remain, for env-sdl | done, reported |
 | #16 | Five more levels as `test` blocks (`tst/levels-test.atm`): digger, blocker, miner, basher, the wall jump; traces as the goldens up to tick 1500 | done, by the session |
