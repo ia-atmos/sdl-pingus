@@ -2,7 +2,7 @@
 
 task Slider (p, g) {
     spawn Sprite(pspr(p, "slider"), p, PSPR)
-    var speed = pg.f32(10.0)
+    var speed = (10.0)
     loop on :tick {
         var i = 0
         loop {
@@ -14,7 +14,7 @@ task Slider (p, g) {
             }
             set i += 1
         }
-        set speed = pg.f32(speed - pg.f32(7 * 0.025))
+        set speed = (speed - (7 * 0.025))
         if speed < 1 {
             return :walker
         }

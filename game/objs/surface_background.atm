@@ -30,10 +30,10 @@ task SurfaceBackground (g, o) {
         if (sx != 0) || (sy != 0) {
             loop on :tick {
                 if sx != 0 {
-                    set scroll.x = wrap(pg.f32(scroll.x + sx), w)
+                    set scroll.x = wrap((scroll.x + sx), w)
                 }
                 if sy != 0 {
-                    set scroll.y = wrap(pg.f32(scroll.y + sy), h)
+                    set scroll.y = wrap((scroll.y + sy), h)
                 }
             }
         }

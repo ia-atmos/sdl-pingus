@@ -16,10 +16,10 @@
 ;;      wall, fall  the persistent abilities: `:climber`, `:floater`
 ;;      owner       the player, for the names of the sprites
 
-pin PINGU = [               ;; in `float`, as the original
-    gravity  = pg.f32(0.2),
-    deadly   = pg.f32(10.4),    ;; deadly velocity
-    terminal = pg.f32(11.0),    ;; terminal velocity
+pin PINGU = [               ;; reals of 32 bits, as the `float` of the original
+    gravity  = 0.2,
+    deadly   = 10.4,            ;; deadly velocity
+    terminal = 11.0,            ;; terminal velocity
     height   = 26,
 ]
 
@@ -110,23 +110,62 @@ func can (p, b) {
 
 ;;; MOVER ;;;
 
+;; Whether a step `sx,sy` from `x,y` collides, as `PinguCollider` of
+;; the original: a step to another column checks the whole height of the
+;; pingu; a step up, its head; a step down, its feet. A bridge stops only
+;; a fall.
+func collides (x, y, sx, sy) {
+    val nx, ny = x + sx, y + sy
+    val falling = sy > 0.0
+    ifs {
+        trunc(nx) != trunc(x) => {
+            var yy = ny
+            val top = ny - PINGU.height
+            loop {
+                while yy >= top
+                val px = pg.map_get(trunc(nx), trunc(yy))
+                until (px != GP.nothing) && !((px == GP.bridge) && !falling), true
+                set yy -= 1.0
+            } || false
+        }
+        !falling => do {
+            val px = pg.map_get(trunc(nx), trunc(ny - PINGU.height))
+            (px != GP.nothing) && (px != GP.bridge)
+        }
+        else => pg.map_get(trunc(nx), trunc(ny)) != GP.nothing
+    }
+}
+
 ;; Moves the pingu with its velocity, one unit at a time, up to a
-;; collision, as the original (in C, with its `float`). Returns whether
-;; it collided.
+;; collision, as `LinearMover` of the original; returns whether it
+;; collided. The reals are `float` (the build has `ATMOS_FLOAT=32`): the
+;; rounding of 32 bits decides when a falling pingu crosses a pixel.
 func move (p) {
     if (p.vx == 0) && (p.vy == 0) {
         return false
     }
-    val hit, x, y = pg.move(p.x, p.y, p.vx, p.vy, PINGU.height)
+    val len2 = (p.vx * p.vx) + (p.vy * p.vy)
+    val inv = 1.0 / math.sqrt(len2)
+    val sx, sy = p.vx * inv, p.vy * inv
+    var x, y = p.x, p.y
+    val hit = loop in trunc(math.sqrt(len2)) {
+        val h = collides(x, y, sx, sy)
+        set x += sx
+        set y += sy
+        until h, true
+    } || false
+    if hit {
+        set x -= sx
+        set y -= sy
+    }
     set p.x = x
     set p.y = y
     hit
 }
 
-;; A velocity of the original: clamped to the terminal velocity, and in
-;; `float`.
+;; A velocity of the original: clamped to the terminal velocity.
 func vel (v) {
-    pg.f32(clamp(v, -PINGU.terminal, PINGU.terminal))
+    clamp(v, -PINGU.terminal, PINGU.terminal)
 }
 
 ;; Mover(p): moves the pingu at each tick, and signals each collision

@@ -13,11 +13,11 @@ task Boarder (p, g) {
     var speed = 0.0
     loop on :tick {
         if (rel(p, 0, -1) != GP.nothing) || (rel(p, 0, -2) != GP.nothing) {
-            set speed = pg.f32(math.min(15.0, speed + pg.f32(15 * 25 / 1000)))
+            set speed = (math.min(15.0, speed + (15 * 25 / 1000)))
             ;; one pixel at a time, then the fraction (the original steps
             ;; until the position is the target, which with a fraction
             ;; never happens)
-            val nx = pg.f32(p.x + (p.dir * speed))
+            val nx = (p.x + (p.dir * speed))
             loop in trunc(speed) {
                 val ox = p.x
                 set p.x = ox + p.dir
