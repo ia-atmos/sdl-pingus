@@ -5,6 +5,9 @@
 - `PINGUS_TRACE=1`: the trace of the actions of the pingus, in the
   format of the port (time, pingu, action, x, y);
 - `PINGUS_COUNT=1`: the number of frames drawn, printed at exit.
+- `PINGUS_SHOT=frame:file.png,...`: screenshots at frames, to compare
+  the screens with those of the port (`SDL_ATM_SHOT` there); run it
+  with `-g 800x600`, the size of the port.
 
 ```
 git clone https://github.com/Pingus/pingus official

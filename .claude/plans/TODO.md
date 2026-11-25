@@ -45,6 +45,8 @@ references in the history; the open ones are numbered here.
 | #25 | The laser exit may have the off-by-one that the guillotine had (it waits for the next tick after its animation); no demo exercises it | open (to check against the official code) |
 | #26 | (b) The coverage of the demos: never compared, the actions `angel`, `boarder`, `smashed`, `superman` and the object `fake_exit`; few, the laser exit, the conveyor belt, the hammer, the smasher, the ice (`doc/fidelity.md`) | done; the uncovered ones to check by reading against the official code |
 | #27 | (a) Screenshots of the official game compared with the port, pixel by pixel, in the screens and levels | open, approved by the author |
+| #28 | (a) The start screen of a level: the description wraps one word later, the three lines of numbers are 3 px lower, the author 5 px lower, Play 10 px to the right, than the official | open |
+| #29 | (a) The worldmap: the port draws the title of the worldmap, the official does not; and a dot near a rock that the official does not show | open |
 
 ## A. Decisions waiting for the author
 

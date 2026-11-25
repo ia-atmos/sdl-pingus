@@ -1,14 +1,16 @@
 diff --git a/src/engine/display/display.cpp b/src/engine/display/display.cpp
-index 69dcefc..c0a8704 100644
+index 69dcefc..074dfb2 100644
 --- a/src/engine/display/display.cpp
 +++ b/src/engine/display/display.cpp
-@@ -1,3 +1,5 @@
+@@ -1,3 +1,7 @@
 +#include <cstdio>
 +#include <cstdlib>
++#include <string>
++#include "engine/display/screenshot.hpp"
  // Pingus - A free Lemmings clone
  // Copyright (C) 2000 Ingo Ruhnke <grumbel@gmail.com>
  //
-@@ -38,6 +40,14 @@ std::unique_ptr<Framebuffer> Display::s_framebuffer;
+@@ -38,6 +42,29 @@ std::unique_ptr<Framebuffer> Display::s_framebuffer;
  void
  Display::flip_display()
  {
@@ -20,6 +22,21 @@ index 69dcefc..c0a8704 100644
 +    atexit([]() { fprintf(stderr, "frames: %d\n", frames); });
 +  }
 +  frames++;
++  // Benchmark patch: screenshots at frames (PINGUS_SHOT=frame:path,...)
++  if (const char* shots = getenv("PINGUS_SHOT")) {
++    std::string all(shots);
++    size_t i = 0;
++    while (i < all.size()) {
++      size_t j = all.find(',', i);
++      if (j == std::string::npos) j = all.size();
++      std::string item = all.substr(i, j - i);
++      size_t c = item.find(':');
++      if (c != std::string::npos && atoi(item.substr(0, c).c_str()) == frames) {
++        Screenshot::save_screenshot(item.substr(c + 1));
++      }
++      i = j + 1;
++    }
++  }
    return s_framebuffer->flip();
  }
  
