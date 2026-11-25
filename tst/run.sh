@@ -104,12 +104,14 @@ done
 # levels as `test` blocks that drive the game themselves (the pilot
 # atmos-lang#76): under -t the environment opens no window and no audio,
 # so they run with none of the variables of the test mode
-env -u SDL_VIDEODRIVER -u SDL_AUDIODRIVER -u SDL_ATM_MUTE \
-    ./run.sh -t tst/bomber-test.atm > "$OUT/bomber-test.out" 2>&1
-check bomber-test "$OUT/bomber-test.out"
-env -u SDL_VIDEODRIVER -u SDL_AUDIODRIVER -u SDL_ATM_MUTE \
-    ./run.sh -t tst/levels-test.atm > "$OUT/levels-test.out" 2>&1
-check levels-test "$OUT/levels-test.out"
+# (built first, apart: the notes of the C compiler are not their output)
+for t in bomber-test levels-test; do
+    rm -f "$OUT/$t"
+    ./run.sh -t -o "$OUT/$t" tst/$t.atm > /dev/null 2>&1
+    env -u SDL_VIDEODRIVER -u SDL_AUDIODRIVER -u SDL_ATM_MUTE \
+        "$OUT/$t" > "$OUT/$t.out" 2>&1
+    check $t "$OUT/$t.out"
+done
 
 # levels, 4 at a time
 grep -v '^#' tst/levels.txt | grep -v '^\s*$' | \
