@@ -36,9 +36,9 @@ references in the history; the open ones are numbered here.
 | #16 | Five more levels as `test` blocks (`tst/levels-test.atm`): digger, blocker, miner, basher, the wall jump; traces as the goldens up to tick 1500 | done, by the session |
 | #17 | For the paper (`paper-games#4`): the CPU of the game logic alone, port and original, with the drawing skipped in both (median of 3, ms per frame, the ratio), in `doc/bench.md` | open, by the session |
 | #18 | Whether the floats kept in C (`pg_move`, `pg.f32`) can go back to Atmos with `ATMOS_REAL=float` | first step: the port builds with `ATMOS_REAL=float` and four level traces are identical; moving the mover to Atmos would make the game depend on that option of the build (open) |
-| #19 | The sound on entering the worldmap (`letsgo`, `PingusMenu::do_start`) was missing | done: `screens/menu.atm`, on "Story"; waits for the author to hear it |
-| #20 | The leave button of the worldmap: not at its corner, no "Leave?" | done: at `(0, H-37)` with "Leave?", as `WorldmapScreenCloseButton`; waits for the author to see it |
-| #21 | On the worldmap, the first mountain and the dots moved a pixel apart while the pingu walked (called #20 by the author in the session) | done: the camera follows the pingu in whole pixels, as the original; waits for the author to see it |
+| #19 | The sound on entering the worldmap (`letsgo`, `PingusMenu::do_start`) was missing | done: `screens/menu.atm`, on "Story"; confirmed by the author (2026-11-25) |
+| #20 | The leave button of the worldmap: not at its corner, no "Leave?" | done: at `(0, H-37)` with "Leave?", as `WorldmapScreenCloseButton`; confirmed by the author (2026-11-25) |
+| #21 | On the worldmap, the first mountain and the dots moved a pixel apart while the pingu walked (called #20 by the author in the session) | done: the camera follows the pingu in whole pixels, as the original; confirmed by the author (2026-11-25) |
 | #22 | `main.atm`: `val file = ...` and `@+`, the forms of Atmos (numbered #21 in `d5901d2`, a number already taken) | done |
 
 ## A. Decisions waiting for the author
