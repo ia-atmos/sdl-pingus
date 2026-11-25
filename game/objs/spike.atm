@@ -1,5 +1,6 @@
 ;; Spike: comes out when a pingu walks over it, kills the pingus over it
-;; at its frame 3, and rests at its frame 13. It is hidden while idle.
+;; at each tick of its frame 3 (a pingu that walks in then dies too),
+;; and rests at its frame 13. It is hidden while idle.
 
 func spike_kill (g, pos) {
     loop _, t in g.pingus {
@@ -17,7 +18,12 @@ task Spike (g, o) {
             await Sprite("traps/spike", pos, [world=true, loop=true])
         } with {
             await :sprite.frame until it.n == 3
-            spike_kill(g, pos)
+            watching :sprite.frame until it.n == 4 {
+                spike_kill(g, pos)
+                loop on :tick {
+                    spike_kill(g, pos)
+                }
+            }
             await :sprite.frame until it.n == 13
         }
     }
