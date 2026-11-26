@@ -4,7 +4,7 @@ task Guillotine (g, o) {
     pin pos = [x=o.position@0, y=o.position@1]
     loop {
         ;; idle, until a pingu is under it
-        val dir = watching :guillotine.kill {
+        val _, dir = watching :guillotine.kill {
             spawn Sprite("traps/guillotineidle", pos, [world=true])
             loop on :tick {
                 loop _, t in g.pingus {
