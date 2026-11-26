@@ -187,7 +187,7 @@ task WmDot (wm, n, v) {
                         }
                     } with {
                         loop {
-                            val e = await :mouse.button.dn until it.button == 1
+                            val e = await :mouse.button.dn until it.button == :left
                             if open && ok {
                                 emit @v :wm.click [node=n.name]
                             } else {

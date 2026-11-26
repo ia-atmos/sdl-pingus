@@ -395,7 +395,7 @@ func inside (r, x, y) {
 ;; Click(r [, but]): awaits a click in the rectangle `r`: the button
 ;; goes down and up inside it.
 task Click (r, but) {
-    val b = but || 1
+    val b = but || :left
     loop {
         await :mouse.button.dn until (it.button == b) && inside(r, it.x, it.y)
         val e = await :mouse.button.up until it.button == b

@@ -78,7 +78,7 @@ task ChoiceBox (key, s, choices, col, row, names) {
     pin box = [x=r.x + 140, y=r.y, w=r.w - 140, h=r.h]
     par {
         loop {
-            val e = await :mouse.button.dn until (it.button == 1) && inside(box, it.x, it.y)
+            val e = await :mouse.button.dn until (it.button == :left) && inside(box, it.x, it.y)
             val i = loop i, c in choices {
                 until c == OPTIONS@key, i
             } || 0
@@ -109,9 +109,9 @@ task SliderBox (key, s, col, row) {
     }
     par {
         loop {
-            val e = await :mouse.button.dn until (it.button == 1) && inside(box, it.x, it.y)
+            val e = await :mouse.button.dn until (it.button == :left) && inside(box, it.x, it.y)
             option_set(key, value(e.x))
-            watching :mouse.button.up until it.button == 1 {
+            watching :mouse.button.up until it.button == :left {
                 loop m on :mouse.motion {
                     val v = value(m.x)
                     if v != OPTIONS@key {

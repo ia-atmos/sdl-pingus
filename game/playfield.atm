@@ -28,7 +28,7 @@ task Playfield (g) {
     par {
         ;; a click on a pingu gives it the selected action, if there is
         ;; one left
-        loop e on :mouse.button.dn until e.button == 1 {
+        loop e on :mouse.button.dn until e.button == :left {
             val t = pingu_at(g, e.x, e.y)
             val act = g.next
             if t && act && can(t.pub, act) && ((g.actions@act || 0) > 0) {
@@ -41,8 +41,8 @@ task Playfield (g) {
         ;; level follows the mouse (drag and drop), or scrolls at a speed
         ;; from the point of the click (a band)
         loop {
-            val e = await :mouse.button.dn until it.button == 3
-            watching :mouse.button.up until it.button == 3 {
+            val e = await :mouse.button.dn until it.button == :right
+            watching :mouse.button.up until it.button == :right {
                 if OPTIONS.dragdrop {
                     val cx, cy = CAM.x, CAM.y
                     loop on :mouse.motion {

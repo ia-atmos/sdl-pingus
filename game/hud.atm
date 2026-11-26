@@ -108,7 +108,7 @@ task SmallMap (g) {
     }
     par {
         loop {
-            val e = await :mouse.button.dn until (it.button == 1) && inside(r, it.x, it.y)
+            val e = await :mouse.button.dn until (it.button == :left) && inside(r, it.x, it.y)
             cam_to(e.x, e.y)
             watching :mouse.button.up {
                 loop m on :mouse.motion until inside(r, m.x, m.y) {
@@ -173,12 +173,12 @@ task FastForward (g) {
         loop {
             watching :game.ff.on {
                 spawn Sprite("core/buttons/hbuttonbgb", r)
-                await :mouse.button.dn until (it.button == 1) && inside(r, it.x, it.y)
+                await :mouse.button.dn until (it.button == :left) && inside(r, it.x, it.y)
                 emit @:parent :game.ff.on
             }
             watching :game.ff.off {
                 spawn Sprite("core/buttons/hbuttonbg", r)
-                await :mouse.button.up until it.button == 1
+                await :mouse.button.up until it.button == :left
                 emit @:parent :game.ff.off
             }
         }
