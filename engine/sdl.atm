@@ -49,18 +49,18 @@ pin pg = [
         val cx, cy, cw, ch = if c => (c@0, c@1, c@2, c@3) => (0, 0, 0, 0)
         val k = path ++ "#" ++ tostring(mod) ++ "#" ++ tostring(cx) ++ "," ++
                 tostring(cy) ++ "," ++ tostring(cw) ++ "," ++ tostring(ch)
-        if IMGS@(k) == nil {
-            set IMGS@(k) = `:atmos pg_img_load(pg_cstr($path), pg_int($mod), pg_int($cx), pg_int($cy), pg_int($cw), pg_int($ch))`
+        if IMGS@k == nil {
+            set IMGS@k = `:atmos pg_img_load(pg_cstr($path), pg_int($mod), pg_int($cx), pg_int($cy), pg_int($cw), pg_int($ch))`
         }
-        IMGS@(k)
+        IMGS@k
     },
 
     ;; pg.sound(path [, vol]): plays a sound, loaded once
     sound = func (path, vol) {
-        if SOUNDS@(path) == nil {
-            set SOUNDS@(path) = sdl.sound(path)
+        if SOUNDS@path == nil {
+            set SOUNDS@path = sdl.sound(path)
         }
-        val snd = SOUNDS@(path)
+        val snd = SOUNDS@path
         if snd {
             sdl.play(snd, if vol == nil => 1.0 => vol)
         }

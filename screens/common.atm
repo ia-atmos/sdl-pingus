@@ -95,9 +95,9 @@ func save () {
 
 ;; A level is solved, or only played.
 func level_store (path, r) {
-    val old = SAVE.levels@(path)
+    val old = SAVE.levels@path
     val ok = r.saved >= r.needed
-    set SAVE.levels@(path) = [
+    set SAVE.levels@path = [
         solved = (old && old.solved) || ok,
         saved  = math.max((old && old.saved) || 0, r.saved),
     ]
@@ -105,7 +105,7 @@ func level_store (path, r) {
 }
 
 func level_solved (path) {
-    val l = SAVE.levels@(path)
+    val l = SAVE.levels@path
     l && l.solved
 }
 

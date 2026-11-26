@@ -32,8 +32,8 @@ task Playfield (g) {
             if e.button == 1 {
                 val t = pingu_at(g, e.x, e.y)
                 val act = g.next
-                if t && act && can(t.pub, act) && ((g.actions@(act) || 0) > 0) {
-                    set g.actions@(act) -= 1
+                if t && act && can(t.pub, act) && ((g.actions@act || 0) > 0) {
+                    set g.actions@act -= 1
                     emit @t :pingu.go [act=act]
                 }
             }

@@ -52,27 +52,27 @@ func wm_open (wm, n) {
     if (n.name == first) || wm_solved(n) {
         return true
     }
-    iter.any(n.next, \(_, k) { wm_solved(wm.nodes@(k)) || (n.story && (k == first)) })
+    iter.any(n.next, \(_, k) { wm_solved(wm.nodes@k) || (n.story && (k == first)) })
 }
 
 ;; The shortest path between two nodes, through open nodes, as a vector
 ;; of names (breadth first).
 func wm_path (wm, a, b) {
-    pin from = [ @(a) = a ]
+    pin from = [ @a = a ]
     pin queue = [a]
     var i = 0
     loop {
         while i < #queue
         val cur = queue@i
         set i += 1
-        loop k, _ in wm.nodes@(cur).next {
-            if !from@(k) && wm_open(wm, wm.nodes@(k)) {
-                set from@(k) = cur
+        loop k, _ in wm.nodes@cur.next {
+            if !from@k && wm_open(wm, wm.nodes@k) {
+                set from@k = cur
                 vector.insert(queue, k)
             }
         }
     }
-    if !from@(b) {
+    if !from@b {
         return nil
     }
     val path = [b]
@@ -126,8 +126,8 @@ task WmPingu (wm, me) {
             while path && (#path > 1)
             set me.at = nil
             val nxt = path@1
-            pin pts = [[x=pos.x, y=pos.y]] ++ wm.nodes@(cur).next@(nxt) ++
-                      [[x=wm.nodes@(nxt).x, y=wm.nodes@(nxt).y]]
+            pin pts = [[x=pos.x, y=pos.y]] ++ wm.nodes@cur.next@nxt ++
+                      [[x=wm.nodes@nxt.x, y=wm.nodes@nxt.y]]
             loop i in #pts - 1 {
                 val a, b = pts@i, pts@(i+1)
                 val len = math.max(1, math.sqrt(((b.x-a.x)*(b.x-a.x)) + ((b.y-a.y)*(b.y-a.y))))

@@ -101,7 +101,7 @@ func levelsets () {
         if !ls.developer_only {
             loop _, l in ls.levels {
                 val path = "data/levels/" ++ l.filename ++ ".pingus.atm"
-                if LEVELS_OK@(path) {
+                if LEVELS_OK@path {
                     vector.insert(ls.paths, path)
                 }
             }

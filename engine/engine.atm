@@ -61,13 +61,13 @@ func path_norm (path) {
 pin DESCS = []
 
 func res_desc (name) {
-    val c = DESCS@(name)
+    val c = DESCS@name
     if c {
         return c
     }
     val base = "data/images/" ++ name
     ;; the cache owns the description, which is completed in place
-    set DESCS@(name) = ifs {
+    set DESCS@name = ifs {
         file_exists(base ++ ".sprite.atm") => data_load(base ++ ".sprite.atm")
         file_exists(base ++ ".png") => [path = base ++ ".png"]
         file_exists(base ++ ".jpg") => [path = base ++ ".jpg"]
@@ -76,7 +76,7 @@ func res_desc (name) {
             [path = "data/images/core/misc/404.png"]
         }
     }
-    val d = DESCS@(name)
+    val d = DESCS@name
     if d.path == nil {
         ;; a sprite: an absolute path is relative to the data
         set d.path = if string.sub(d.image, 0, 0) == "/" =>
@@ -116,7 +116,7 @@ func origin (o, w, h) {
 ;; with a modifier. As `Resource::load_surface` of the original.
 func res_surface (name, mod) {
     val d = res_desc(name)
-    val m = MOD@(mod) || 0
+    val m = MOD@mod || 0
     if d.size || (d.position@0 != 0) || (d.position@1 != 0) ||
        (d.array@0 != 1) || (d.array@1 != 1)
     {
@@ -205,7 +205,7 @@ task Sprite (name, pos, o) {
             val f = if opt.back => n - 1 - (t // delay) => t // delay
             if f != frame {
                 set frame = f
-                emit @(:parent) :sprite.frame [n=f]
+                emit @:parent :sprite.frame [n=f]
             }
         }
         done && !loops
@@ -255,7 +255,7 @@ task Image (img, pos) {
 pin FONTS_CACHE = []
 
 func font (name) {
-    val c = FONTS_CACHE@(name)
+    val c = FONTS_CACHE@name
     if c ?? :number {
         return c
     }
@@ -268,7 +268,7 @@ func font (name) {
                           g.offset@0, g.offset@1, g.advance)
         }
     }
-    set FONTS_CACHE@(name) = f
+    set FONTS_CACHE@name = f
     f
 }
 
@@ -319,7 +319,7 @@ func break_lines (f, s, w) {
 pin LANG = [texts=nil]
 
 func tr (s) {
-    (LANG.texts && LANG.texts@(s)) || s
+    (LANG.texts && LANG.texts@s) || s
 }
 
 func lang_set (code) {

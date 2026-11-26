@@ -34,5 +34,5 @@ loop k, v in [
     slider = Slider, smashed = Smashed, splashed = Splashed, superman = Superman,
     waiter = Waiter, walker = Walker,
 ] {
-    set ACTIONS@(k) = v
+    set ACTIONS@k = v
 }

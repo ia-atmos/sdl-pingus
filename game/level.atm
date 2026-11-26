@@ -23,8 +23,8 @@ func level_load (path) {
     }
     ;; texts in many strings, or with none
     loop _, k in [:description, :author, :comment] {
-        val v = lvl.head@(k)
-        set lvl.head@(k) = ifs {
+        val v = lvl.head@k
+        set lvl.head@k = ifs {
             v == nil    => ""
             v ?? :table => string.join(v, "")
             else        => tostring(v)

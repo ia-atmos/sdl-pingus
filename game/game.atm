@@ -47,8 +47,8 @@ task Orders (g, orders) {
         }
         loop _, k in g.pingus {
             if k.pub.id == n {
-                if can(k.pub, act) && ((g.actions@(act) || 0) > 0) {
-                    set g.actions@(act) -= 1
+                if can(k.pub, act) && ((g.actions@act || 0) > 0) {
+                    set g.actions@act -= 1
                     emit @k :pingu.go [act=act]
                 } else {
                     trace(g, k.pub, "refuses:" ++ act)
@@ -100,8 +100,8 @@ task Clock (g) {
                     while late >= 20
                     set late -= 20
                     set g.time += 1
-                    emit @(:parent) :tick
-                    emit @(:parent) :tock
+                    emit @:parent :tick
+                    emit @:parent :tock
                 }
             }
         }
@@ -113,8 +113,8 @@ task Clock (g) {
                     set late -= 20
                     loop in 4 {
                         set g.time += 1
-                        emit @(:parent) :tick
-                        emit @(:parent) :tock
+                        emit @:parent :tick
+                        emit @:parent :tock
                     }
                 }
             }
@@ -152,7 +152,7 @@ task Game (path, orders) {
     pin acts = do {
         val v = []
         loop _, a in ACTIONS_PLAYER {
-            if head.actions@(a) {
+            if head.actions@a {
                 vector.insert(v, a)
             }
         }

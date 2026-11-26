@@ -27,7 +27,7 @@ task ActionButton (g, i, act, n) {
                     spawn Sprite("core/buttons/buttonbackground", r)
                     spawn Sprite(name, sp, [anchor=:center, still=true])
                     await Click(r)
-                    emit @(:parent) :game.select [i=i, act=act]
+                    emit @:parent :game.select [i=i, act=act]
                 }
             }
             set g.next = act
@@ -39,14 +39,14 @@ task ActionButton (g, i, act, n) {
     } with {
         val f = FONT.pingus_small
         loop on :draw {
-            text(f, g.actions@(act), r.x + r.w - 5, r.y + 9, :right)
+            text(f, g.actions@act, r.x + r.w - 5, r.y + 9, :right)
         }
     } with {
         loop {
             await :mouse.motion until inside(r, it.x, it.y)
             watching :mouse.motion until !inside(r, it.x, it.y) {
                 loop on :draw {
-                    text(FONT.pingus_small, tr(ACTION_NAME@(act)), r.x + r.w + 5, r.y + 9)
+                    text(FONT.pingus_small, tr(ACTION_NAME@act), r.x + r.w + 5, r.y + 9)
                 }
             }
         }
@@ -63,7 +63,7 @@ task ActionKeys (g, acts) {
         if k && (k >= 0) && (k <= 9) {
             val i = if k == 0 => 9 => k - 1
             if i < n {
-                emit @(:parent) :game.select [i=i, act=acts@i]
+                emit @:parent :game.select [i=i, act=acts@i]
             }
         }
     }
@@ -163,7 +163,7 @@ task Armageddon (g) {
         }
     }
     spawn Sprite("core/buttons/armageddon_anim", pos, [anchor=:center])
-    emit @(:parent) :game.armageddon
+    emit @:parent :game.armageddon
     await(false)
 }
 
@@ -176,12 +176,12 @@ task FastForward (g) {
             watching :game.ff.on {
                 spawn Sprite("core/buttons/hbuttonbgb", r)
                 await :mouse.button.dn until (it.button == 1) && inside(r, it.x, it.y)
-                emit @(:parent) :game.ff.on
+                emit @:parent :game.ff.on
             }
             watching :game.ff.off {
                 spawn Sprite("core/buttons/hbuttonbg", r)
                 await :mouse.button.up until it.button == 1
-                emit @(:parent) :game.ff.off
+                emit @:parent :game.ff.off
             }
         }
     }
@@ -198,12 +198,12 @@ task Pause (g) {
             watching :game.pause {
                 spawn Sprite("core/buttons/hbuttonbgb", r)
                 await Click(r)
-                emit @(:parent) :game.pause
+                emit @:parent :game.pause
             }
             watching :game.pause {
                 spawn Sprite("core/buttons/hbuttonbg", r)
                 await Click(r)
-                emit @(:parent) :game.pause
+                emit @:parent :game.pause
             }
         }
     }

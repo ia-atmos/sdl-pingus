@@ -70,7 +70,7 @@ task Menu () {
     } with {
         loop {
             await MenuButton(125, 50, "Options")
-            emit @(:global) :go.options
+            emit @:global :go.options
         }
     } with {
         await MenuButton(0, 120, "Exit")

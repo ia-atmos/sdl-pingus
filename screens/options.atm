@@ -32,18 +32,18 @@ func options_apply () {
 ;; the saved options over the defaults, if of the same type (the saves of
 ;; the first version had `sound` and `music` as booleans)
 loop k, v in (SAVE.options || []) {
-    if type(v) == type(OPTIONS@(k)) {
-        set OPTIONS@(k) = v
+    if type(v) == type(OPTIONS@k) {
+        set OPTIONS@k = v
     }
 }
 set SAVE.options = OPTIONS
 options_apply()
 
 func option_set (key, v) {
-    set OPTIONS@(key) = v
+    set OPTIONS@key = v
     options_apply()
     save()
-    emit @(:global) :options [key=key]
+    emit @:global :options [key=key]
 }
 
 ;; The rectangle of a row of a column, as `add_item` of the original.
@@ -60,11 +60,11 @@ task CheckBox (key, s, col, row) {
     par {
         loop {
             await Click(box)
-            option_set(key, !OPTIONS@(key))
+            option_set(key, !OPTIONS@key)
         }
     } with {
         loop on :draw {
-            sdl.draw(if OPTIONS@(key) => yes => no, r.x, r.y)
+            sdl.draw(if OPTIONS@key => yes => no, r.x, r.y)
             text(FONT.chalk_normal, tr(s), r.x + 40, r.y)
         }
     }
@@ -80,7 +80,7 @@ task ChoiceBox (key, s, choices, col, row, names) {
         loop {
             val e = await :mouse.button.dn until (it.button == 1) && inside(box, it.x, it.y)
             val i = loop i, c in choices {
-                until c == OPTIONS@(key), i
+                until c == OPTIONS@key, i
             } || 0
             val d = if (e.x - box.x) > (box.w // 2) => 1 => (#choices - 1)
             option_set(key, choices@((i + d) % #choices))
@@ -91,8 +91,8 @@ task ChoiceBox (key, s, choices, col, row, names) {
             text(f, tr(s), r.x, r.y)
             text(f, "<", box.x, box.y)
             text(f, ">", box.x + box.w, box.y, :right)
-            val v = OPTIONS@(key)
-            text(f, (names && names@(v)) || v, box.x + (box.w // 2), box.y, :center)
+            val v = OPTIONS@key
+            text(f, (names && names@v) || v, box.x + (box.w // 2), box.y, :center)
         }
     }
 }
@@ -114,7 +114,7 @@ task SliderBox (key, s, col, row) {
             watching :mouse.button.up until it.button == 1 {
                 loop m on :mouse.motion {
                     val v = value(m.x)
-                    if v != OPTIONS@(key) {
+                    if v != OPTIONS@key {
                         option_set(key, v)
                     }
                 }
@@ -123,7 +123,7 @@ task SliderBox (key, s, col, row) {
     } with {
         loop on :draw {
             val f = FONT.chalk_normal
-            val n = OPTIONS@(key) // (100 // STEPS)
+            val n = OPTIONS@key // (100 // STEPS)
             text(f, tr(s), r.x, r.y)
             if n == 0 {
                 text(f, tr("off"), box.x + (box.w // 2), box.y, :center)
@@ -156,7 +156,7 @@ task Options () {
     spawn ChoiceBox(:resolution, "Resolution:", RESOLUTIONS, 1, 0)
     ;; the languages in the order of their names, as the original
     pin ls = langs()
-    vector.sort(ls, \(a, b) { (LANG_NAMES@(a) || a) < (LANG_NAMES@(b) || b) })
+    vector.sort(ls, \(a, b) { (LANG_NAMES@a || a) < (LANG_NAMES@b || b) })
     spawn ChoiceBox(:lang,       "Language:",   ls,          1, 3, LANG_NAMES)
     spawn SliderBox(:master, "Master Volume:", 1, 5)
     spawn SliderBox(:sound,  "Sound Volume:",  1, 6)

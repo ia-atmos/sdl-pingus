@@ -221,7 +221,7 @@ task Teleporter (g, o, target) {
                 }
             }
             emit :tele.go
-            emit @(:parent) :teleport [id=target.id]
+            emit @:parent :teleport [id=target.id]
         }
     }
 }
@@ -325,7 +325,7 @@ task SwitchDoorSwitch (g, o) {
     pin pos = [x=o.position@0, y=o.position@1]
     spawn Sprite("worldobjs/switchdoor_switch", pos, [world=true])
     await :tock until zone_any(g, pos, 0, 0, 15, 40)
-    emit @(:parent) :door.open [id=o.target_id]
+    emit @:parent :door.open [id=o.target_id]
     await(false)
 }
 
