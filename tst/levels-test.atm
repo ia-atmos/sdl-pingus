@@ -15,10 +15,10 @@ func play (level, orders) {
     pin g = spawn Game("data/levels/" ++ level ++ ".pingus.atm", orders)
     loop n in 1200 {
         emit @:global (25000)
-        emit(:frame [n=n+1, us=25000])
-        emit(:draw)
+        emit :frame [n=n+1, us=25000]
+        emit :draw
     }
-    emit(:key.dn [key="Escape"])
+    emit :key.dn [key="Escape"]
     val r = g.ret
     print(string.format("%-40s saved %d, killed %d, of %d", level, r.saved, r.killed, r.total))
     return r.saved, r.killed

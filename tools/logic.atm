@@ -17,7 +17,7 @@ test {
         until g.ret
         set n += 1
         emit @:global (20000)
-        emit(:frame [n=n, us=20000])
+        emit :frame [n=n, us=20000]
     }
     print(string.format("ticks %d, saved %d, killed %d", g.ret.time, g.ret.saved, g.ret.killed))
 }

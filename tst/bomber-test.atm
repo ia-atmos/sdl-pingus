@@ -19,10 +19,10 @@ test {
     pin g = spawn Game("data/levels/tutorial/bomber-tutorial2-grumbel.pingus.atm", "250:0:bomber")
     loop n in 800 {
         emit @:global (25000)
-        emit(:frame [n=n+1, us=25000])
-        emit(:draw)
+        emit :frame [n=n+1, us=25000]
+        emit :draw
     }
-    emit(:key.dn [key="Escape"])
+    emit :key.dn [key="Escape"]
     ;; the bomber died at the tick 280 (as tst/golden/bomber.out), and
     ;; no pingu is out yet
     val r = g.ret

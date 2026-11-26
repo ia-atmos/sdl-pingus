@@ -292,10 +292,8 @@ task Game (path, orders) {
         }
     }
     spawn {
-        loop e on :key.up {
-            if (e.key == "F") || (e.key == "Space") {
-                emit :game.ff.off
-            }
+        loop on :key.up until (it.key == "F") || (it.key == "Space") {
+            emit :game.ff.off
         }
     }
 
