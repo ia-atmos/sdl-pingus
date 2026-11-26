@@ -118,16 +118,11 @@ func collides (x, y, sx, sy) {
     val nx, ny = x + sx, y + sy
     val falling = sy > 0.0
     ifs {
-        trunc(nx) != trunc(x) => {
-            var yy = ny
-            val top = ny - PINGU.height
-            loop {
-                while yy >= top
-                val px = pg.map_get(trunc(nx), trunc(yy))
-                until (px != GP.nothing) && !((px == GP.bridge) && !falling), true
-                set yy -= 1.0
-            } || false
-        }
+        ;; from the feet up to the head
+        trunc(nx) != trunc(x) => iter.any((0, PINGU.height), \(i) {
+            val px = pg.map_get(trunc(nx), trunc(ny - i))
+            (px != GP.nothing) && !((px == GP.bridge) && !falling)
+        })
         !falling => do {
             val px = pg.map_get(trunc(nx), trunc(ny - PINGU.height))
             (px != GP.nothing) && (px != GP.bridge)
@@ -152,8 +147,8 @@ func move (p) {
         val h = collides(x, y, sx, sy)
         set x += sx
         set y += sy
-        until h, true
-    } || false
+        until h
+    }
     if hit {
         set x -= sx
         set y -= sy
