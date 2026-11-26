@@ -47,6 +47,9 @@ references in the history; the open ones are numbered here.
 | #27 | (a) Screenshots of the official game compared with the port, pixel by pixel, in the screens and levels | open, approved by the author |
 | #28 | (a) The start screen of a level: the description wraps one word later, the three lines of numbers are 3 px lower, the author 5 px lower, Play 10 px to the right, than the official | open |
 | #29 | (a) The worldmap: the port draws the title of the worldmap, the official does not; and a dot near a rock that the official does not show | open |
+| #30 | The bitmap fonts of `engine/pingus.h` in Atmos (proposed, not approved) | proposed |
+| #31 | Excerpt, idiomatic (#18): `game/pingu/pingu.atm:173-179`, the `Mover` task, `loop on :tick` and `emit @(:parent) :collided` | shown to the author |
+| #32 | Excerpt, bad (#18): `game/pingu/pingu.atm:121-130` and `151-156`, a search in a loop: `until c, true } \|\| false`, as a loop gives no value when it ends with no `until` | shown to the author |
 
 ## A. Decisions waiting for the author
 
