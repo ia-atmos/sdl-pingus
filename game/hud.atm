@@ -111,7 +111,7 @@ task SmallMap (g) {
             val e = await :mouse.button.dn until (it.button == 1) && inside(r, it.x, it.y)
             cam_to(e.x, e.y)
             watching :mouse.button.up {
-                loop m on :mouse.motion until inside(r, it.x, it.y) {
+                loop m on :mouse.motion until inside(r, m.x, m.y) {
                     cam_to(m.x, m.y)
                 }
             }
