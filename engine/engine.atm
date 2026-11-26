@@ -50,7 +50,7 @@ func path_norm (path) {
             else      => vector.insert(out, s)
         }
     }
-    vector.join(out, "/")
+    string.join(out, "/")
 }
 
 ;;; SPRITE DESCRIPTIONS ;;;
@@ -308,7 +308,7 @@ func break_lines (f, s, w) {
     if cur != "" {
         vector.insert(lines, cur)
     }
-    vector.join(lines, "\n")
+    string.join(lines, "\n")
 }
 
 ;;; TRANSLATIONS ;;;

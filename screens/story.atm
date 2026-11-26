@@ -17,7 +17,7 @@ task Story (path) {
         loop _, page in st.pages {
             val img = page.surface.image
             val iw, ih = res_frame_size(img)
-            val all = if page.text ?? :table => vector.join(page.text, "") => page.text
+            val all = if page.text ?? :table => string.join(page.text, "") => page.text
             val txt = break_lines(FONT.chalk_normal, tr(all), 560)
             spawn Sprite(img, [x=(W//2) - (iw//2), y=(H//2) + 10 - ih])
             ;; the text, letter by letter, until it is all there or the
