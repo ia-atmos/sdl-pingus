@@ -55,6 +55,8 @@ references in the history; the open ones are numbered here.
 | #35 | Excerpt, bad (searches as `iter`): `screens/worldmap.atm:55`, `iter.any(n.next, \\(_, k) {...})`, a dummy `_` for the value when only the key matters | shown to the author |
 | #36 | Excerpt, idiomatic (`@name`): `game/game.atm:52`, `emit @k :pingu.go [act=act]` | shown to the author |
 | #37 | Excerpt, bad (`@name`): `screens/worldmap.atm:150`, `SAVE.worldmaps@(wm.head.short_name)`, a path still needs the parentheses | shown to the author |
+| #38 | Excerpt, idiomatic (IDIOMS.md): `game/playfield.atm:31`, `loop e on :mouse.button.dn until it.button == 1 {...}` | shown to the author |
+| #39 | Excerpt, bad (IDIOMS.md): `game/hud.atm:114`, `loop m on :mouse.motion until inside(r, it.x, it.y) { cam_to(m.x, m.y) }`, two names for one event | shown to the author |
 
 ## A. Decisions waiting for the author
 
