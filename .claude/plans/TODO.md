@@ -51,6 +51,10 @@ references in the history; the open ones are numbered here.
 | #31 | Excerpt, idiomatic (#18): `game/pingu/pingu.atm:173-179`, the `Mover` task, `loop on :tick` and `emit @(:parent) :collided` | shown to the author |
 | #32 | Excerpt, bad (#18): `game/pingu/pingu.atm:121-130` and `151-156`, a search in a loop: `until c, true } \|\| false`, as a loop gives no value when it ends with no `until` | shown to the author |
 | #33 | The answer to the general instruction for the ports (2026-11-26, via `atmos`): how much the port follows it, what to redo, a grade (7) | answered, waiting for the author |
+| #34 | Excerpt, idiomatic (searches as `iter`): `game/pingu/pingu.atm:121-124`, the collision over the height as `iter.any((0, PINGU.height), ...)` | shown to the author |
+| #35 | Excerpt, bad (searches as `iter`): `screens/worldmap.atm:55`, `iter.any(n.next, \\(_, k) {...})`, a dummy `_` for the value when only the key matters | shown to the author |
+| #36 | Excerpt, idiomatic (`@name`): `game/game.atm:52`, `emit @k :pingu.go [act=act]` | shown to the author |
+| #37 | Excerpt, bad (`@name`): `screens/worldmap.atm:150`, `SAVE.worldmaps@(wm.head.short_name)`, a path still needs the parentheses | shown to the author |
 
 ## A. Decisions waiting for the author
 
