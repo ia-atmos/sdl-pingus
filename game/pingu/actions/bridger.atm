@@ -4,10 +4,7 @@ val BRIDGER_BRICKS = 15
 
 ;; The way ahead is free to walk up the bridge.
 func bridger_free (p) {
-    val blocked = loop _, x in [1, 2, 3, 4] {
-        until (rel(p, x, 2) != GP.nothing) || head(p, x, 2), true
-    }
-    !blocked
+    !iter.any((1, 4), \(x) { (rel(p, x, 2) != GP.nothing) || head(p, x, 2) })
 }
 
 func bridger_brick (p, left) {

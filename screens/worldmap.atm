@@ -52,11 +52,7 @@ func wm_open (wm, n) {
     if (n.name == first) || wm_solved(n) {
         return true
     }
-    val near = loop k, _ in n.next {
-        val m = wm.nodes@(k)
-        until wm_solved(m) || (n.story && (k == first)), true
-    }
-    near || false
+    iter.any(n.next, \(_, k) { wm_solved(wm.nodes@(k)) || (n.story && (k == first)) })
 }
 
 ;; The shortest path between two nodes, through open nodes, as a vector

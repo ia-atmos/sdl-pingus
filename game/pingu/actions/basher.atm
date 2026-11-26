@@ -15,12 +15,9 @@ func basher_bash (p) {
 ;; inclusive, as the original.
 func basher_something (p) {
     val w, h = sdl.size(res_surface("pingus/common/bash_radius"))
-    loop x in (0, w) {
-        val y = loop y in (BASHER_MIN_HEIGHT, BASHER_MAX_HEIGHT) {
-            until rel(p, x, y) == GP.ground, true
-        }
-        until y, true
-    } || false
+    iter.any((0, w), \(x) {
+        iter.any((BASHER_MIN_HEIGHT, BASHER_MAX_HEIGHT), \(y) { rel(p, x, y) == GP.ground })
+    })
 }
 
 ;; One step forward, down up to 3 pixels. False to fall.

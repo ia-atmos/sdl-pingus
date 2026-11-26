@@ -155,11 +155,7 @@ task FakeExit (g, o) {
         par :any {
             await Sprite("traps/fake_exit", pos, [world=true, still=true])
         } with {
-            await :tock until do {
-                loop _, t in g.pingus {
-                    until zone(t.pub), true
-                }
-            }
+            await :tock until iter.any(g.pingus, \(t) { zone(t.pub) })
         }
         pin s = spawn Sprite("traps/fake_exit", pos, [world=true, loop=false])
         par :any {
@@ -216,9 +212,7 @@ task Teleporter (g, o, target) {
         await(false)
     }
     loop on :tock {
-        val hit = loop _, t in g.pingus {
-            until in_zone(pos, t.pub, -3, -52, 3, 0), true
-        }
+        val hit = iter.any(g.pingus, \(t) { in_zone(pos, t.pub, -3, -52, 3, 0) })
         if hit {
             loop _, t in g.pingus {
                 if in_zone(pos, t.pub, -3, -52, 3, 0) {

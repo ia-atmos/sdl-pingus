@@ -272,9 +272,7 @@ task Game (path, orders) {
         sound "goodidea"
         loop {
             await Ticks(4)
-            val t = loop _, t in pingus {
-                until can(t.pub, :bomber), t
-            }
+            val t = iter.find(pingus, \(t) { can(t.pub, :bomber) })
             while t
             emit @t :pingu.go [act=:bomber]
         }

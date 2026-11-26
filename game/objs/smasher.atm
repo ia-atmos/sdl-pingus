@@ -6,9 +6,7 @@ func smasher_trigger (pos, q) {
 }
 
 func smasher_any (g, pos) {
-    loop _, t in g.pingus {
-        until smasher_trigger(pos, t.pub) && (t.pub.act != :splashed), true
-    }
+    iter.any(g.pingus, \(t) { smasher_trigger(pos, t.pub) && (t.pub.act != :splashed) })
 }
 
 task Smasher (g, o) {
